@@ -6,9 +6,9 @@
     <persistence-unit name="ShoeStoreDB" transaction-type="RESOURCE_LOCAL">
         
         <!-- Entity classes -->
-        <class>com.mycompany.shoestore.model.Category</class>
-        <class>com.mycompany.shoestore.model.Product</class>
-        <class>com.mycompany.shoestore.model.ProductSize</class>
+        <class>model.Category</class>
+        <class>model.Product</class>
+        <class>model.ProductSize</class>
         
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
