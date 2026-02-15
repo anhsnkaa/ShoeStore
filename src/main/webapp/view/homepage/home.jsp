@@ -31,7 +31,7 @@
         <!-- owl.carousel css -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/owl.carousel.css">
         <!-- font-awesome css -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- flexslider.css-->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/flexslider.css">
         <!-- chosen.min.css-->
@@ -52,11 +52,11 @@
         <!-- Add your site or application content here -->
 
         <!-- header-area-start -->
-        <jsp:include page="common/header.jsp"></jsp:include>
+        <jsp:include page="../common/header.jsp"></jsp:include>
             <!-- header-area-end -->
 
             <!-- breadcrumbs-area-start -->
-        <jsp:include page="common/breadcrumbs-area.jsp"></jsp:include>
+        <jsp:include page="../common/breadcrumbs-area.jsp"></jsp:include>
             <!-- breadcrumbs-area-end -->
             <!-- shop-main-area-start -->
             <div class="shop-main-area mb-70">
@@ -72,10 +72,9 @@
                                 </div>
                                 <div class="left-menu mb-30">
                                     <ul>
-                                        <li><a href="#">Jackets<span>(15)</span></a></li>
-                                        <li><a href="#">weaters<span>(9)</span></a></li>
-                                        <li><a href="#">Bottoms<span>(12)</span></a></li>
-                                        <li><a href="#">Jeans Pants<span>(6)</span></a></li>
+                                    <c:forEach items="${listCategory}" var="c">
+                                        <li><a href="#">${c.name}<span>(15)</span></a></li>
+                                    </c:forEach>
                                     </ul>
                                 </div>
                                 <div class="left-title mb-20">
@@ -328,7 +327,7 @@
                                             <!-- single-product-start -->
                                             <div class="product-wrapper mb-40">
                                                 <div class="product-img">
-                                                    <a href="#">
+                                                    <a href="product-details?id=${p.id}">
                                                         <img src="${pageContext.request.contextPath}/img/product/1.jpg" alt="book" class="primary" />
                                                     </a>
                                                     <div class="quick-view">
@@ -339,7 +338,7 @@
                                                 </div>
                                                 <div class="product-details text-center">
 
-                                                    <h4><a href="#">${p.name}</a></h4>
+                                                    <h4><a href="product-details?id=${p.id}">${p.name}</a></h4>
                                                     <div class="product-price">
                                                         <ul>
                                                             <li>$${p.price}</li>
@@ -625,7 +624,7 @@
         </div>
         <!-- shop-main-area-end -->
         <!-- footer-area-start -->
-        <jsp:include page="common/footer.jsp"></jsp:include>
+        <jsp:include page="../common/footer.jsp"></jsp:include>
             <!-- footer-area-end -->
             <!-- Modal -->
             <div class="modal fade" id="productModal" tabindex="-1" role="dialog">
