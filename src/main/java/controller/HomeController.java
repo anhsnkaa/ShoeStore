@@ -33,7 +33,8 @@ public class HomeController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //get ve list productDAO
-        List<Product> listProduct = productDAO.getAllProducts();
+
+        List<Product> listProduct = findProductDoGet(request);
         //get ve list productSizeDAO
         List<ProductSize> listProductSize = productSizeDAO.getSizesByProduct(0);
         //get ve list categoryDAO
@@ -69,5 +70,21 @@ public class HomeController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private List<Product> findProductDoGet(HttpServletRequest request) {
+        String actionSearch = request.getParameter("search") == null
+                ? "default" : request.getParameter("search");
+        List<Product> product;
+        switch (actionSearch) {
+            case "category":
+                int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+                product = productDAO.getProductByCategory(categoryId);
+                break;
+            default:
+                product = productDAO.getAllProducts();
+
+        }
+        return product;
+    }
 
 }

@@ -38,7 +38,16 @@ public class ProductDAO {
         em.close();
         return p;
     }
+    
+    public List<Product> getProductByCategory(int categoryId) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
 
+        List<Product> list = em.createQuery("SELECT p FROM Product p Where p.category.id = :cid",Product.class).setParameter("cid",categoryId).getResultList();
+
+        em.close();
+        return list;
+    }
+    
     public List<Product> getProductByName(String name) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
