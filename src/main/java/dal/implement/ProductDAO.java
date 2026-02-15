@@ -48,10 +48,10 @@ public class ProductDAO {
         return list;
     }
     
-    public List<Product> getProductByName(String name) {
+    public List<Product> getProductByKeyword(String keyword) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
-        List<Product> list = em.createQuery("SELECT p FROM Product p Where p.name LIKE :kw",Product.class).setParameter("kw","%"+ name + "%").getResultList();
+        List<Product> list = em.createQuery("SELECT p FROM Product p Where p.name LIKE :kw",Product.class).setParameter("kw","%"+ keyword + "%").getResultList();
 
         em.close();
         return list;

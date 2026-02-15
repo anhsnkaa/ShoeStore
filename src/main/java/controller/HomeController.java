@@ -80,9 +80,12 @@ public class HomeController extends HttpServlet {
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
                 product = productDAO.getProductByCategory(categoryId);
                 break;
+            case "searchByKeyword":
+                String keyword = request.getParameter("keyword");
+                product = productDAO.getProductByKeyword(keyword);
+                break;
             default:
                 product = productDAO.getAllProducts();
-
         }
         return product;
     }
