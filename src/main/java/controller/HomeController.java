@@ -27,7 +27,6 @@ import model.ProductSize;
 public class HomeController extends HttpServlet {
 
     ProductDAO productDAO = new ProductDAO();
-    ProductSizeDAO productSizeDAO = new ProductSizeDAO();
     CategoryDAO categoryDAO = new CategoryDAO();
 
     @Override
@@ -37,15 +36,12 @@ public class HomeController extends HttpServlet {
 
         //get ve list productDAO
         List<Product> listProduct = findProductDoGet(request, pageControl);
-        //get ve list productSizeDAO
-        List<ProductSize> listProductSize = productSizeDAO.getSizesByProduct(0);
         //get ve list categoryDAO
         List<Category> listCategory = categoryDAO.getAllCategories();
 
         //set vao listProduct, listProductSize, listCategory trong session
         HttpSession session = request.getSession();
         session.setAttribute("listProduct", listProduct);
-        session.setAttribute("listProductSize", listProductSize);
         session.setAttribute("listCategory", listCategory);
         session.setAttribute("pageControl", pageControl);
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);

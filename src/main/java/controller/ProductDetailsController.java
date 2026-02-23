@@ -6,13 +6,16 @@
 package controller;
 
 import dal.implement.ProductDAO;
+import dal.implement.ProductSizeDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import model.Product;
+import model.ProductSize;
 
 /**
  *
@@ -20,6 +23,7 @@ import model.Product;
  */
 public class ProductDetailsController extends HttpServlet {
     ProductDAO productDAO = new ProductDAO();
+    ProductSizeDAO productSizeDAO = new ProductSizeDAO();
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,8 +34,12 @@ public class ProductDetailsController extends HttpServlet {
         //lay product tu database
         Product productFindById = productDAO.getProductById(id);
         
+        //get ve list productSizeDAO
+        List<ProductSize> listProductSize = productSizeDAO.getSizesByProduct(id);
+        
         //set product vao request va chuyen sang product-details
         request.setAttribute("product", productFindById);
+        request.setAttribute("listProductSize", listProductSize);
         request.getRequestDispatcher("view/homepage/product-details.jsp").forward(request, response);
     } 
 

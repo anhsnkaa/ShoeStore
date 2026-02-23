@@ -4,6 +4,7 @@
     Author     : FPTShop
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -48,27 +49,27 @@
 
         <!-- Add your site or application content here -->
         <!-- header-area-start -->
-        
+
         <jsp:include page="../common/header.jsp"></jsp:include>
-        <!-- header-area-end -->
-        <!-- breadcrumbs-area-start -->
+            <!-- header-area-end -->
+            <!-- breadcrumbs-area-start -->
         <jsp:include page="../common/breadcrumbs-area.jsp"></jsp:include>
-        <!-- breadcrumbs-area-end -->
-        <!-- product-main-area-start -->
-        <div class="product-main-area mb-70">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-9 col-md-12 col-12 order-lg-1 order-1">
-                        <!-- product-main-area-start -->
-                        <div class="product-main-area">
-                            <div class="row">
-                                <div class="col-lg-5 col-md-6 col-12">
-                                    <div class="flexslider">
-                                        <ul class="slides">
-                                            <li data-thumb="${pageContext.request.contextPath}/img/thum-2/1.jpg">
+            <!-- breadcrumbs-area-end -->
+            <!-- product-main-area-start -->
+            <div class="product-main-area mb-70">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-9 col-md-12 col-12 order-lg-1 order-1">
+                            <!-- product-main-area-start -->
+                            <div class="product-main-area">
+                                <div class="row">
+                                    <div class="col-lg-5 col-md-6 col-12">
+                                        <div class="flexslider">
+                                            <ul class="slides">
+                                                <li data-thumb="${pageContext.request.contextPath}/img/thum-2/1.jpg">
                                                 <img src="${pageContext.request.contextPath}/img/flex/1.jpg" alt="woman" />
                                             </li>
-                                            
+
                                         </ul>
                                     </div>
                                 </div>
@@ -85,15 +86,30 @@
                                             </div>
                                         </div>
                                         <div class="product-reviews-summary">
-                                            <div class="reviews-actions">
-                                                <a href="#">3 Reviews</a>
-                                                <a href="#" class="view">Add Your Review</a>
+                                            <div class="choose-size">
+                                                <p>Size</p>
+                                                <select name="sizeId" required>
+                                                    <c:forEach items="${listProductSize}" var="s">
+                                                        <c:choose>
+                                                            <c:when test="${s.quantity > 0}">
+                                                                <option value="${s.id}">
+                                                                ${s.size} - Available ${s.quantity}
+                                                                </option>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <option disabled>
+                                                                    ${s.size} - Out of stock
+                                                                </option>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </c:forEach>
+                                                </select>
                                             </div>
+
                                         </div>
                                         <div class="product-info-price">
                                             <div class="price-final">
                                                 <span>$${product.price}</span>
-                                                <span class="old-price">$40.00</span>
                                             </div>
                                         </div>
                                         <div class="product-add-form">
@@ -105,11 +121,6 @@
                                             </form>
                                         </div>
                                         <div class="product-social-links">
-                                            <div class="product-addto-links">
-                                                <a href="#"><i class="fa fa-heart"></i></a>
-                                                <a href="#"><i class="fa fa-pie-chart"></i></a>
-                                                <a href="#"><i class="fa fa-envelope-o"></i></a>
-                                            </div>
                                             <div class="product-addto-links-text">
                                                 <p>${product.description}</p>
                                             </div>
@@ -625,21 +636,21 @@
         <!-- product-main-area-end -->
         <!-- footer-area-start -->
         <jsp:include page="../common/footer.jsp"></jsp:include>
-        <!-- footer-area-end -->
-        <!-- Modal -->
-        <div class="modal fade" id="productModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-5 col-sm-5 col-xs-12">
-                                <div class="modal-tab">
-                                    <div class="product-details-large tab-content">
-                                        <div class="tab-pane active" id="image-1">
-                                            <img src="${pageContext.request.contextPath}/img/product/quickview-l4.jpg" alt="" />
+            <!-- footer-area-end -->
+            <!-- Modal -->
+            <div class="modal fade" id="productModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <div class="modal-tab">
+                                        <div class="product-details-large tab-content">
+                                            <div class="tab-pane active" id="image-1">
+                                                <img src="${pageContext.request.contextPath}/img/product/quickview-l4.jpg" alt="" />
                                         </div>
                                         <div class="tab-pane" id="image-2">
                                             <img src="${pageContext.request.contextPath}/img/product/quickview-l2.jpg" alt="" />
