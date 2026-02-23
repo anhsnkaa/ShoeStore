@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Category;
+import model.PageControl;
 import model.Product;
 import model.ProductSize;
 
@@ -32,9 +33,10 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //get ve list productDAO
+        PageControl pageControl = new PageControl();
 
-        List<Product> listProduct = findProductDoGet(request);
+        //get ve list productDAO
+        List<Product> listProduct = findProductDoGet(request, pageControl);
         //get ve list productSizeDAO
         List<ProductSize> listProductSize = productSizeDAO.getSizesByProduct(0);
         //get ve list categoryDAO
@@ -45,6 +47,7 @@ public class HomeController extends HttpServlet {
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listProductSize", listProductSize);
         session.setAttribute("listCategory", listCategory);
+        session.setAttribute("pageControl", pageControl);
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
     }
 
@@ -71,22 +74,53 @@ public class HomeController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private List<Product> findProductDoGet(HttpServletRequest request) {
+    private List<Product> findProductDoGet(HttpServletRequest request, PageControl pageControl) {
+        //get ve page
+        String pageRaw = request.getParameter("page");
+        //valid page
+        int page;
+        int pageSize = 12;
+        try {
+            page = Integer.parseInt(pageRaw);
+            if (page <= 0) {
+                page = 1;
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+        //get ve search
         String actionSearch = request.getParameter("search") == null
                 ? "default" : request.getParameter("search");
+        //get ve listProductDAO
         List<Product> product;
+        //get ve requestUrl
+        String requestURL = request.getRequestURL().toString();
+        int totalRecord = 0;
         switch (actionSearch) {
             case "category":
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-                product = productDAO.getProductByCategory(categoryId);
+                totalRecord = productDAO.getTotalRecordByCategory(categoryId);
+                product = productDAO.getProductByCategory(categoryId, page);
+                pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + "&");
                 break;
             case "searchByKeyword":
                 String keyword = request.getParameter("keyword");
-                product = productDAO.getProductByKeyword(keyword);
+                totalRecord = productDAO.getTotalRecordByKeyword(keyword);
+                product = productDAO.getProductByKeyword(keyword, page);
+                pageControl.setUrlPattern(requestURL + "?search=searchByKeyword&keyword=" + keyword + "&");
                 break;
             default:
-                product = productDAO.getAllProducts();
+                product = productDAO.getAllProducts(page);
+                totalRecord = productDAO.getTotalProducts();
+                pageControl.setUrlPattern(requestURL + "?");
         }
+        //total page
+        int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
+
+        //set total record, total page, page vao page control
+        pageControl.setPage(page);
+        pageControl.setTotalPage(totalPage);
+        pageControl.setTotalRecord(totalRecord);
         return product;
     }
 
