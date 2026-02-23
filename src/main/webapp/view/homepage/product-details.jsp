@@ -50,10 +50,10 @@
         <!-- Add your site or application content here -->
         <!-- header-area-start -->
 
-        <jsp:include page="../common/header.jsp"></jsp:include>
+        <jsp:include page="../common/homePage/header.jsp"></jsp:include>
             <!-- header-area-end -->
             <!-- breadcrumbs-area-start -->
-        <jsp:include page="../common/breadcrumbs-area.jsp"></jsp:include>
+        <jsp:include page="../common/homePage/breadcrumbs-area.jsp"></jsp:include>
             <!-- breadcrumbs-area-end -->
             <!-- product-main-area-start -->
             <div class="product-main-area mb-70">
@@ -635,7 +635,7 @@
         </div>
         <!-- product-main-area-end -->
         <!-- footer-area-start -->
-        <jsp:include page="../common/footer.jsp"></jsp:include>
+        <jsp:include page="../common/homePage/footer.jsp"></jsp:include>
             <!-- footer-area-end -->
             <!-- Modal -->
             <div class="modal fade" id="productModal" tabindex="-1" role="dialog">

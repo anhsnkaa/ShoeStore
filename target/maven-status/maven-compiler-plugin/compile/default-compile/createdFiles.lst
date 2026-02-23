@@ -1,8 +1,8 @@
-controller\ProductDetailsController.class
-controller\HomeController.class
 dal\JPAUtil.class
 model\PageControl.class
+controller\homepage\HomeController.class
 dal\implement\ProductSizeDAO.class
+controller\homepage\ProductDetailsController.class
 model\Product.class
 model\ProductSize.class
 model\Category.class
@@ -10,3 +10,4 @@ dal\implement\ProductDAO.class
 dal\implement\CategoryDAO.class
 com\mycompany\shoestore\JakartaRestConfiguration.class
 com\mycompany\shoestore\resources\JakartaEE10Resource.class
+controller\admin\DashboardServerlet.class

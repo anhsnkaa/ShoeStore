@@ -16,7 +16,20 @@ import model.Product;
  */
 public class ProductDAO {
 
-    public List<Product> getAllProducts(int page) {
+    public List<Product> getAllProducts() {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        List<Product> list = em.createQuery(
+                "SELECT p FROM Product p", Product.class)
+                .getResultList();
+
+        em.close();
+
+        return list;
+    }
+
+    public List<Product> getAllProductsPaging(int page) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         List<Product> list = em.createQuery("SELECT p FROM Product p", Product.class)
