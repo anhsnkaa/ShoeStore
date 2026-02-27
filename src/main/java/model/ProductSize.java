@@ -62,6 +62,11 @@ public class ProductSize {
     public void setProduct(Product product) {
         this.product = product;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", size, quantity);
+    }
     
     
 }

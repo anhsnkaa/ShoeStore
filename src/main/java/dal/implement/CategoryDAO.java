@@ -27,6 +27,13 @@ public class CategoryDAO {
         return list;
     }
 
+    public Category findById(int id) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        Category c = em.find(Category.class, id);
+        em.close();
+        return c;
+    }
+
     public void addCategory(Category c) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 

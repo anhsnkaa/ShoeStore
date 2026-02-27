@@ -12,6 +12,10 @@
         <servlet-name>DashboardServerlet</servlet-name>
         <servlet-class>controller.admin.DashboardServerlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProductAdminServerlet</servlet-name>
+        <servlet-class>controller.admin.ProductAdminServerlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -23,6 +27,10 @@
     <servlet-mapping>
         <servlet-name>DashboardServerlet</servlet-name>
         <url-pattern>/admin/dashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductAdminServerlet</servlet-name>
+        <url-pattern>/admin/product</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

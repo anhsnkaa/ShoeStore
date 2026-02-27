@@ -1,3 +1,4 @@
+controller\admin\ProductAdminServerlet.class
 dal\JPAUtil.class
 model\PageControl.class
 controller\homepage\HomeController.class

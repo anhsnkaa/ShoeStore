@@ -120,4 +120,6 @@ public class ProductDAO {
 
         return total.intValue();   // ép sang int
     }
+
+  
 }

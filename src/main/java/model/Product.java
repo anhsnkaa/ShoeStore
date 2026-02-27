@@ -19,23 +19,26 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
+
     @Column(columnDefinition = "NVARCHAR(150)")
     private String name;
-    
+
     private String img;
     private double price;
-    
+
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String description;
-    
+
     // nhiều product thuộc 1 category
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    
+
     // 1 product có nhiều size
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<ProductSize> sizes;
 
     public Product() {
@@ -52,7 +55,6 @@ public class Product {
     public int getId() {
         return id;
     }
-
 
     public String getName() {
         return name;
@@ -101,6 +103,9 @@ public class Product {
     public void setSizes(List<ProductSize> sizes) {
         this.sizes = sizes;
     }
-    
 
+    public void addSize(ProductSize size) {
+        sizes.add(size);
+        size.setProduct(this);
+    }
 }

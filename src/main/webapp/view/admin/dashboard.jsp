@@ -74,8 +74,8 @@
                                                 <th>Name</th>
                                                 <th>Image</th>
                                                 <th>Price</th>
-                                                <th>Description</th>
                                                 <th>Category</th>
+                                                <th>Size</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -83,10 +83,22 @@
                                             <tr>
                                                 <td>${p.id}</td>
                                                 <td>${p.name}</td>
-                                                <td>${p.img}</td>
+                                                <td>
+                                                    <img src="${pageContext.request.contextPath}/${p.img}"
+                                                         width="80"
+                                                         height="80"
+                                                         style="object-fit: cover;">
+                                                </td>
                                                 <td>$${p.price}</td>
-                                                <td>${p.description}</td>
                                                 <td>${p.category.name}</td>
+                                                <td>
+                                                    <button class="btn btn-info btn-sm"
+                                                            data-toggle="modal"
+                                                            data-target="#sizeModal"
+                                                            onclick="loadSizes(${p.id})">
+                                                        View Sizes
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -112,9 +124,68 @@
             <a class="scroll-to-top rounded" href="#page-top">
                 <i class="fas fa-angle-up"></i>
             </a>
+            <div class="modal fade" id="sizeModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
 
-            <!-- Logout Modal-->
+                        <div class="modal-header">
+                            <h5 class="modal-title">Available Sizes</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                &times;
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div id="sizeContent">
+                                Loading...
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <script>
+                function loadSizes(productId) {
+
+                    $.ajax({
+                        url: "<%= request.getContextPath() %>/admin/dashboard",
+                        type: "GET",
+                        data: {
+                            action: "getSizes",
+                            id: productId
+                        },
+                        success: function (data) {
+
+                            var html = "";
+                            html += "<table class='table table-bordered'>";
+                            html += "<tr>";
+                            html += "<th>Size</th>";
+                            html += "<th>Quantity</th>";
+                            html += "</tr>";
+
+                            for (var i = 0; i < data.length; i++) {
+                                html += "<tr>";
+                                html += "<td>" + data[i].size + "</td>";
+                                html += "<td>" + data[i].quantity + "</td>";
+                                html += "</tr>";
+                            }
+
+                            html += "</table>";
+
+                            $("#sizeContent").html(html);
+                        },
+                        error: function (xhr) {
+                            $("#sizeContent").html("Error loading sizes");
+                            console.log(xhr.responseText);
+                        }
+                    });
+
+                }
+        </script>
+        <!-- Logout Modal-->
         <jsp:include page="../common/admin/logoutmodel.jsp"></jsp:include>
+
+        <jsp:include page="../admin/addProductModal.jsp"></jsp:include>
 
             <!-- Bootstrap core JavaScript-->
             <script src="${pageContext.request.contextPath}/vendor/jquery/jquery.min.js"></script>
