@@ -38,6 +38,44 @@ public class ProductAdminServerlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if ("getProduct".equals(action)) {
+
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            Product p = productDAO.getProductById(id);
+            List<ProductSize> sizes = productSizeDAO.getQuantityOfSizes(id);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            PrintWriter out = response.getWriter();
+
+            out.print("{");
+            out.print("\"id\":" + p.getId() + ",");
+            out.print("\"name\":\"" + p.getName() + "\",");
+            out.print("\"price\":" + p.getPrice() + ",");
+            out.print("\"description\":\"" + p.getDescription() + "\",");
+            out.print("\"sizes\":[");
+
+            for (int i = 0; i < sizes.size(); i++) {
+                ProductSize ps = sizes.get(i);
+
+                out.print("{");
+                out.print("\"size\":" + ps.getSize() + ",");
+                out.print("\"quantity\":" + ps.getQuantity());
+                out.print("}");
+
+                if (i < sizes.size() - 1) {
+                    out.print(",");
+                }
+            }
+
+            out.print("]}");
+            out.flush();
+            return;
+        }
     }
 
     /**
@@ -64,6 +102,12 @@ public class ProductAdminServerlet extends HttpServlet {
         switch (action) {
             case "add":
                 addProduct(request);
+                break;
+            case "delete":
+                deleteProduct(request);
+                break;
+            case "update":
+                updateProduct(request);
                 break;
             default:
                 throw new AssertionError();
@@ -146,6 +190,17 @@ public class ProductAdminServerlet extends HttpServlet {
         } catch (IOException | ServletException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void deleteProduct(HttpServletRequest request) {
+
+        int id = Integer.parseInt(request.getParameter("id"));
+        productDAO.deleteProduct(id);
+
+    }
+
+    private void updateProduct(HttpServletRequest request) {
+
     }
 
 }

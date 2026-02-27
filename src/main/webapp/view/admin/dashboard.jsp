@@ -76,6 +76,7 @@
                                                 <th>Price</th>
                                                 <th>Category</th>
                                                 <th>Size</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -97,6 +98,31 @@
                                                             data-target="#sizeModal"
                                                             onclick="loadSizes(${p.id})">
                                                         View Sizes
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-warning btn-sm"
+                                                            data-toggle="modal"
+                                                            data-target="#editModal"
+                                                            data-id="${p.id}"
+                                                            data-name="${p.name}"
+                                                            data-price="${p.price}"
+                                                            data-description="${p.description}"
+                                                            data-sizes='[
+                                                            <c:forEach items="${p.sizes}" var="s" varStatus="loop">
+                                                                {"size":${s.size},"quantity":${s.quantity}}
+                                                                <c:if test="${!loop.last}">,</c:if>
+                                                            </c:forEach>
+                                                            ]'
+                                                            onclick="loadEditProduct(${p.id})">
+                                                        Edit
+                                                    </button>
+                                                                
+                                                    <button class="btn btn-danger btn-sm"
+                                                            data-toggle="modal"
+                                                            data-target="#deleteModal"
+                                                            onclick="setDeleteId(${p.id}, '${p.name}')"">
+                                                        Delete
                                                     </button>
                                                 </td>
                                             </tr>
@@ -181,14 +207,63 @@
                     });
 
                 }
+
+                function setDeleteId(id, name) {
+                    document.getElementById("deleteForm").action =
+                            "${pageContext.request.contextPath}/admin/product?action=delete&id=" + id;
+
+                    document.getElementById("deleteProductName").innerText =
+                            "Delete product: " + name + "?";
+                }
+                function loadEditProduct(id) {
+
+                    $.ajax({
+                        url: "${pageContext.request.contextPath}/admin/product",
+                        dataType: "json",   // 🔥 THÊM DÒNG NÀY
+                        type: "GET",
+                        data: {
+                            action: "getProduct",
+                            id: id
+                        },
+                        success: function (data) {
+
+                            $("#editId").val(data.id);
+                            $("#editName").val(data.name);
+                            $("#editPrice").val(data.price);
+
+                            let html = "";
+
+                            for (let s = 36; s <= 44; s++) {
+
+                                let qty = 0;
+
+                                data.sizes.forEach(function (item) {
+                                    if (item.size === s) {
+                                        qty = item.quantity;
+                                    }
+                                });
+
+                                html +=
+                                        "<tr>" +
+                                        "<td>" + s + "</td>" +
+                                        "<td><input type='number' name='sizeQty_" + s +
+                                        "' value='" + qty +
+                                        "' class='form-control'></td>" +
+                                        "</tr>";
+                            }
+
+                            $("#editSizeTable").html(html);
+                        }
+                    });
+                }
         </script>
         <!-- Logout Modal-->
         <jsp:include page="../common/admin/logoutmodel.jsp"></jsp:include>
 
         <jsp:include page="../admin/addProductModal.jsp"></jsp:include>
-
-            <!-- Bootstrap core JavaScript-->
-            <script src="${pageContext.request.contextPath}/vendor/jquery/jquery.min.js"></script>
+        <jsp:include page="../admin/deleteProductModal.jsp"/>
+        <!-- Bootstrap core JavaScript-->
+        <script src="${pageContext.request.contextPath}/vendor/jquery/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
         <!-- Core plugin JavaScript-->

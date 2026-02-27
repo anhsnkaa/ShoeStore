@@ -21,11 +21,11 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         List<Product> list = em.createQuery(
-                "SELECT p FROM Product p", Product.class)
-                .getResultList();
+                "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.sizes",
+                Product.class
+        ).getResultList();
 
         em.close();
-
         return list;
     }
 
@@ -44,6 +44,21 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
         em.getTransaction().begin();
         em.persist(p);
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public void deleteProduct(int id) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        em.getTransaction().begin();
+
+        Product p = em.find(Product.class, id);
+
+        if (p != null) {
+            em.remove(p);
+        }
+
         em.getTransaction().commit();
         em.close();
     }
@@ -121,5 +136,27 @@ public class ProductDAO {
         return total.intValue();   // ép sang int
     }
 
-  
+    public void deleteByProduct(int productId) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        em.getTransaction().begin();
+
+        em.createQuery("DELETE FROM ProductSize ps WHERE ps.product.id = :id")
+                .setParameter("id", productId)
+                .executeUpdate();
+
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public void updateProduct(Product p) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        em.getTransaction().begin();
+
+        em.merge(p);
+
+        em.getTransaction().commit();
+        em.close();
+    }
 }
