@@ -35,7 +35,45 @@
                         <label>Price</label>
                         <input type="number" class="form-control" name="price" id="editPrice">
                     </div>
-
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select class="form-control" name="category" id="editCategory">
+                            <c:forEach items="${listCategory}" var="c">
+                                <option value="${c.id}">${c.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <!--Image-->
+                    <div class="form-group">
+                        <label>Image:</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Upload</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file"
+                                       class="custom-file-input"
+                                       id="editImage"
+                                       name="image"
+                                       onchange="previewEditImage(this)">
+                                <label class="custom-file-label">
+                                    Choose file
+                                </label>
+                            </div>
+                        </div>
+                        <img id="editPreviewImage"
+                             src="#"
+                             alt="Preview"
+                             style="display:none; max-width:300px; max-height:300px;">
+                    </div>
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control"
+                                  name="description"
+                                  id="editDescription"></textarea>
+                    </div>
                     <!-- Size table -->
                     <table class="table table-bordered">
                         <thead>

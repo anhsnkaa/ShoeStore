@@ -57,4 +57,17 @@ public class ProductSizeDAO {
 
         em.close();
     }
+
+    public void deleteByProductId(int productId) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        em.getTransaction().begin();
+
+        em.createQuery("DELETE FROM ProductSize ps WHERE ps.product.id = :pid")
+                .setParameter("pid", productId)
+                .executeUpdate();
+
+        em.getTransaction().commit();
+        em.close();
+    }
 }

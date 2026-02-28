@@ -108,16 +108,9 @@
                                                             data-name="${p.name}"
                                                             data-price="${p.price}"
                                                             data-description="${p.description}"
-                                                            data-sizes='[
-                                                            <c:forEach items="${p.sizes}" var="s" varStatus="loop">
-                                                                {"size":${s.size},"quantity":${s.quantity}}
-                                                                <c:if test="${!loop.last}">,</c:if>
-                                                            </c:forEach>
-                                                            ]'
-                                                            onclick="loadEditProduct(${p.id})">
+                                                            onclick="loadEditProduct(this)">
                                                         Edit
                                                     </button>
-                                                                
                                                     <button class="btn btn-danger btn-sm"
                                                             data-toggle="modal"
                                                             data-target="#deleteModal"
@@ -215,21 +208,27 @@
                     document.getElementById("deleteProductName").innerText =
                             "Delete product: " + name + "?";
                 }
-                function loadEditProduct(id) {
+                function loadEditProduct(button) {
+
+                    let id = button.dataset.id;
 
                     $.ajax({
                         url: "${pageContext.request.contextPath}/admin/product",
-                        dataType: "json",   // 🔥 THÊM DÒNG NÀY
                         type: "GET",
+                        dataType: "json",
                         data: {
                             action: "getProduct",
                             id: id
                         },
                         success: function (data) {
 
+                            console.log(data); // test
+
                             $("#editId").val(data.id);
                             $("#editName").val(data.name);
                             $("#editPrice").val(data.price);
+                            $("#editDescription").val(data.description);
+                            $("#editCategory").val(data.categoryId);
 
                             let html = "";
 
@@ -237,11 +236,13 @@
 
                                 let qty = 0;
 
-                                data.sizes.forEach(function (item) {
-                                    if (item.size === s) {
-                                        qty = item.quantity;
-                                    }
-                                });
+                                if (data.sizes) {
+                                    data.sizes.forEach(function (item) {
+                                        if (parseInt(item.size) == s) {
+                                            qty = item.quantity;
+                                        }
+                                    });
+                                }
 
                                 html +=
                                         "<tr>" +
@@ -256,12 +257,29 @@
                         }
                     });
                 }
+                function previewEditImage(input) {
+
+                    var preview = document.getElementById("editPreviewImage");
+
+                    if (input.files && input.files[0]) {
+
+                        var reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            preview.src = e.target.result;
+                            preview.style.display = "block";
+                        };
+
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
         </script>
         <!-- Logout Modal-->
         <jsp:include page="../common/admin/logoutmodel.jsp"></jsp:include>
 
         <jsp:include page="../admin/addProductModal.jsp"></jsp:include>
         <jsp:include page="../admin/deleteProductModal.jsp"/>
+        <jsp:include page="../admin/editProductModal.jsp"/>
         <!-- Bootstrap core JavaScript-->
         <script src="${pageContext.request.contextPath}/vendor/jquery/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

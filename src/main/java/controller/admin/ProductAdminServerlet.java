@@ -57,6 +57,7 @@ public class ProductAdminServerlet extends HttpServlet {
             out.print("\"name\":\"" + p.getName() + "\",");
             out.print("\"price\":" + p.getPrice() + ",");
             out.print("\"description\":\"" + p.getDescription() + "\",");
+            out.print("\"categoryId\":" + p.getCategory().getId() + ",");
             out.print("\"sizes\":[");
 
             for (int i = 0; i < sizes.size(); i++) {
@@ -193,14 +194,78 @@ public class ProductAdminServerlet extends HttpServlet {
     }
 
     private void deleteProduct(HttpServletRequest request) {
-
         int id = Integer.parseInt(request.getParameter("id"));
         productDAO.deleteProduct(id);
-
     }
 
     private void updateProduct(HttpServletRequest request) {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            String name = request.getParameter("name");
+            int price = Integer.parseInt(request.getParameter("price"));
+            String description = request.getParameter("description");
+            int categoryId = Integer.parseInt(request.getParameter("category"));
 
+            Category category = categoryDAO.findById(categoryId);
+
+            // 🔥 Lấy product cũ
+            Product product = productDAO.getProductById(id);
+
+            product.setName(name);
+            product.setPrice(price);
+            product.setDescription(description);
+            product.setCategory(category);
+
+            // ===== XỬ LÝ IMAGE =====
+            Part part = request.getPart("image");
+
+            if (part != null && part.getSubmittedFileName() != null
+                    && !part.getSubmittedFileName().trim().isEmpty()) {
+
+                String path = request.getServletContext().getRealPath("/images");
+                File dir = new File(path);
+
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                File image = new File(dir, part.getSubmittedFileName());
+                part.write(image.getAbsolutePath());
+
+                product.setImg("images/" + part.getSubmittedFileName());
+            }
+
+            // ===== UPDATE PRODUCT =====
+            productDAO.updateProduct(product);
+
+            // ===== UPDATE SIZE =====
+            // 1️⃣ XÓA SIZE CŨ
+            productSizeDAO.deleteByProductId(id);
+
+            // 2️⃣ INSERT SIZE MỚI
+            for (int s = 36; s <= 44; s++) {
+
+                String qtyStr = request.getParameter("sizeQty_" + s);
+
+                if (qtyStr != null && !qtyStr.isEmpty()) {
+
+                    int quantity = Integer.parseInt(qtyStr);
+
+                    if (quantity > 0) {
+
+                        ProductSize ps = new ProductSize();
+                        ps.setSize(s);
+                        ps.setQuantity(quantity);
+                        ps.setProduct(product);
+
+                        productSizeDAO.addProductSize(ps);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
