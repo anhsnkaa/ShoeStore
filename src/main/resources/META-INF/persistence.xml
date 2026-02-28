@@ -9,7 +9,8 @@
         <class>model.Category</class>
         <class>model.Product</class>
         <class>model.ProductSize</class>
-        
+        <class>model.Account</class>
+        <class>model.Role</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=ShoeStoreDB;encrypt=false"/>

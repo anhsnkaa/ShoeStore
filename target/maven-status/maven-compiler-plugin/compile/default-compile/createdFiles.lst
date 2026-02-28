@@ -1,14 +1,17 @@
+controller\authen\AuthenticationController.class
 controller\admin\ProductAdminServerlet.class
 dal\JPAUtil.class
 model\PageControl.class
 controller\homepage\HomeController.class
 dal\implement\ProductSizeDAO.class
 controller\homepage\ProductDetailsController.class
+model\Role.class
 model\Product.class
 model\ProductSize.class
 model\Category.class
 dal\implement\ProductDAO.class
 dal\implement\CategoryDAO.class
+model\Account.class
 com\mycompany\shoestore\JakartaRestConfiguration.class
 com\mycompany\shoestore\resources\JakartaEE10Resource.class
 controller\admin\DashboardServerlet.class

@@ -1,7 +1,9 @@
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Role.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Category.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\ProductSize.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\CategoryDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\PageControl.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\authen\AuthenticationController.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\JPAUtil.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\DashboardServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Product.java
@@ -11,4 +13,5 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\Pr
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\ProductSizeDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\homepage\HomeController.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\homepage\ProductDetailsController.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Account.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\com\mycompany\shoestore\JakartaRestConfiguration.java
