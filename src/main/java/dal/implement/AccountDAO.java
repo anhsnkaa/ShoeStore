@@ -37,6 +37,21 @@ public class AccountDAO {
         return acc;
     }
 
+    public boolean isUsernameExists(String username) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long count = em.createQuery(
+                "SELECT COUNT(a) FROM Account a WHERE a.username = :user",
+                Long.class)
+                .setParameter("user", username)
+                .getSingleResult();
+
+        em.close();
+
+        return count > 0;
+    }
+
     public Account findByUsernameAndPass(String username, String password) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();
@@ -57,5 +72,23 @@ public class AccountDAO {
         } finally {
             em.close();
         }
+    }
+
+    public void addAccount(Account acc) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            em.persist(acc);   // Lưu vào DB
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }   
     }
 }

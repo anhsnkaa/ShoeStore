@@ -1,10 +1,12 @@
 controller\authen\AuthenticationController.class
+dal\implement\AccountDAO.class
 controller\admin\ProductAdminServerlet.class
 dal\JPAUtil.class
 model\PageControl.class
 controller\homepage\HomeController.class
 dal\implement\ProductSizeDAO.class
 controller\homepage\ProductDetailsController.class
+dal\implement\RoleDAO.class
 model\Role.class
 model\Product.class
 model\ProductSize.class
