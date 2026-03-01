@@ -71,68 +71,68 @@
                                 <form action="authen?action=sign-up" method="POST">
                                     <div class="offset-lg-2 col-lg-8 col-md-12 col-12">
                                         <div class="billing-fields">
-
-                                            <div class="row">
-
-                                                <!-- Full Name -->
-                                                <div class="col-lg-6 col-md-6 col-12">
-                                                    <div class="single-register">
-                                                        <label>Full Name<span>*</span></label>
-                                                        <input type="text" name="fullName" required />
-                                                    </div>
-                                                </div>
-
-                                                <!-- Username -->
-                                                <div class="col-lg-6 col-md-6 col-12">
-                                                    <div class="single-register">
-                                                        <label>Username<span>*</span></label>
-                                                        <input type="text" name="username" required />
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row">
-
-                                                <!-- Email -->
-                                                <div class="col-lg-6 col-md-6 col-12">
-                                                    <div class="single-register">
-                                                        <label>Email<span>*</span></label>
-                                                        <input type="email" name="email" required />
-                                                    </div>
-                                                </div>
-
-                                                <!-- Phone -->
-                                                <div class="col-lg-6 col-md-6 col-12">
-                                                    <div class="single-register">
-                                                        <label>Phone<span>*</span></label>
-                                                        <input type="text" name="phone" required />
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                            <!-- Address -->
-                                            <div class="single-register">
-                                                <label>Address<span>*</span></label>
-                                                <input type="text" name="address" required />
-                                            </div>
-
-                                            <!-- Password -->
-                                            <div class="single-register">
-                                                <label>Password<span>*</span></label>
-                                                <input type="password" name="password" required />
-                                            </div>
-                                            <!-- Submit Button -->
-                                            <div class="single-register text-center">
-                                                <input type="submit" value="Register"
-                                                       class="btn btn-primary">
-                                            </div>
-
                                             <!-- Error Message -->
                                             <div class="text-center mt-2">
                                                 <span style="color:red">${error}</span>
                                         </div>
+                                        <div class="row">
+
+                                            <!-- Full Name -->
+                                            <div class="col-lg-6 col-md-6 col-12">
+                                                <div class="single-register">
+                                                    <label>Full Name<span>*</span></label>
+                                                    <input type="text" name="fullName" required />
+                                                </div>
+                                            </div>
+
+                                            <!-- Username -->
+                                            <div class="col-lg-6 col-md-6 col-12">
+                                                <div class="single-register">
+                                                    <label>Username<span>*</span></label>
+                                                    <input type="text" name="username" required />
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row">
+
+                                            <!-- Email -->
+                                            <div class="col-lg-6 col-md-6 col-12">
+                                                <div class="single-register">
+                                                    <label>Email<span>*</span></label>
+                                                    <input type="email" name="email" required />
+                                                </div>
+                                            </div>
+
+                                            <!-- Phone -->
+                                            <div class="col-lg-6 col-md-6 col-12">
+                                                <div class="single-register">
+                                                    <label>Phone<span>*</span></label>
+                                                    <input type="text" name="phone" required />
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Address -->
+                                        <div class="single-register">
+                                            <label>Address<span>*</span></label>
+                                            <input type="text" name="address" required />
+                                        </div>
+
+                                        <!-- Password -->
+                                        <div class="single-register">
+                                            <label>Password<span>*</span></label>
+                                            <input type="password" name="password" required />
+                                        </div>
+                                        <!-- Submit Button -->
+                                        <div class="single-register text-center">
+                                            <input type="submit" value="Register"
+                                                   class="btn btn-primary">
+                                        </div>
+
+
 
                                     </div>
 
