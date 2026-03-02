@@ -30,7 +30,7 @@
         <!-- owl.carousel css -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/owl.carousel.css">
         <!-- font-awesome css -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- flexslider.css-->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/flexslider.css">
         <!-- chosen.min.css-->
@@ -72,7 +72,6 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-12">
-                            <form action="#">
                                 <div class="table-content table-responsive mb-15 border-1">
                                     <table>
                                         <thead>
@@ -116,41 +115,47 @@
                                                 </td>
 
                                                 <!-- QUANTITY -->
-                                                <td class="product-quantity">
-                                                    <input type="number"
-                                                           class="qty-input"
-                                                           data-price="${od.price}"
-                                                           value="${od.quantity}"
-                                                           min="1">
-                                                </td>
+                                        <form action="payment?action=change-quantity" method="POST">
+                                            <input type="hidden" name="id" value="${od.product.id}"/>
+                                            <td class="product-quantity">
+                                                <input type="number"
+                                                       class="qty-input"
+                                                       data-price="${od.price}"
+                                                       value="${od.quantity}"
+                                                       min="1" onchange="return this.closest('form').submit()" name="quantity">
+                                            </td>
+                                        </form>
+                                        <!-- TOTAL -->
+                                        <td class="product-subtotal">
+                                            $<span class="item-total">
+                                                ${od.price * od.quantity}
+                                            </span>
+                                        </td>
 
-                                                <!-- TOTAL -->
-                                                <td class="product-subtotal">
-                                                    $<span class="item-total">
-                                                        ${od.price * od.quantity}
-                                                    </span>
-                                                </td>
-
-                                                <!-- REMOVE -->
-                                                <td class="product-remove">
-                                                    <a href="cart?action=remove&id=${od.product.id}&size=${od.size}">
-                                                        <i class="fa fa-times"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
+                                        <!-- REMOVE -->
+                                        <td class="product-remove">
+                                            <form action="payment?action=delete-product" method="POST">  
+                                                <input type="hidden" name="id" value="${od.product.id}"/>
+                                                <a href="#" onclick="return this.closest('form').submit()">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            </form>
+                                        </td>
+                                        </tr>
+                                    </c:forEach>
                                     </tbody>
                                 </table>
                             </div>
-                        </form>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-8 col-md-6 col-12">
                         <div class="buttons-cart mb-30">
-                            <ul>
-                                <li><a href="#">Continue Shopping</a></li>
-                            </ul>
+                            <form action="action">
+                                <ul>
+                                    <li><a href="#">Continue Shopping</a></li>
+                                </ul>
+                            </form>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-12">

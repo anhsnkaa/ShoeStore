@@ -26,6 +26,7 @@ public class PaymentController extends HttpServlet {
 
     ProductDAO productDAO = new ProductDAO();
     ProductSizeDAO productSizeDAO = new ProductSizeDAO();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -49,9 +50,16 @@ public class PaymentController extends HttpServlet {
             case "add-product":
                 addProduct(request, response);
                 break;
+            case "change-quantity":
+                changeQuantity(request, response);
+                break;
+            case "delete-product":
+                deleteProduct(request, response);
+                break;
             default:
                 throw new AssertionError();
         }
+        response.sendRedirect("payment");
     }
 
     private void addProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -80,7 +88,6 @@ public class PaymentController extends HttpServlet {
 
         //them orderdetails vao trong cart
         session.setAttribute("cart", cart);
-        response.sendRedirect("payment");
     }
 
     private void addOrderDetailsToOrder(OrderDetail od, Order cart) {
@@ -109,5 +116,38 @@ public class PaymentController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private void changeQuantity(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+        try {
+            //get ve product id
+            int id = Integer.parseInt(request.getParameter("id"));
+            //get ve quantity
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            //lay ve cart
+            Order cart = (Order) session.getAttribute("cart");
+            //thay doi quantity
+            for (OrderDetail obj : cart.getOrderDetails()) {
+                if (obj.getProduct().getId() == id) {
+                    obj.setQuantity(quantity);
+                }
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteProduct(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+        int id = Integer.parseInt(request.getParameter("id"));
+        Order cart = (Order) session.getAttribute("cart");
+        OrderDetail od = null;
+        for (OrderDetail obj : cart.getOrderDetails()) {
+            if (obj.getProduct().getId() == id) {
+                od = obj;
+            }
+        }
+        cart.getOrderDetails().remove(od);
+    }
 
 }
