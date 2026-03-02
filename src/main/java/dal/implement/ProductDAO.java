@@ -21,7 +21,8 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         List<Product> list = em.createQuery(
-                "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.sizes",
+                "SELECT DISTINCT p FROM Product p "
+                + "LEFT JOIN FETCH p.images",
                 Product.class
         ).getResultList();
 
@@ -32,10 +33,13 @@ public class ProductDAO {
     public List<Product> getAllProductsPaging(int page) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
-        List<Product> list = em.createQuery("SELECT p FROM Product p", Product.class)
+        List<Product> list = em.createQuery(
+                "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images",
+                Product.class)
                 .setFirstResult((page - 1) * 12)
                 .setMaxResults(12)
                 .getResultList();
+
         em.close();
         return list;
     }
@@ -64,10 +68,20 @@ public class ProductDAO {
     }
 
     public Product getProductById(int id) {
+
         EntityManager em = JPAUtil.getEMF().createEntityManager();
-        Product p = em.find(Product.class, id);
+
+        Product product = em.createQuery(
+                "SELECT p FROM Product p "
+                + "LEFT JOIN FETCH p.images "
+                + "WHERE p.id = :id",
+                Product.class
+        )
+                .setParameter("id", id)
+                .getSingleResult();
+
         em.close();
-        return p;
+        return product;
     }
 
     public List<Product> getProductByCategory(int categoryId, int page) {

@@ -67,7 +67,7 @@
                                         <div class="flexslider">
                                             <ul class="slides">
                                                 <li data-thumb="${pageContext.request.contextPath}/img/thum-2/1.jpg">
-                                                <img src="${pageContext.request.contextPath}/img/flex/1.jpg" alt="woman" />
+                                                <img src="${pageContext.request.contextPath}/${product.mainImage}" />
                                             </li>
 
                                         </ul>
@@ -93,7 +93,7 @@
                                                         <c:choose>
                                                             <c:when test="${s.quantity > 0}">
                                                                 <option value="${s.id}">
-                                                                ${s.size} - Available ${s.quantity}
+                                                                    ${s.size} - Available ${s.quantity}
                                                                 </option>
                                                             </c:when>
                                                             <c:otherwise>
@@ -140,13 +140,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="Details">
                                     <div class="valu">
-                                        <p>The sporty Joust Duffle Bag can't be beat - not in the gym, not on the luggage carousel, not anywhere. Big enough to haul a basketball or soccer ball and some sneakers with plenty of room to spare, it's ideal for athletes with places to go.</p>
-                                        <ul>
-                                            <li><i class="fa fa-circle"></i>Dual top handles.</li>
-                                            <li><i class="fa fa-circle"></i>Adjustable shoulder strap.</li>
-                                            <li><i class="fa fa-circle"></i>Full-length zipper.</li>
-                                            <li><i class="fa fa-circle"></i>L 29" x W 13" x H 11".</li>
-                                        </ul>
+                                        ${product.description}
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="Reviews">

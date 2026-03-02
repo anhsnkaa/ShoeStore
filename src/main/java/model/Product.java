@@ -48,7 +48,7 @@ public class Product {
     @OneToMany(mappedBy = "product",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.EAGER)
     private List<ProductImage> images = new ArrayList<>();
 
     // ===== CONSTRUCTOR =====
@@ -62,6 +62,15 @@ public class Product {
     public double getFinalPrice() {
         double safeDiscount = (discount == null) ? 0.0 : discount;
         return price * (1 - safeDiscount / 100);
+    }
+
+    public String getMainImage() {
+        for (ProductImage img : images) {
+            if (Boolean.TRUE.equals(img.isIsMain())) {
+                return img.getImageUrl();
+            }
+        }
+        return null;
     }
 
     public void addSize(ProductSize size) {

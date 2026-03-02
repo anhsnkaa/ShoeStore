@@ -141,27 +141,6 @@ public class ProductAdminServerlet extends HttpServlet {
             int categoryId = Integer.parseInt(request.getParameter("category"));
             Category category = categoryDAO.findById(categoryId);
             //image
-            Part part = request.getPart("image");
-            String imagePath = null;
-
-            if (part == null || part.getSubmittedFileName() == null || part.getSubmittedFileName().trim().isEmpty()) {
-                imagePath = null;
-            } else {
-                //duong dan luu anh
-                String path = request.getServletContext().getRealPath("/images");
-                File dir = new File(path);
-
-                //xem duong dan nay ton tai chua
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-
-                File image = new File(dir, part.getSubmittedFileName());
-                //ghi file vao trong duong dan
-                part.write(image.getAbsolutePath());
-                //lay ra cai context path cua project
-                imagePath = "images/" + part.getSubmittedFileName();
-            }
             // ===== CREATE PRODUCT =====
             Product product = new Product();
             product.setName(name);
@@ -169,21 +148,38 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setDescription(description);
             product.setCategory(category);
 
-            // LƯU PRODUCT TRƯỚC
-            productDAO.addProduct(product);
+            // ===== UPLOAD MULTIPLE IMAGES =====
+            for (Part part : request.getParts()) {
 
-            // ===== SAU KHI PRODUCT CÓ ID MỚI LƯU ẢNH =====
-            if (imagePath != null) {
-                ProductImage img = new ProductImage();
-                img.setImageUrl(imagePath);
-                img.setIsMain(true);
-                img.setProduct(product);
+                if ("images".equals(part.getName())
+                        && part.getSubmittedFileName() != null
+                        && !part.getSubmittedFileName().trim().isEmpty()) {
 
-                productImageDAO.add(img);
+                    String path = request.getServletContext().getRealPath("/images");
+                    File dir = new File(path);
+
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+
+                    File image = new File(dir, part.getSubmittedFileName());
+                    part.write(image.getAbsolutePath());
+
+                    String imagePath = "images/" + part.getSubmittedFileName();
+
+                    ProductImage img = new ProductImage();
+                    img.setImageUrl(imagePath);
+                    img.setIsMain(false);
+
+                    product.addImage(img); // 🔥 DÙNG CASCADE
+                }
             }
-            product.setCategory(category);
 
-            productDAO.addProduct(product); // LƯU PRODUCT
+            // SET ẢNH ĐẦU LÀ ẢNH CHÍNH
+            if (!product.getImages().isEmpty()) {
+                product.getImages().get(0).setIsMain(true);
+            }
+
             // ===== ADD SIZE =====
             for (int s = 36; s <= 44; s++) {
                 String paramName = "sizeQty_" + s;
@@ -198,12 +194,13 @@ public class ProductAdminServerlet extends HttpServlet {
                         ProductSize ps = new ProductSize();
                         ps.setSize(s);
                         ps.setQuantity(quantity);
-                        ps.setProduct(product);
 
-                        productSizeDAO.addProductSize(ps);
+                        product.addSize(ps);
                     }
                 }
             }
+            // LƯU PRODUCT 
+            productDAO.addProduct(product);
         } catch (IOException | ServletException ex) {
             ex.printStackTrace();
         }
@@ -233,33 +230,30 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setCategory(category);
 
             // ===== XỬ LÝ IMAGE =====
-            Part part = request.getPart("image");
+            for (Part part : request.getParts()) {
 
-            if (part != null && part.getSubmittedFileName() != null
-                    && !part.getSubmittedFileName().trim().isEmpty()) {
+                if ("images".equals(part.getName())
+                        && part.getSubmittedFileName() != null
+                        && !part.getSubmittedFileName().trim().isEmpty()) {
 
-                String path = request.getServletContext().getRealPath("/images");
-                File dir = new File(path);
+                    String path = request.getServletContext().getRealPath("/images");
+                    File dir = new File(path);
 
-                if (!dir.exists()) {
-                    dir.mkdirs();
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+
+                    File image = new File(dir, part.getSubmittedFileName());
+                    part.write(image.getAbsolutePath());
+
+                    String imagePath = "images/" + part.getSubmittedFileName();
+
+                    ProductImage img = new ProductImage();
+                    img.setImageUrl(imagePath);
+                    img.setIsMain(false);
+
+                    product.addImage(img);
                 }
-
-                File image = new File(dir, part.getSubmittedFileName());
-                part.write(image.getAbsolutePath());
-
-                String imagePath = "images/" + part.getSubmittedFileName();
-
-                // XÓA ẢNH CŨ (nếu muốn)
-                productImageDAO.deleteByProductId(id);
-
-                // THÊM ẢNH MỚI
-                ProductImage img = new ProductImage();
-                img.setImageUrl(imagePath);
-                img.setIsMain(true);
-                img.setProduct(product);
-
-                productImageDAO.add(img);
             }
 
             // ===== UPDATE PRODUCT =====

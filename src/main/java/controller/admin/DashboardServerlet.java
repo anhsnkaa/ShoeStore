@@ -35,6 +35,33 @@ public class DashboardServerlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String action = request.getParameter("action");
+        if ("getImages".equals(action)) {
+
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            Product product = productDAO.getProductById(id);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            PrintWriter out = response.getWriter();
+
+            out.print("[");
+            for (int i = 0; i < product.getImages().size(); i++) {
+
+                out.print("{");
+                out.print("\"imageUrl\":\"" + product.getImages().get(i).getImageUrl() + "\"");
+                out.print("}");
+
+                if (i < product.getImages().size() - 1) {
+                    out.print(",");
+                }
+            }
+            out.print("]");
+
+            out.flush();
+            return;
+        }
         // 🔥 Trường hợp AJAX load sizes
         if ("getSizes".equals(action)) {
 

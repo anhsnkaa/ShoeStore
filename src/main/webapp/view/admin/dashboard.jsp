@@ -75,7 +75,7 @@
                                                 <th>Image</th>
                                                 <th>Price</th>
                                                 <th>Category</th>
-                                                <th>Size</th>
+                                                <th>Size/Image</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -85,10 +85,17 @@
                                                 <td>${p.id}</td>
                                                 <td>${p.name}</td>
                                                 <td>
-                                                    <img src="${pageContext.request.contextPath}/${p.img}"
-                                                         width="80"
-                                                         height="80"
-                                                         style="object-fit: cover;">
+                                                    <c:choose>
+                                                        <c:when test="${not empty p.images}">
+                                                            <img src="${pageContext.request.contextPath}/${p.images[0].imageUrl}"
+                                                                 width="80"
+                                                                 height="80"
+                                                                 style="object-fit: cover;">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            No Image
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </td>
                                                 <td>$${p.price}</td>
                                                 <td>${p.category.name}</td>
@@ -98,6 +105,12 @@
                                                             data-target="#sizeModal"
                                                             onclick="loadSizes(${p.id})">
                                                         View Sizes
+                                                    </button>
+                                                    <button class="btn btn-secondary btn-sm mt-1"
+                                                            data-toggle="modal"
+                                                            data-target="#imageModal"
+                                                            onclick="loadImages(${p.id})">
+                                                        View Images
                                                     </button>
                                                 </td>
                                                 <td>
@@ -137,9 +150,9 @@
                 <!-- /.content-wrapper -->
 
             </div>
-            <!-- /#wrapper -->
 
-            <!-- Scroll to Top Button-->
+            <!-- /#wrapper -->
+            <!-- size modal-->
             <a class="scroll-to-top rounded" href="#page-top">
                 <i class="fas fa-angle-up"></i>
             </a>
@@ -163,6 +176,28 @@
                     </div>
                 </div>
             </div>
+            <!-- image modal-->
+            <div class="modal fade" id="imageModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Product Images</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                &times;
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div id="imageContent">
+                                Loading...
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <script>
                 function loadSizes(productId) {
 
@@ -254,6 +289,45 @@
                             }
 
                             $("#editSizeTable").html(html);
+                        }
+                    });
+                }
+                function loadImages(productId) {
+
+                    $.ajax({
+                        url: "${pageContext.request.contextPath}/admin/dashboard",
+                        type: "GET",
+                        dataType: "json",
+                        data: {
+                            action: "getImages",
+                            id: productId
+                        },
+                        success: function (data) {
+
+                            console.log(data);
+
+                            if (!data || data.length === 0) {
+                                $("#imageContent").html("No images found");
+                                return;
+                            }
+
+                            var html = "<div class='row'>";
+
+                            for (var i = 0; i < data.length; i++) {
+
+                                html += "<div class='col-md-3 mb-3'>";
+                                html += "<img src='${pageContext.request.contextPath}/" + data[i].imageUrl +
+                                        "' class='img-fluid img-thumbnail'>";
+                                html += "</div>";
+                            }
+
+                            html += "</div>";
+
+                            $("#imageContent").html(html);
+                        },
+                        error: function (xhr) {
+                            console.log(xhr);
+                            $("#imageContent").html("Error loading images");
                         }
                     });
                 }

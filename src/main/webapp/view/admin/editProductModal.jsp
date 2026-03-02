@@ -46,7 +46,8 @@
                     </div>
                     <!--Image-->
                     <div class="form-group">
-                        <label>Image:</label>
+                        <label>Images:</label>
+
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Upload</span>
@@ -54,18 +55,18 @@
                             <div class="custom-file">
                                 <input type="file"
                                        class="custom-file-input"
-                                       id="editImage"
-                                       name="image"
-                                       onchange="previewEditImage(this)">
+                                       id="editImages"
+                                       name="images"
+                                       multiple
+                                       onchange="previewEditImages(this)">
                                 <label class="custom-file-label">
-                                    Choose file
+                                    Choose files
                                 </label>
                             </div>
                         </div>
-                        <img id="editPreviewImage"
-                             src="#"
-                             alt="Preview"
-                             style="display:none; max-width:300px; max-height:300px;">
+
+                        <!-- Preview nhiều ảnh -->
+                        <div id="editPreviewContainer" class="row mt-2"></div>
                     </div>
                     <!-- Description -->
                     <div class="form-group">
@@ -98,4 +99,36 @@
 
         </div>
     </div>
+    <script>
+        function previewEditImages(input) {
+
+            let previewContainer = document.getElementById("editPreviewContainer");
+            previewContainer.innerHTML = "";
+
+            if (input.files.length > 0) {
+
+                for (let i = 0; i < input.files.length; i++) {
+
+                    let reader = new FileReader();
+
+                    reader.onload = function (e) {
+
+                        let col = document.createElement("div");
+                        col.className = "col-md-4 mb-2";
+
+                        let img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.className = "img-fluid img-thumbnail";
+                        img.style.height = "150px";
+                        img.style.objectFit = "cover";
+
+                        col.appendChild(img);
+                        previewContainer.appendChild(col);
+                    };
+
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+        }
+        </script>
 </div>

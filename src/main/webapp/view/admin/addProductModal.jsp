@@ -52,12 +52,16 @@
                                 <span class="input-group-text">Upload</span>
                             </div>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="image" name="image" onchange="displayImage(this)">
+                                <input type="file"
+                                       class="custom-file-input"
+                                       id="images"
+                                       name="images"
+                                       onchange="displayImages(this)"
+                                       multiple>
                                 <label class="custom-file-label" >Choose file</label>
                             </div>
                         </div>
-                        <img id="previewImage" src="#" alt="Preview"
-                             style="display: none; max-width: 300px; max-height: 300px;">
+                        <div id="previewContainer" class="row mt-2"></div>
 
                     </div>
                     <!--Description-->
@@ -137,17 +141,33 @@
         }
     }
 
-    function displayImage(input) {
-        var previewImage = document.getElementById("previewImage");
-        var file = input.files[0];
-        var reader = new FileReader();
+    function displayImages(input) {
 
-        reader.onload = function (e) {
-            previewImage.src = e.target.result;
-            previewImage.style.display = "block";
+        let previewContainer = document.getElementById("previewContainer");
+        previewContainer.innerHTML = ""; // clear ảnh cũ
+
+        if (input.files) {
+
+            for (let i = 0; i < input.files.length; i++) {
+
+                let reader = new FileReader();
+
+                reader.onload = function (e) {
+
+                    let col = document.createElement("div");
+                    col.className = "col-md-4 mb-2";
+
+                    let img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.className = "img-fluid img-thumbnail";
+
+                    col.appendChild(img);
+                    previewContainer.appendChild(col);
+                };
+
+                reader.readAsDataURL(input.files[i]);
+            }
         }
-
-        reader.readAsDataURL(file);
     }
 
 
