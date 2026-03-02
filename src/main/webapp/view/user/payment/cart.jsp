@@ -68,84 +68,98 @@
             </div>
             <!-- entry-header-area-end -->
             <!-- cart-main-area-start -->
-            <div class="cart-main-area mb-70">
-                <div class="container">
+             <div class="cart-main-area mb-70">
+                 <div class="container">
+                    <c:if test="${not empty checkoutMessage}">
+                        <div class="row" style="margin-bottom: 16px;">
+                            <div class="col-lg-12">
+                                <c:if test="${checkoutType == 'success'}">
+                                    <div class="alert alert-success" role="alert">${checkoutMessage}</div>
+                                </c:if>
+                                <c:if test="${checkoutType != 'success'}">
+                                    <div class="alert alert-danger" role="alert">${checkoutMessage}</div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
                     <div class="row">
                         <div class="col-lg-12">
-                                <div class="table-content table-responsive mb-15 border-1">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th class="product-thumbnail">Image</th>
-                                                <th class="product-name">Product</th>
-                                                <th class="product-price">Price</th>
-                                                <th class="product-quantity">Quantity</th>
-                                                <th class="product-subtotal">Total</th>
-                                                <th class="product-remove">Remove</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <c:if test="${empty cart or empty cart.orderDetails}">
-                                            <tr>
-                                                <td colspan="6" style="text-align:center;">
-                                                    Your cart is empty
-                                                </td>
-                                            </tr>
-                                        </c:if>
-                                        <c:forEach items="${cart.orderDetails}" var="od">
-                                            <tr>
-                                                <!-- IMAGE -->
-                                                <td class="product-thumbnail">
-                                                    <a href="#">
-                                                        <img src="${pageContext.request.contextPath}/${od.product.mainImage}" 
-                                                             width="80">
-                                                    </a>
-                                                </td>
-
-                                                <!-- NAME -->
-                                                <td class="product-name">
-                                                    ${od.product.name}
-                                                    <br>
-                                                    <small>Size: ${od.size}</small>
-                                                </td>
-
-                                                <!-- PRICE -->
-                                                <td class="product-price">
-                                                    $${od.price}
-                                                </td>
-
-                                                <!-- QUANTITY -->
-                                        <form action="payment?action=change-quantity" method="POST">
-                                            <input type="hidden" name="id" value="${od.product.id}"/>
-                                            <td class="product-quantity">
-                                                <input type="number"
-                                                       class="qty-input"
-                                                       data-price="${od.price}"
-                                                       value="${od.quantity}"
-                                                       min="1" onchange="return this.closest('form').submit()" name="quantity">
-                                            </td>
-                                        </form>
-                                        <!-- TOTAL -->
-                                        <td class="product-subtotal">
-                                            $<span class="item-total">
-                                                ${od.price * od.quantity}
-                                            </span>
-                                        </td>
-
-                                        <!-- REMOVE -->
-                                        <td class="product-remove">
-                                            <form action="payment?action=delete-product" method="POST">  
-                                                <input type="hidden" name="id" value="${od.product.id}"/>
-                                                <a href="#" onclick="return this.closest('form').submit()">
-                                                    <i class="fa fa-times"></i>
-                                                </a>
-                                            </form>
-                                        </td>
+                            <div class="table-content table-responsive mb-15 border-1">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="product-thumbnail">Image</th>
+                                            <th class="product-name">Product</th>
+                                            <th class="product-price">Price</th>
+                                            <th class="product-quantity">Quantity</th>
+                                            <th class="product-subtotal">Total</th>
+                                            <th class="product-remove">Remove</th>
                                         </tr>
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    </thead>
+                                    <tbody>
+                                    <c:if test="${empty cart or empty cart.orderDetails}">
+                                        <tr>
+                                            <td colspan="6" style="text-align:center;">
+                                                Your cart is empty
+                                            </td>
+                                        </tr>
+                                    </c:if>
+                                    <c:forEach items="${cart.orderDetails}" var="od">
+                                        <tr>
+                                            <!-- IMAGE -->
+                                            <td class="product-thumbnail">
+                                                <a href="#">
+                                                    <img src="${pageContext.request.contextPath}/${od.product.mainImage}" 
+                                                         width="80">
+                                                </a>
+                                            </td>
+
+                                            <!-- NAME -->
+                                            <td class="product-name">
+                                                ${od.product.name}
+                                                <br>
+                                                <small>Size: ${od.size}</small>
+                                            </td>
+
+                                            <!-- PRICE -->
+                                            <td class="product-price">
+                                                $${od.price}
+                                            </td>
+
+                                            <!-- QUANTITY -->
+                                            <td class="product-quantity">
+                                                <form action="${pageContext.request.contextPath}/payment?action=change-quantity" method="POST">
+                                                    <input type="hidden" name="id" value="${od.product.id}"/>
+                                                    <input type="number"
+                                                           class="qty-input"
+                                                           data-price="${od.price}"
+                                                           value="${od.quantity}"
+                                                           min="1"
+                                                           name="quantity"
+                                                           onchange="this.form.submit()">
+                                                </form>
+                                            </td>
+                                    <!-- TOTAL -->
+                                    <td class="product-subtotal">
+                                        $<span class="item-total">
+                                            ${od.price * od.quantity}
+                                        </span>
+                                    </td>
+
+                                    <!-- REMOVE -->
+                                            <td class="product-remove">
+                                                <form action="${pageContext.request.contextPath}/payment?action=delete-product" method="POST">
+                                                    <input type="hidden" name="id" value="${od.product.id}"/>
+                                                    <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -190,7 +204,9 @@
                                 </tbody>
                             </table>
                             <div class="wc-proceed-to-checkout">
-                                <a href="#">Proceed to Checkout</a>
+                                <form action="${pageContext.request.contextPath}/payment?action=check-out" method="POST">
+                                    <button type="submit">Proceed to Checkout</button>
+                                </form>
                             </div>
                         </div>
                     </div>
