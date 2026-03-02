@@ -6,6 +6,7 @@ package controller.admin;
 
 import dal.implement.CategoryDAO;
 import dal.implement.ProductDAO;
+import dal.implement.ProductImageDAO;
 import dal.implement.ProductSizeDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
 import model.Product;
+import model.ProductImage;
 import model.ProductSize;
 
 /**
@@ -31,6 +33,7 @@ import model.ProductSize;
 @MultipartConfig
 public class ProductAdminServerlet extends HttpServlet {
 
+    ProductImageDAO productImageDAO = new ProductImageDAO();
     ProductSizeDAO productSizeDAO = new ProductSizeDAO();
     ProductDAO productDAO = new ProductDAO();
     CategoryDAO categoryDAO = new CategoryDAO();
@@ -164,7 +167,20 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setName(name);
             product.setPrice(price);
             product.setDescription(description);
-            product.setImg(imagePath);
+            product.setCategory(category);
+
+            // LƯU PRODUCT TRƯỚC
+            productDAO.addProduct(product);
+
+            // ===== SAU KHI PRODUCT CÓ ID MỚI LƯU ẢNH =====
+            if (imagePath != null) {
+                ProductImage img = new ProductImage();
+                img.setImageUrl(imagePath);
+                img.setIsMain(true);
+                img.setProduct(product);
+
+                productImageDAO.add(img);
+            }
             product.setCategory(category);
 
             productDAO.addProduct(product); // LƯU PRODUCT
@@ -232,7 +248,18 @@ public class ProductAdminServerlet extends HttpServlet {
                 File image = new File(dir, part.getSubmittedFileName());
                 part.write(image.getAbsolutePath());
 
-                product.setImg("images/" + part.getSubmittedFileName());
+                String imagePath = "images/" + part.getSubmittedFileName();
+
+                // XÓA ẢNH CŨ (nếu muốn)
+                productImageDAO.deleteByProductId(id);
+
+                // THÊM ẢNH MỚI
+                ProductImage img = new ProductImage();
+                img.setImageUrl(imagePath);
+                img.setIsMain(true);
+                img.setProduct(product);
+
+                productImageDAO.add(img);
             }
 
             // ===== UPDATE PRODUCT =====

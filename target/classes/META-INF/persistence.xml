@@ -11,6 +11,8 @@
         <class>model.ProductSize</class>
         <class>model.Account</class>
         <class>model.Role</class>
+        <class>model.ProductImage</class>
+        <class>model.Blog</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=ShoeStoreDB;encrypt=false"/>

@@ -1,59 +1,87 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author FPTShop
- */
 @Entity
 @Table(name = "Products")
-
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "NVARCHAR(150)")
+    @Column(columnDefinition = "NVARCHAR(150)", nullable = false)
     private String name;
 
-    private String img;
     private double price;
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
-    // nhiều product thuộc 1 category
+    // 🔥 Gender (Nam / Nữ)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    // 🔥 Giảm giá (%)
+    private Double discount;
+
+    // 🔥 Sản phẩm nổi bật
+    private Boolean featured;
+
+    // 🔥 Ngày tạo (để làm New Arrival)
+    private LocalDateTime createdDate;
+
+    // ===== RELATION =====
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    // 1 product có nhiều size
     @OneToMany(mappedBy = "product",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<ProductSize> sizes;
+    private List<ProductSize> sizes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<ProductImage> images = new ArrayList<>();
+
+    // ===== CONSTRUCTOR =====
     public Product() {
+        this.createdDate = LocalDateTime.now();
+        this.discount = 0.0;
+        this.featured = false;
     }
 
-    public Product(String name, String img, double price, String description, Category category) {
-        this.name = name;
-        this.img = img;
-        this.price = price;
-        this.description = description;
-        this.category = category;
+    // ===== BUSINESS METHOD =====
+    public double getFinalPrice() {
+        double safeDiscount = (discount == null) ? 0.0 : discount;
+        return price * (1 - safeDiscount / 100);
     }
 
+    public void addSize(ProductSize size) {
+        sizes.add(size);
+        size.setProduct(this);
+    }
+
+    public void addImage(ProductImage image) {
+        images.add(image);
+        image.setProduct(this);
+    }
+
+    // ===== GETTER / SETTER =====
     public int getId() {
         return id;
+    }
+
+    // ❗ Không nên dùng setId khi persist
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -62,14 +90,6 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
     }
 
     public double getPrice() {
@@ -88,6 +108,38 @@ public class Product {
         this.description = description;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    public Boolean getFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(Boolean featured) {
+        this.featured = featured;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -104,8 +156,11 @@ public class Product {
         this.sizes = sizes;
     }
 
-    public void addSize(ProductSize size) {
-        sizes.add(size);
-        size.setProduct(this);
+    public List<ProductImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ProductImage> images) {
+        this.images = images;
     }
 }
