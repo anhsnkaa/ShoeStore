@@ -106,6 +106,12 @@ public class HomeController extends HttpServlet {
                 product = productDAO.getProductByKeyword(keyword, page);
                 pageControl.setUrlPattern(requestURL + "?search=searchByKeyword&keyword=" + keyword + "&");
                 break;
+            case "gender":
+                String gender = request.getParameter("gender");
+                totalRecord = productDAO.getTotalRecordByGender(gender);
+                product = productDAO.getProductByGender(gender, page);
+                pageControl.setUrlPattern(requestURL + "?search=gender&gender=" + gender + "&");
+                break;
             default:
                 product = productDAO.getAllProductsPaging(page);
                 totalRecord = productDAO.getTotalProducts();
@@ -120,6 +126,4 @@ public class HomeController extends HttpServlet {
         pageControl.setTotalRecord(totalRecord);
         return product;
     }
-    
-    
 }

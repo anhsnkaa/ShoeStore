@@ -66,10 +66,13 @@
                                     <div class="col-lg-5 col-md-6 col-12">
                                         <div class="flexslider">
                                             <ul class="slides">
-                                                <li data-thumb="${pageContext.request.contextPath}/img/thum-2/1.jpg">
-                                                <img src="${pageContext.request.contextPath}/${product.mainImage}" />
-                                            </li>
+                                            <c:forEach items="${product.images}" var="img">
 
+                                                <li data-thumb="${pageContext.request.contextPath}/${img.imageUrl}">
+                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}" />
+                                                </li>
+
+                                            </c:forEach>
                                         </ul>
                                     </div>
                                 </div>

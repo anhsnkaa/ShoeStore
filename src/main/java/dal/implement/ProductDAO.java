@@ -7,6 +7,7 @@ package dal.implement;
 import dal.JPAUtil;
 import jakarta.persistence.*;
 import java.util.List;
+import model.Gender;
 import model.PageControl;
 import model.Product;
 
@@ -172,5 +173,37 @@ public class ProductDAO {
 
         em.getTransaction().commit();
         em.close();
+    }
+
+    public List<Product> getProductByGender(String gender, int page) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        List<Product> list = em.createQuery(
+                "SELECT p FROM Product p WHERE p.gender = :gender",
+                Product.class
+        )
+                .setParameter("gender", Gender.valueOf(gender)) // 🔥 QUAN TRỌNG
+                .setFirstResult((page - 1) * 12)
+                .setMaxResults(12)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public int getTotalRecordByGender(String gender) {
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p WHERE p.gender = :gender",
+                Long.class
+        )
+                .setParameter("gender", Gender.valueOf(gender)) // 🔥 QUAN TRỌNG
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
     }
 }

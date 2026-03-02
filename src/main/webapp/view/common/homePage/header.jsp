@@ -149,13 +149,8 @@
                                 <li class="active"><a href="index.html">Home<i class="fa fa-angle-down"></i></a>
                                     <div class="sub-menu">
                                         <ul>
-                                            <li><a href="index.html">Home-1</a></li>
-                                            <li><a href="index-2.html">Home-2</a></li>
-                                            <li><a href="index-3.html">Home-3</a></li>
-                                            <li><a href="index-4.html">Home-4</a></li>
-                                            <li><a href="index-5.html">Home-5</a></li>
-                                            <li><a href="index-6.html">Home-6</a></li>
-                                            <li><a href="index-7.html">Home-7</a></li>
+                                            <li><a href="home?search=gender&gender=MEN">Men</a></li>
+                                            <li><a href="home?search=gender&gender=WOMEN">Women</a></li>    
                                         </ul>
                                     </div>
                                 </li>
