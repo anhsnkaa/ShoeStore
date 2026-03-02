@@ -15,6 +15,13 @@ import model.ProductSize;
  */
 public class ProductSizeDAO {
 
+    public ProductSize getSizeById(int id) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        ProductSize ps = em.find(ProductSize.class, id);
+        em.close();
+        return ps;
+    }
+
     public List<ProductSize> getSizesByProduct(int productId) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();

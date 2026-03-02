@@ -1,7 +1,9 @@
 controller\authen\AuthenticationController.class
 controller\filter\UserFilter.class
+model\OrderDetail.class
 controller\admin\ProductAdminServerlet.class
 dal\JPAUtil.class
+dal\implement\OrderDetailDAO.class
 controller\homepage\HomeController.class
 controller\filter\ExtensionFileFilter.class
 dal\implement\ProductSizeDAO.class
@@ -20,8 +22,12 @@ model\ProductImage.class
 dal\implement\ProductImageDAO.class
 dal\implement\AccountDAO.class
 model\PageControl.class
+dal\implement\OrderDAO.class
+model\Order.class
 dal\implement\RoleDAO.class
 model\Blog.class
+controller\user\PaymentController.class
 model\ProductSize.class
 model\Category.class
+dal\implement\BlogDAO.class
 model\Gender.class

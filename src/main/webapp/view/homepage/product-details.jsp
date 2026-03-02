@@ -89,25 +89,7 @@
                                             </div>
                                         </div>
                                         <div class="product-reviews-summary">
-                                            <div class="choose-size">
-                                                <p>Size</p>
-                                                <select name="sizeId" required>
-                                                    <c:forEach items="${listProductSize}" var="s">
-                                                        <c:choose>
-                                                            <c:when test="${s.quantity > 0}">
-                                                                <option value="${s.id}">
-                                                                    ${s.size} - Available ${s.quantity}
-                                                                </option>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <option disabled>
-                                                                    ${s.size} - Out of stock
-                                                                </option>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </c:forEach>
-                                                </select>
-                                            </div>
+
 
                                         </div>
                                         <div class="product-info-price">
@@ -116,17 +98,42 @@
                                             </div>
                                         </div>
                                         <div class="product-add-form">
-                                            <form action="#">
-                                                <div class="quality-button">
-                                                    <input class="qty" type="number" value="1">
+                                            <form action="payment?action=add-product" method="POST">
+
+                                                <input type="hidden" name="productId" value="${product.id}">
+
+                                                <!-- SIZE -->
+                                                <div class="choose-size mb-3">
+                                                    <p>Size</p>
+                                                    <select name="sizeId" class="form-control" required>
+                                                        <c:forEach items="${listProductSize}" var="s">
+                                                            <c:choose>
+                                                                <c:when test="${s.quantity > 0}">
+                                                                    <option value="${s.id}">
+                                                                        ${s.size} - Available ${s.quantity}
+                                                                    </option>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <option disabled>
+                                                                        ${s.size} - Out of stock
+                                                                    </option>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:forEach>
+                                                    </select>
                                                 </div>
-                                                <a href="#">Add to cart</a>
+
+
+                                                <div class="quality-button">
+                                                    <input class="qty" type="number" value="1" name="quantity">
+                                                </div>
+
+                                                <button type="submit" class="btn btn-dark">
+                                                    Add to cart
+                                                </button>
+
+
                                             </form>
-                                        </div>
-                                        <div class="product-social-links">
-                                            <div class="product-addto-links-text">
-                                                <p>${product.description}</p>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
