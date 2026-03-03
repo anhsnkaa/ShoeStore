@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,94 +39,103 @@
                 <!-- Sidebar -->
             <jsp:include page="../../common/user/sidebar.jsp"></jsp:include>
                 <div id="content-wrapper">
-
                     <div class="container-fluid">
-
-                        <!-- Breadcrumbs-->
-                    <jsp:include page="../../common/user/breadcrumbs.jsp"></jsp:include>
-
-                        <!-- Icon Cards-->
-                    <jsp:include page="../../common/user/iconcard.jsp"></jsp:include>
-                        <!-- Area Chart Example-->
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area"></i>
-                                Area Chart Example
+                        <c:choose>
+                            <c:when test="${not empty orders}">
+                            <!-- Breadcrumbs -->
+                            <jsp:include page="../../common/user/breadcrumbs.jsp"></jsp:include>
+                                <!-- Icon Cards -->
+                            <jsp:include page="../../common/user/iconcard.jsp"></jsp:include>
+                                <!-- Orders Table -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <i class="fas fa-table"></i>
+                                        My Orders
+                                        <a href="${pageContext.request.contextPath}/home" class="btn btn-sm btn-primary float-right">
+                                            Back To Home
+                                        </a>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order Id</th>
+                                                        <th>Created Date</th>
+                                                        <th>Status</th>
+                                                        <th>Total amount</th>
+                                                        <th>View Details</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:forEach items="${orders}" var="o">
+                                                        <tr>
+                                                            <td>#${o.id}</td>
+                                                            <td>${o.createdDate}</td>
+                                                            <td>${o.status}</td>
+                                                            <td>$${o.totalAmount}</td>
+                                                            <td>
+                                                                <button class="btn btn-info btn-sm"
+                                                                        type="button"
+                                                                        data-toggle="collapse"
+                                                                        data-target="#order-detail-${o.id}"
+                                                                        aria-expanded="false"
+                                                                        aria-controls="order-detail-${o.id}">
+                                                                    View Details
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="5">
+                                                                <div class="collapse" id="order-detail-${o.id}">
+                                                                    <table class="table table-sm table-bordered mb-0">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Product</th>
+                                                                                <th>Size</th>
+                                                                                <th>Qty</th>
+                                                                                <th>Price</th>
+                                                                                <th>Line Total</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <c:if test="${empty o.orderDetails}">
+                                                                                <tr>
+                                                                                    <td colspan="5" class="text-center">No items in this order</td>
+                                                                                </tr>
+                                                                            </c:if>
+                                                                            <c:forEach items="${o.orderDetails}" var="od">
+                                                                                <tr>
+                                                                                    <td>${od.product.name}</td>
+                                                                                    <td>${od.size}</td>
+                                                                                    <td>${od.quantity}</td>
+                                                                                    <td>$${od.price}</td>
+                                                                                    <td>$${od.price * od.quantity}</td>
+                                                                                </tr>
+                                                                            </c:forEach>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="card mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="mb-0">No orders found</h5>
+                                    <a href="${pageContext.request.contextPath}/home" class="btn btn-primary mt-3">
+                                        Back To Home
+                                    </a>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <canvas id="myAreaChart" width="100%" height="30"></canvas>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                        </div>
-
-                        <!-- DataTables Example -->
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fas fa-table"></i>
-                                Data Table Example
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>Id</th>
-                                                <th>Name</th>
-                                                <th>Image</th>
-                                                <th>Price</th>
-                                                <th>Category</th>
-                                                <th>Size</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <c:forEach items="${listProduct}" var="p">
-                                        <tr>
-                                            <td>${p.id}</td>
-                                            <td>${p.name}</td>
-                                            <td>
-                                                <img src="${pageContext.request.contextPath}/${p.img}"
-                                                     width="80"
-                                                     height="80"
-                                                     style="object-fit: cover;">
-                                            </td>
-                                            <td>$${p.price}</td>
-                                            <td>${p.category.name}</td>
-                                            <td>
-                                                <button class="btn btn-info btn-sm"
-                                                        data-toggle="modal"
-                                                        data-target="#sizeModal"
-                                                        onclick="loadSizes(${p.id})">
-                                                    View Sizes
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-warning btn-sm"
-                                                        data-toggle="modal"
-                                                        data-target="#editModal"
-                                                        data-id="${p.id}"
-                                                        data-name="${p.name}"
-                                                        data-price="${p.price}"
-                                                        data-description="${p.description}"
-                                                        onclick="loadEditProduct(this)">
-                                                    Edit
-                                                </button>
-                                                <button class="btn btn-danger btn-sm"
-                                                        data-toggle="modal"
-                                                        data-target="#deleteModal"
-                                                        onclick="setDeleteId(${p.id}, '${p.name}')"">
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                    </div>
-
+                        </c:otherwise>
+                    </c:choose>
                 </div>
                 <!-- /.container-fluid -->
 
@@ -275,8 +285,8 @@
         </script>
         <!-- Logout Modal-->
         <jsp:include page="../../common/user/logoutmodel.jsp"></jsp:include>
-        <!-- Bootstrap core JavaScript-->
-        <script src="${pageContext.request.contextPath}/vendor/jquery/jquery.min.js"></script>
+            <!-- Bootstrap core JavaScript-->
+            <script src="${pageContext.request.contextPath}/vendor/jquery/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
         <!-- Core plugin JavaScript-->

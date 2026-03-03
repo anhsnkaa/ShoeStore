@@ -24,6 +24,10 @@
         <filter-name>UserFilter</filter-name>
         <url-pattern>/dashboard</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>UserFilter</filter-name>
+        <url-pattern>/payment</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>HomeController</servlet-name>
         <servlet-class>controller.homepage.HomeController</servlet-class>

@@ -5,22 +5,32 @@
 
 package controller.user;
 
+import dal.implement.AccountDAO;
+import dal.implement.OrderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.Account;
+import model.Order;
 
 /**
  *
  * @author FPTShop
  */
 public class DashboardUserServerlet extends HttpServlet {
-   
+    OrderDAO orderDAO = new OrderDAO();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Account userAccount = (Account) session.getAttribute("account");
+        List<Order> userOrder = orderDAO.getOrdersByUserId(userAccount.getId());
+        request.setAttribute("orders", userOrder);
         request.getRequestDispatcher("view/user/dashboard/dashboard.jsp").forward(request, response);
     } 
 

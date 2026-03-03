@@ -316,36 +316,31 @@
                                     <c:forEach items="${listProduct}" var="p">
                                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                                             <!-- single-product-start -->
-                                            <div class="product-wrapper mb-40">
-                                                <div class="product-img">
-                                                    <a href="product-details?id=${p.id}">
-                                                        <img src="${pageContext.request.contextPath}/${p.mainImage}" />
+                                            <div class="product-img">
+                                                <a href="product-details?id=${p.id}">
+                                                    <img src="${pageContext.request.contextPath}/${p.mainImage}" />
+                                                </a>
+                                                <div class="quick-view">
+                                                    <a class="action-view" href="#" data-bs-target="#productModal" data-bs-toggle="modal" title="Quick View">
+                                                        <i class="fa fa-search-plus"></i>
                                                     </a>
-                                                    <div class="quick-view">
-                                                        <a class="action-view" href="#" data-bs-target="#productModal" data-bs-toggle="modal" title="Quick View">
-                                                            <i class="fa fa-search-plus"></i>
-                                                        </a>
-                                                    </div>
                                                 </div>
-                                                <div class="product-details text-center">
+                                            </div>
+                                            <div class="product-details text-center">
 
-                                                    <h4><a href="product-details?id=${p.id}">${p.name}</a></h4>
-                                                    <div class="product-price">
-                                                        <ul>
+                                                <h4><a href="product-details?id=${p.id}">${p.name}</a></h4>
+                                                <div class="product-price">
+                                                    <ul>
+                                                        <a href="product-details?id=${p.id}">
                                                             <li>$${p.price}</li>
-                                                        </ul>
-                                                    </div>
+                                                        </a>
+                                                    </ul>
                                                 </div>
-                                                <div class="product-link">
-                                                    <div class="product-button">
-                                                        <a href="#" title="Add to cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
-                                                    </div>
-                                                    <div class="add-to-link">
-                                                        <ul>
-                                                            <li><a href="product-details.html" title="Details"><i class="fa fa-external-link"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
+                                            </div>
+                                            <div class="product-link">
+                                                <ul>
+                                                    <li><a href="product-details.html" title="Details"></a></li>
+                                                </ul>
                                             </div>
                                             <!-- single-product-end -->
                                         </div>

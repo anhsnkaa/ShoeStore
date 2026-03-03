@@ -29,7 +29,7 @@
         <!-- owl.carousel css -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/owl.carousel.css">
         <!-- font-awesome css -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- flexslider.css-->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/flexslider.css">
         <!-- chosen.min.css-->

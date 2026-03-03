@@ -15,11 +15,4 @@
         <li class="breadcrumb-item active">Overview</li>
     </ol>
 
-    <!-- Nút Add -->
-    <button class="btn btn-primary"
-            data-toggle="modal"
-            data-target="#addModal">
-        <i class="fas fa-plus"></i> Add Product
-    </button>
-
 </div>

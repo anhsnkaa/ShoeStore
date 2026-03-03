@@ -41,18 +41,17 @@
                                 <!--Nguoi dung-->
                                 <c:if test="${account.role.id == 2}">
                                     <li>
-                                        <a href="${pageContext.request.contextPath}/dashboard">My Account</a>
+                                        <a href="${pageContext.request.contextPath}/dashboard">My Account: ${account.username}</a>
                                     </li>
                                 </c:if>
                                 <!--Admin-->
                                 <c:if test="${account.role.id == 1}">
                                     <li>
-                                        <a href="${pageContext.request.contextPath}/admin/dashboard">My Account</a>
+                                        <a href="${pageContext.request.contextPath}/admin/dashboard">My Account: ${account.username}</a>
                                     </li>
                                 </c:if>
                             </c:if>
-                            <li><a href="checkout.html">Checkout</a></li>
-                                <c:if test="${account == null}">
+                            <c:if test="${account == null}">
                                 <li>
                                     <a href="authen?action=login">Sign in</a>
                                 </li>
@@ -92,42 +91,55 @@
                 </div>
                 <div class="col-lg-3 col-md-3 col-12">
                     <div class="my-cart">
+                        <c:set var="cart" value="${sessionScope.cart}" />
+                        <c:set var="cartCount" value="0" />
+                        <c:if test="${not empty cart and not empty cart.orderDetails}">
+                            <c:forEach items="${cart.orderDetails}" var="od">
+                                <c:set var="cartCount" value="${cartCount + od.quantity}" />
+                            </c:forEach>
+                        </c:if>
                         <ul>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i>My Cart</a>
-                                <span>2</span>
+                            <li>
+                                <a href="${pageContext.request.contextPath}/payment">
+                                    <i class="fa fa-shopping-cart"></i>My Cart
+                                </a>
+                                <span>${cartCount}</span>
                                 <div class="mini-cart-sub">
                                     <div class="cart-product">
-                                        <div class="single-cart">
-                                            <div class="cart-img">
-                                                <a href="#"><img src="${pageContext.request.contextPath}/img/product/1.jpg" alt="book" /></a>
-                                            </div>
-                                            <div class="cart-info">
-                                                <h5><a href="#">Joust Duffle Bag</a></h5>
-                                                <p>1 x £60.00</p>
-                                            </div>
-                                            <div class="cart-icon">
-                                                <a href="#"><i class="fa fa-remove"></i></a>
-                                            </div>
-                                        </div>
-                                        <div class="single-cart">
-                                            <div class="cart-img">
-                                                <a href="#"><img src="${pageContext.request.contextPath}/img/product/3.jpg" alt="book" /></a>
-                                            </div>
-                                            <div class="cart-info">
-                                                <h5><a href="#">Chaz Kangeroo Hoodie</a></h5>
-                                                <p>1 x £52.00</p>
-                                            </div>
-                                            <div class="cart-icon">
-                                                <a href="#"><i class="fa fa-remove"></i></a>
-                                            </div>
-                                        </div>
+                                        <c:choose>
+                                            <c:when test="${empty cart or empty cart.orderDetails}">
+                                                <div class="single-cart">
+                                                    <div class="cart-info">
+                                                        <h5>Your cart is empty</h5>
+                                                    </div>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:forEach items="${cart.orderDetails}" var="od">
+                                                    <div class="single-cart">
+                                                        <div class="cart-img">
+                                                            <a href="${pageContext.request.contextPath}/product-details?id=${od.product.id}">
+                                                                <img src="${pageContext.request.contextPath}/${od.product.mainImage}" alt="${od.product.name}" />
+                                                            </a>
+                                                        </div>
+                                                        <div class="cart-info">
+                                                            <h5>
+                                                                <a href="${pageContext.request.contextPath}/product-details?id=${od.product.id}">
+                                                                    ${od.product.name}
+                                                                </a>
+                                                            </h5>
+                                                            <p>${od.quantity} x $${od.price} (Size ${od.size})</p>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                     <div class="cart-totals">
-                                        <h5>Total <span>£12.00</span></h5>
+                                        <h5>Total <span>$${empty cart ? 0 : cart.total}</span></h5>
                                     </div>
                                     <div class="cart-bottom">
-                                        <a class="view-cart" href="cart.html">view cart</a>
-                                        <a href="checkout.html">Check out</a>
+                                        <a class="view-cart" href="${pageContext.request.contextPath}/payment">View cart</a>
                                     </div>
                                 </div>
                             </li>
