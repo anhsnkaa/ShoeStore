@@ -86,6 +86,7 @@ public class AnswerDAO {
                     "SELECT a FROM Answer a "
                     + "JOIN FETCH a.user u "
                     + "JOIN FETCH a.question q "
+                    + "JOIN FETCH q.product p "
                     + "WHERE a.status = 'PENDING' "
                     + "ORDER BY a.createdDate DESC",
                     Answer.class

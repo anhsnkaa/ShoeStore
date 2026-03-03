@@ -76,25 +76,35 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Question ID</th>
+                                    <th>Product</th>
+                                    <th>Question</th>
                                     <th>User</th>
                                     <th>Answer</th>
                                     <th>Created</th>
+                                    <th>View</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <c:if test="${empty pendingAnswers}">
                                     <tr>
-                                        <td colspan="6" class="text-center">No pending answers</td>
+                                        <td colspan="9" class="text-center">No pending answers</td>
                                     </tr>
                                 </c:if>
                                 <c:forEach items="${pendingAnswers}" var="a">
                                     <tr>
                                         <td>#${a.id}</td>
                                         <td>#${a.question.id}</td>
+                                        <td>${a.question.product.name}</td>
+                                        <td>${a.question.content}</td>
                                         <td>${a.user.fullName}</td>
                                         <td>${a.content}</td>
                                         <td>${a.createdDate}</td>
+                                        <td>
+                                            <a href="${pageContext.request.contextPath}/product-details?id=${a.question.product.id}#Qna" target="_blank">
+                                                Open
+                                            </a>
+                                        </td>
                                         <td>
                                             <form action="${pageContext.request.contextPath}/admin/qna" method="post" class="d-inline">
                                                 <input type="hidden" name="action" value="approve-answer"/>

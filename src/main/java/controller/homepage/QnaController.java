@@ -22,7 +22,7 @@ import model.Question;
  * @author FPTShop
  */
 public class QnaController extends HttpServlet {
-    
+
     QuestionDAO questionDAO = new QuestionDAO();
     AnswerDAO answerDAO = new AnswerDAO();
 
@@ -92,7 +92,7 @@ public class QnaController extends HttpServlet {
         }
         Question q = new Question();
         q.setContent(content);
-        q.setStatus("PENDING");//duyet admin sau
+        q.setStatus(isAdmin(account) ? "APPROVED" : "PENDING");
         Product p = new Product();
         p.setId(productId);
         q.setProduct(p);
@@ -121,7 +121,7 @@ public class QnaController extends HttpServlet {
 
         Answer answer = new Answer();
         answer.setContent(content);
-        answer.setStatus("PENDING");
+        answer.setStatus(isAdmin(account) ? "APPROVED" : "PENDING");
         answer.setUser(account);
 
         Question question = new Question();
@@ -132,12 +132,18 @@ public class QnaController extends HttpServlet {
 
         response.sendRedirect(request.getContextPath() + "/product-details?id=" + productId + "#Qna");
     }
-    
+
     private int parseIntOrDefault(String raw, int defaultValue) {
         try {
             return Integer.parseInt(raw);
         } catch (Exception e) {
             return defaultValue;
         }
+    }
+
+    private boolean isAdmin(Account account) {
+        return account != null
+                && account.getRole() != null
+                && account.getRole().getId() == 1;
     }
 }

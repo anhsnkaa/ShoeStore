@@ -168,7 +168,7 @@
                                         </div>
                                         <div class="review-field-ratings">
                                             <span>Your Rating <sup>*</sup></span>
-                                            
+
                                         </div>
                                         <div class="review-form">
                                             <div class="single-form">
@@ -211,7 +211,11 @@
                                         <c:forEach items="${qnaQuestions}" var="q">
                                             <div class="mb-3" style="border:1px solid #eee; padding:12px; border-radius:6px;">
                                                 <p><strong>Question:</strong> ${q.content}</p>
-                                                <p style="font-size:12px; color:#777;">by ${q.user.fullName} - ${q.createdDate}</p>
+                                                <p style="font-size:12px; color:#777;">
+                                                    by ${q.user.fullName}
+                                                    <c:if test="${q.user.role != null && q.user.role.id == 1}"> (Admin)</c:if>
+                                                    - ${q.createdDate}
+                                                </p>
 
                                                 <!-- Lay danh sach cau tra loi cua cau hoi hien tai -->
                                                 <c:set var="ansList" value="${answersByQuestion[q.id]}" />
@@ -225,7 +229,11 @@
                                                 <c:forEach items="${ansList}" var="a">
                                                     <div style="margin-left:20px; background:#f9f9f9; padding:8px; border-radius:4px; margin-bottom:8px;">
                                                         <p><strong>Answer:</strong> ${a.content}</p>
-                                                        <p style="font-size:12px; color:#777;">by ${a.user.fullName} - ${a.createdDate}</p>
+                                                        <p style="font-size:12px; color:#777;">
+                                                            by ${a.user.fullName}
+                                                            <c:if test="${a.user.role != null && a.user.role.id == 1}"> (Admin)</c:if>
+                                                            - ${a.createdDate}
+                                                        </p>
                                                     </div>
                                                 </c:forEach>
 
