@@ -60,6 +60,10 @@
         <servlet-name>OrderAdminServerlet</servlet-name>
         <servlet-class>controller.admin.OrderAdminServerlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>QnaController</servlet-name>
+        <servlet-class>controller.homepage.QnaController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -91,6 +95,10 @@
     <servlet-mapping>
         <servlet-name>OrderAdminServerlet</servlet-name>
         <url-pattern>/admin/order</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QnaController</servlet-name>
+        <url-pattern>/qna</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

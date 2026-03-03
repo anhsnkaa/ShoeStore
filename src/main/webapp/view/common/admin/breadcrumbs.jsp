@@ -14,7 +14,12 @@
         </li>
         <li class="breadcrumb-item active">Overview</li>
     </ol>
-
+    <!-- quay về trang chủ -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="${pageContext.request.contextPath}/home" class="btn btn-sm btn-secondary">
+            Back To Home
+        </a>
+    </div>
     <!-- Nút Add -->
     <button class="btn btn-primary"
             data-toggle="modal"

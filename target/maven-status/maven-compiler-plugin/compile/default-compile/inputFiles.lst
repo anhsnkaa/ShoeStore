@@ -1,5 +1,7 @@
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\OrderDetailDAO.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\QuestionDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Category.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\homepage\QnaController.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\CategoryDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\OrderDetail.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\user\PaymentController.java
@@ -12,6 +14,7 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\Produ
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\filter\ExtensionFileFilter.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Blog.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\AccountDAO.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\AnswerDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\BlogDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\ProductImage.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\com\mycompany\shoestore\JakartaRestConfiguration.java
@@ -21,8 +24,10 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\Order
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\RoleDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\ProductSize.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\PageControl.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Answer.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\DashboardServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\filter\UserFilter.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Question.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\ProductAdminServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\ProductSizeDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Order.java

@@ -143,9 +143,13 @@
                         <!-- product-info-area-start -->
                         <div class="product-info-area mt-80">
                             <!-- Nav tabs -->
-                            <ul class="nav">
+                            <ul class="nav" id="product-tabs">
+                                <!-- Tab mo ta san pham -->
                                 <li><a class="active" href="#Details" data-bs-toggle="tab">Details</a></li>
+                                <!-- Tab review cu -->
                                 <li><a href="#Reviews" data-bs-toggle="tab">Reviews 3</a></li>
+                                <!-- Tab hoi dap moi -->
+                                <li><a href="#Qna" data-bs-toggle="tab">Q&A</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="Details">
@@ -158,92 +162,13 @@
                                         <div class="section-title mb-60 mt-60">
                                             <h2>Customer Reviews</h2>
                                         </div>
-                                        <ul>
-                                            <li>
-                                                <div class="review-title">
-                                                    <h3>themes</h3>
-                                                </div>
-                                                <div class="review-left">
-                                                    <div class="review-rating">
-                                                        <span>Price</span>
-                                                        <div class="rating-result">
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="review-rating">
-                                                        <span>Value</span>
-                                                        <div class="rating-result">
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="review-rating">
-                                                        <span>Quality</span>
-                                                        <div class="rating-result">
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                            <a href="#"><i class="fa fa-star"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="review-right">
-                                                    <div class="review-content">
-                                                        <h4>themes </h4>
-                                                    </div>
-                                                    <div class="review-details">
-                                                        <p class="review-author">Review by<a href="#">plaza</a></p>
-                                                        <p class="review-date">Posted on <span>12/9/16</span></p>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
                                         <div class="review-add">
                                             <h3>You're reviewing:</h3>
                                             <h4>Joust Duffle Bag</h4>
                                         </div>
                                         <div class="review-field-ratings">
                                             <span>Your Rating <sup>*</sup></span>
-                                            <div class="control">
-                                                <div class="single-control">
-                                                    <span>Value</span>
-                                                    <div class="review-control-vote">
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                    </div>
-                                                </div>
-                                                <div class="single-control">
-                                                    <span>Quality</span>
-                                                    <div class="review-control-vote">
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                    </div>
-                                                </div>
-                                                <div class="single-control">
-                                                    <span>Price</span>
-                                                    <div class="review-control-vote">
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                        <a href="#"><i class="fa fa-star"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                         <div class="review-form">
                                             <div class="single-form">
@@ -268,6 +193,70 @@
                                         <div class="review-form-button">
                                             <a href="#">Submit Review</a>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="Qna">
+                                    <div class="valu valu-2">
+                                        <!-- Tieu de khu vuc hoi dap -->
+                                        <div class="section-title mb-30 mt-30">
+                                            <h2>Questions & Answers</h2>
+                                        </div>
+
+                                        <!-- Thong bao khi chua co cau hoi -->
+                                        <c:if test="${empty qnaQuestions}">
+                                            <p>Chưa có câu hỏi nào cho sản phẩm này.</p>
+                                        </c:if>
+
+                                        <!-- Lap danh sach cau hoi -->
+                                        <c:forEach items="${qnaQuestions}" var="q">
+                                            <div class="mb-3" style="border:1px solid #eee; padding:12px; border-radius:6px;">
+                                                <p><strong>Q:</strong> ${q.content}</p>
+                                                <p style="font-size:12px; color:#777;">by ${q.user.fullName} - ${q.createdDate}</p>
+
+                                                <!-- Lay danh sach cau tra loi cua cau hoi hien tai -->
+                                                <c:set var="ansList" value="${answersByQuestion[q.id]}" />
+
+                                                <!-- Thong bao khi cau hoi chua co cau tra loi -->
+                                                <c:if test="${empty ansList}">
+                                                    <p><em>Chưa có câu trả lời.</em></p>
+                                                </c:if>
+
+                                                <!-- Lap danh sach cau tra loi -->
+                                                <c:forEach items="${ansList}" var="a">
+                                                    <div style="margin-left:20px; background:#f9f9f9; padding:8px; border-radius:4px; margin-bottom:8px;">
+                                                        <p><strong>A:</strong> ${a.content}</p>
+                                                        <p style="font-size:12px; color:#777;">by ${a.user.fullName} - ${a.createdDate}</p>
+                                                    </div>
+                                                </c:forEach>
+
+                                                <!-- Form tra loi (chi hien khi da dang nhap) -->
+                                                <c:if test="${sessionScope.account != null}">
+                                                    <form action="${pageContext.request.contextPath}/qna?action=answer" method="post" style="margin-top:10px;">
+                                                        <input type="hidden" name="productId" value="${product.id}">
+                                                        <input type="hidden" name="questionId" value="${q.id}">
+                                                        <textarea name="content" class="form-control" rows="2" placeholder="Viết câu trả lời..." required></textarea>
+                                                        <button type="submit" class="btn btn-sm btn-primary mt-2">Trả lời</button>
+                                                    </form>
+                                                </c:if>
+                                            </div>
+                                        </c:forEach>
+
+                                        <hr>
+
+                                        <!-- Form dat cau hoi -->
+                                        <c:choose>
+                                            <c:when test="${sessionScope.account != null}">
+                                                <h4>Đặt câu hỏi</h4>
+                                                <form action="${pageContext.request.contextPath}/qna?action=ask" method="post">
+                                                    <input type="hidden" name="productId" value="${product.id}">
+                                                    <textarea name="content" class="form-control" rows="3" placeholder="Nhập câu hỏi..." required></textarea>
+                                                    <button type="submit" class="btn btn-dark mt-2">Gửi câu hỏi</button>
+                                                </form>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <p>Vui lòng <a href="${pageContext.request.contextPath}/authen?action=login">đăng nhập</a> để đặt câu hỏi.</p>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </div>
                             </div>	
@@ -748,6 +737,16 @@
         <script src="${pageContext.request.contextPath}/js/plugins.js"></script>
         <!-- main js -->
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
+        <script>
+            (function () {
+                if (window.location.hash === "#qna" || window.location.hash === "#Qna") {
+                    var trigger = document.querySelector('a[href="#Qna"]');
+                    if (trigger && window.bootstrap && bootstrap.Tab) {
+                        bootstrap.Tab.getOrCreateInstance(trigger).show();
+                    }
+                }
+            })();
+        </script>
     </body>
 
     <!-- Mirrored from htmldemo.net/koparion/koparion/product-details.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 23 Feb 2024 17:30:51 GMT -->
