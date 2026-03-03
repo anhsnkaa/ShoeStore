@@ -6,9 +6,7 @@ package controller.homepage;
 
 import dal.implement.CategoryDAO;
 import dal.implement.ProductDAO;
-import dal.implement.ProductSizeDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +16,6 @@ import java.util.List;
 import model.Category;
 import model.PageControl;
 import model.Product;
-import model.ProductSize;
 
 /**
  *
@@ -26,24 +23,28 @@ import model.ProductSize;
  */
 public class HomeController extends HttpServlet {
 
+    // DAO chinh dung de lay du lieu san pham tren home.
     ProductDAO productDAO = new ProductDAO();
+    // DAO category cho bo loc category.
     CategoryDAO categoryDAO = new CategoryDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Khoi tao thong tin phan trang cho lan tai hien tai.
         PageControl pageControl = new PageControl();
 
-        //get ve list productDAO
+        // Lay danh sach san pham theo bo loc + sort.
         List<Product> listProduct = findProductDoGet(request, pageControl);
-        //get ve list categoryDAO
+        // Lay danh sach category de hien thi o sidebar.
         List<Category> listCategory = categoryDAO.getAllCategories();
 
-        //set vao listProduct, listProductSize, listCategory trong session
+        // Day du lieu vao session de jsp dung truc tiep.
         HttpSession session = request.getSession();
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listCategory", listCategory);
         session.setAttribute("pageControl", pageControl);
+        // Chuyen huong den trang home.jsp.
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
     }
 
@@ -58,6 +59,7 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Home chi xu ly GET, POST se chuyen ve GET.
         response.sendRedirect("home");
     }
 
@@ -71,10 +73,12 @@ public class HomeController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    // Xu ly tat ca bo loc/search/sort va tinh toan thong tin phan trang.
     private List<Product> findProductDoGet(HttpServletRequest request, PageControl pageControl) {
-        //get ve page
+        // Lay page tu request.
         String pageRaw = request.getParameter("page");
-        //valid page
+
+        // Validate page.
         int page;
         int pageSize = 12;
         try {
@@ -85,45 +89,124 @@ public class HomeController extends HttpServlet {
         } catch (NumberFormatException e) {
             page = 1;
         }
-        //get ve search
+
+        // Lay action search hien tai.
         String actionSearch = request.getParameter("search") == null
                 ? "default" : request.getParameter("search");
-        //get ve listProductDAO
+
+        // Chuan hoa gia tri sort de dung cho query.
+        String sort = normalizeSort(request.getParameter("sort"));
+
+        // Bien chua ket qua san pham.
         List<Product> product;
-        //get ve requestUrl
+
+        // URL hien tai de tao pattern cho pagination.
         String requestURL = request.getRequestURL().toString();
         int totalRecord = 0;
+        String sortQuery = buildSortQuery(sort);
+
         switch (actionSearch) {
             case "category":
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
                 totalRecord = productDAO.getTotalRecordByCategory(categoryId);
-                product = productDAO.getProductByCategory(categoryId, page);
-                pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + "&");
+                product = productDAO.getProductByCategory(categoryId, page, sort);
+                pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
                 break;
             case "searchByKeyword":
                 String keyword = request.getParameter("keyword");
                 totalRecord = productDAO.getTotalRecordByKeyword(keyword);
-                product = productDAO.getProductByKeyword(keyword, page);
-                pageControl.setUrlPattern(requestURL + "?search=searchByKeyword&keyword=" + keyword + "&");
+                product = productDAO.getProductByKeyword(keyword, page, sort);
+                pageControl.setUrlPattern(requestURL + "?search=searchByKeyword&keyword=" + keyword + sortQuery + "&");
                 break;
             case "gender":
                 String gender = request.getParameter("gender");
                 totalRecord = productDAO.getTotalRecordByGender(gender);
-                product = productDAO.getProductByGender(gender, page);
-                pageControl.setUrlPattern(requestURL + "?search=gender&gender=" + gender + "&");
+                product = productDAO.getProductByGender(gender, page, sort);
+                pageControl.setUrlPattern(requestURL + "?search=gender&gender=" + gender + sortQuery + "&");
+                break;
+            case "price":
+                double min = parseDoubleOrDefault(request.getParameter("min"), 0);
+                Double max = parseNullableDouble(request.getParameter("max"));
+
+                if (max != null && max < min) {
+                    double temp = min;
+                    min = max;
+                    max = temp;
+                }
+
+                totalRecord = productDAO.getTotalRecordByPriceRange(min, max);
+                product = productDAO.getProductByPriceRange(min, max, page, sort);
+
+                StringBuilder pattern = new StringBuilder(requestURL)
+                        .append("?search=price&min=")
+                        .append(min);
+
+                if (max != null) {
+                    pattern.append("&max=").append(max);
+                }
+
+                pattern.append(sortQuery);
+
+                pattern.append("&");
+                pageControl.setUrlPattern(pattern.toString());
                 break;
             default:
-                product = productDAO.getAllProductsPaging(page);
+                product = productDAO.getAllProductsPaging(page, sort);
                 totalRecord = productDAO.getTotalProducts();
-                pageControl.setUrlPattern(requestURL + "?");
+                pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
         }
-        //total page
+
+        // Tinh tong page.
         int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
 
-        //set total record, total page, page vao page control
+        // Set thong tin phan trang cho view.
         pageControl.setPage(page);
         pageControl.setTotalPage(totalPage);
         pageControl.setTotalRecord(totalRecord);
         return product;
+    }
+
+    // Parse double va tra gia tri mac dinh neu loi.
+    private double parseDoubleOrDefault(String raw, double defaultValue) {
+        try {
+            return Double.parseDouble(raw);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    // Parse double co the null (dung cho max gia).
+    private Double parseNullableDouble(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            return Double.parseDouble(raw);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Chuan hoa sort de chi chap nhan cac gia tri hop le.
+    private String normalizeSort(String rawSort) {
+        if (rawSort == null || rawSort.isBlank()) {
+            return null;
+        }
+
+        switch (rawSort) {
+            case "nameAsc":
+            case "nameDesc":
+            case "priceAsc":
+            case "priceDesc":
+                return rawSort;
+            default:
+                return null;
+        }
+    }
+
+    // Tao query-string cho sort de giu trang thai khi loc + phan trang.
+    private String buildSortQuery(String sort) {
+        return sort == null ? "" : "&sort=" + sort;
     }
 }

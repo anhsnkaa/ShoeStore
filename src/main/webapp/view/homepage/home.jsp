@@ -107,11 +107,11 @@
                             </div>
                             <div class="left-menu mb-30">
                                 <ul>
-                                    <li><a href="#">$0.00-$9.99<span>(1)</span></a></li>
-                                    <li><a href="#">$30.00-$39.99<span>(11)</span></a></li>
-                                    <li><a href="#">$40.00-$49.99<span>(2)</span></a></li>
-                                    <li><a href="#">$50.00-$59.99<span>(3)</span></a></li>
-                                    <li><a href="#">$70.00-and above<span>(1)</span></a></li>
+                                    <li><a href="home?search=price&min=0&max=9.99">$0.00-$9.99</a></li>
+                                    <li><a href="home?search=price&min=30&max=39.99">$30.00-$39.99</a></li>
+                                    <li><a href="home?search=price&min=40&max=49.99">$40.00-$49.99</a></li>
+                                    <li><a href="home?search=price&min=50&max=59.99">$50.00-$59.99</a></li>
+                                    <li><a href="home?search=price&min=70">$70.00-and above</a></li>
                                 </ul>
                             </div>
                             <div class="left-title mb-20">
@@ -301,12 +301,35 @@
                             </div>
                             <div class="toolbar-sorter">
                                 <span>Sort By</span>
-                                <select id="sorter" class="sorter-options" data-role="sorter">
-                                    <option selected="selected" value="position"> Position </option>
-                                    <option value="name"> Product Name </option>
-                                    <option value="price"> Price </option>
-                                </select>
-                                <a href="#"><i class="fa fa-arrow-up"></i></a>
+                                <!-- Form sort de submit GET va giu lai bo loc hien tai -->
+                                <form action="home" method="get" class="d-inline">
+                                    <c:if test="${not empty param.search}">
+                                        <input type="hidden" name="search" value="${param.search}"/>
+                                    </c:if>
+                                    <c:if test="${not empty param.categoryId}">
+                                        <input type="hidden" name="categoryId" value="${param.categoryId}"/>
+                                    </c:if>
+                                    <c:if test="${not empty param.keyword}">
+                                        <input type="hidden" name="keyword" value="${param.keyword}"/>
+                                    </c:if>
+                                    <c:if test="${not empty param.gender}">
+                                        <input type="hidden" name="gender" value="${param.gender}"/>
+                                    </c:if>
+                                    <c:if test="${not empty param.min}">
+                                        <input type="hidden" name="min" value="${param.min}"/>
+                                    </c:if>
+                                    <c:if test="${not empty param.max}">
+                                        <input type="hidden" name="max" value="${param.max}"/>
+                                    </c:if>
+
+                                    <select id="sorter" name="sort" class="sorter-options" data-role="sorter" onchange="this.form.submit()">
+                                        <option value="" ${empty param.sort ? 'selected="selected"' : ''}>Position</option>
+                                        <option value="nameAsc" ${param.sort == 'nameAsc' ? 'selected="selected"' : ''}>Product Name A-Z</option>
+                                        <option value="nameDesc" ${param.sort == 'nameDesc' ? 'selected="selected"' : ''}>Product Name Z-A</option>
+                                        <option value="priceAsc" ${param.sort == 'priceAsc' ? 'selected="selected"' : ''}>Price Low To High</option>
+                                        <option value="priceDesc" ${param.sort == 'priceDesc' ? 'selected="selected"' : ''}>Price High To Low</option>
+                                    </select>
+                                </form>
                             </div>
                         </div>
                         <!-- tab-area-start -->

@@ -35,6 +35,9 @@
         <div class="card-header">
             <i class="fas fa-table"></i>
             Order Management
+            <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-sm btn-secondary float-right">
+                Back To Dashboard
+            </a>
         </div>
         <div class="card-body">
             <div class="table-responsive">

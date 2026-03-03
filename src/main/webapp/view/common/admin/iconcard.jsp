@@ -44,7 +44,7 @@
                 <div class="card-body-icon">
                     <i class="fas fa-fw fa-shopping-cart"></i>
                 </div>
-                <div class="mr-5">123 New Orders!</div>
+                <div class="mr-5">${empty orderCount ? 0 : orderCount} New Orders!</div>
             </div>
             <a class="card-footer text-white clearfix small z-1" href="${pageContext.request.contextPath}/admin/order">
                 <span class="float-left">View Orders</span>

@@ -5,6 +5,7 @@
 package controller.admin;
 
 import dal.implement.CategoryDAO;
+import dal.implement.OrderDAO;
 import dal.implement.ProductDAO;
 import dal.implement.ProductSizeDAO;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class DashboardServerlet extends HttpServlet {
     ProductSizeDAO productSizeDAO = new ProductSizeDAO();
     ProductDAO productDAO = new ProductDAO();
     CategoryDAO categoryDAO = new CategoryDAO();
+    OrderDAO orderDAO = new OrderDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -99,8 +101,10 @@ public class DashboardServerlet extends HttpServlet {
         List<Product> listProduct = productDAO.getAllProducts();
         //get ve list categoryDAO
         List<Category> listCategory = categoryDAO.getAllCategories();
+        int orderCount = orderDAO.getAllOrders().size();
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listCategory", listCategory);
+        request.setAttribute("orderCount", orderCount);
         request.getRequestDispatcher("../view/admin/dashboard.jsp").forward(request, response);
     }
 
