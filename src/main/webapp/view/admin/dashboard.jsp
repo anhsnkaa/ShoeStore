@@ -127,7 +127,7 @@
                                                     <button class="btn btn-danger btn-sm"
                                                             data-toggle="modal"
                                                             data-target="#deleteModal"
-                                                            onclick="setDeleteId(${p.id}, '${p.name}')"">
+                                                            onclick="setDeleteId(${p.id}, '${p.name}')">
                                                         Delete
                                                     </button>
                                                 </td>

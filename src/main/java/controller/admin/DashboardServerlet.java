@@ -108,9 +108,20 @@ public class DashboardServerlet extends HttpServlet {
         //get ve list categoryDAO
         List<Category> listCategory = categoryDAO.getAllCategories();
         int orderCount = orderDAO.getAllOrders().size();
+        long totalOrderCount = orderDAO.getTotalOrderCount();
+        double totalRevenue = orderDAO.getTotalRevenue();
+        double avgOrderValue = orderDAO.getAverageOrderValue();
+        double maxOrderValue = orderDAO.getMaxOrderValue();
+        double minOrderValue = orderDAO.getMinOrderValue();
+
+        request.setAttribute("totalOrderCount", totalOrderCount);
+        request.setAttribute("totalRevenue", totalRevenue);
+        request.setAttribute("avgOrderValue", avgOrderValue);
+        request.setAttribute("maxOrderValue", maxOrderValue);
+        request.setAttribute("minOrderValue", minOrderValue);
+        request.setAttribute("orderCount", orderCount);
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listCategory", listCategory);
-        request.setAttribute("orderCount", orderCount);
         request.setAttribute("notificationCount", notificationCount);
         request.getRequestDispatcher("../view/admin/dashboard.jsp").forward(request, response);
     }

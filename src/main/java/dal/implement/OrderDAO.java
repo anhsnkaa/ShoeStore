@@ -136,4 +136,73 @@ public class OrderDAO {
             em.close();
         }
     }
+
+    public long getTotalOrderCount() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Long total = em.createQuery(
+                    "SELECT COUNT(o) FROM Order o",
+                    Long.class
+            ).getSingleResult();
+            return total == null ? 0L : total;
+        } finally {
+            em.close();
+        }
+    }
+
+    public double getTotalRevenue() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Double total = em.createQuery(
+                    "SELECT SUM(o.totalAmount) FROM Order o "
+                    + "WHERE o.status IN ('CONFIRMED', 'SHIPPING', 'DONE')",
+                    Double.class
+            ).getSingleResult();
+            return total == null ? 0.0 : total;
+        } finally {
+            em.close();
+        }
+    }
+
+    public double getAverageOrderValue() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Double avg = em.createQuery(
+                    "SELECT AVG(o.totalAmount) FROM Order o "
+                    + "WHERE o.status IN ('CONFIRMED', 'SHIPPING', 'DONE')",
+                    Double.class
+            ).getSingleResult();
+            return avg == null ? 0.0 : avg;
+        } finally {
+            em.close();
+        }
+    }
+
+    public double getMaxOrderValue() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Double max = em.createQuery(
+                    "SELECT MAX(o.totalAmount) FROM Order o "
+                    + "WHERE o.status IN ('CONFIRMED', 'SHIPPING', 'DONE')",
+                    Double.class
+            ).getSingleResult();
+            return max == null ? 0.0 : max;
+        } finally {
+            em.close();
+        }
+    }
+
+    public double getMinOrderValue() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Double min = em.createQuery(
+                    "SELECT MIN(o.totalAmount) FROM Order o "
+                    + "WHERE o.status IN ('CONFIRMED', 'SHIPPING', 'DONE')",
+                    Double.class
+            ).getSingleResult();
+            return min == null ? 0.0 : min;
+        } finally {
+            em.close();
+        }
+    }
 }

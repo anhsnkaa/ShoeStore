@@ -68,6 +68,10 @@
         <servlet-name>QnaAdminServerlet</servlet-name>
         <servlet-class>controller.admin.QnaAdminServerlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReportAdminServerlet</servlet-name>
+        <servlet-class>controller.admin.ReportAdminServerlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -107,6 +111,10 @@
     <servlet-mapping>
         <servlet-name>QnaAdminServerlet</servlet-name>
         <url-pattern>/admin/qna</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReportAdminServerlet</servlet-name>
+        <url-pattern>/admin/report</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
