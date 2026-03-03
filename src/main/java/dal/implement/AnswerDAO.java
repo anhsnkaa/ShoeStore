@@ -121,4 +121,17 @@ public class AnswerDAO {
             em.close();
         }
     }
+
+    public int getPendingAnswerCount() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Long total = em.createQuery(
+                    "SELECT COUNT(a) FROM Answer a WHERE a.status = 'PENDING'",
+                    Long.class
+            ).getSingleResult();
+            return total.intValue();
+        } finally {
+            em.close();
+        }
+    }
 }

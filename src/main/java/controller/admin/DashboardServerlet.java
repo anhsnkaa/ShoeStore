@@ -4,10 +4,12 @@
  */
 package controller.admin;
 
+import dal.implement.AnswerDAO;
 import dal.implement.CategoryDAO;
 import dal.implement.OrderDAO;
 import dal.implement.ProductDAO;
 import dal.implement.ProductSizeDAO;
+import dal.implement.QuestionDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -30,12 +32,16 @@ public class DashboardServerlet extends HttpServlet {
     ProductDAO productDAO = new ProductDAO();
     CategoryDAO categoryDAO = new CategoryDAO();
     OrderDAO orderDAO = new OrderDAO();
+    QuestionDAO questionDAO = new QuestionDAO();
+    AnswerDAO answerDAO = new AnswerDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
+        int pendingQuestionCount = questionDAO.getPendingQuestionCount();
+        int pendingAnswerCount = answerDAO.getPendingAnswerCount();
+        int notificationCount = pendingQuestionCount + pendingAnswerCount;
         String action = request.getParameter("action");
         if ("getImages".equals(action)) {
 
@@ -105,6 +111,7 @@ public class DashboardServerlet extends HttpServlet {
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listCategory", listCategory);
         request.setAttribute("orderCount", orderCount);
+        request.setAttribute("notificationCount", notificationCount);
         request.getRequestDispatcher("../view/admin/dashboard.jsp").forward(request, response);
     }
 
