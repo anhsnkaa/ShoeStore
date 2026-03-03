@@ -46,8 +46,8 @@
                 </div>
                 <div class="mr-5">123 New Orders!</div>
             </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
-                <span class="float-left">View Details</span>
+            <a class="card-footer text-white clearfix small z-1" href="${pageContext.request.contextPath}/admin/order">
+                <span class="float-left">View Orders</span>
                 <span class="float-right">
                     <i class="fas fa-angle-right"></i>
                 </span>

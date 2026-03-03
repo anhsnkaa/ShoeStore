@@ -60,6 +60,10 @@ public class AuthenticationController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException { //get ve action
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+
         String action = request.getParameter("action") != null ? request.getParameter("action") : "";
         //dựa theo action để xử lý request
         String url;
@@ -108,7 +112,10 @@ public class AuthenticationController extends HttpServlet {
     }
 
     private String logOut(HttpServletRequest request, HttpServletResponse response) {
-        request.getSession().removeAttribute("account");
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate(); // xoa account + cart + moi du lieu session
+        }
         return "home";
     }
 

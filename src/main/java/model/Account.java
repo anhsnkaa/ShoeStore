@@ -22,15 +22,16 @@ public class Account {
     private String username;
 
     private String password;
-    
-    @Column(name = "full_name")
+
+    @Column(name = "full_name", columnDefinition = "NVARCHAR(150)")
     private String fullName;
-    
+
     @Column(unique = true)
     private String email;
 
     private String phone;
-
+    
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String address;
 
     private boolean status = true;
@@ -124,5 +125,5 @@ public class Account {
     public void setRole(Role role) {
         this.role = role;
     }
-    
+
 }
