@@ -71,7 +71,7 @@
                                 <td>${o.user.address}</td>
                                 <td>${o.status}</td>
                                 <td>$${o.totalAmount}</td>
-                                <td>${o.createdDate}</td>
+                                <td>${o.createdDateDisplay}</td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${o.status == 'PENDING'}">

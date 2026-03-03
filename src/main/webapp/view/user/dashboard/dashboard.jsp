@@ -71,7 +71,7 @@
                                                     <c:forEach items="${orders}" var="o">
                                                         <tr>
                                                             <td>#${o.id}</td>
-                                                            <td>${o.createdDate}</td>
+                                                            <td>${o.createdDateDisplay}</td>
                                                             <td>${o.status}</td>
                                                             <td>$${o.totalAmount}</td>
                                                             <td>

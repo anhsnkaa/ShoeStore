@@ -214,7 +214,7 @@
                                                 <p style="font-size:12px; color:#777;">
                                                     by ${q.user.fullName}
                                                     <c:if test="${q.user.role != null && q.user.role.id == 1}"> (Admin)</c:if>
-                                                    - ${q.createdDate}
+                                                    - ${q.createdDateDisplay}
                                                 </p>
 
                                                 <!-- Lay danh sach cau tra loi cua cau hoi hien tai -->
@@ -232,7 +232,7 @@
                                                         <p style="font-size:12px; color:#777;">
                                                             by ${a.user.fullName}
                                                             <c:if test="${a.user.role != null && a.user.role.id == 1}"> (Admin)</c:if>
-                                                            - ${a.createdDate}
+                                                            - ${a.createdDateDisplay}
                                                         </p>
                                                     </div>
                                                 </c:forEach>

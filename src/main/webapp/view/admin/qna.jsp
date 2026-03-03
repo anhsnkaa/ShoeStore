@@ -44,7 +44,7 @@
                                         <td>${q.product.name}</td>
                                         <td>${q.user.fullName}</td>
                                         <td>${q.content}</td>
-                                        <td>${q.createdDate}</td>
+                                        <td>${q.createdDateDisplay}</td>
                                         <td>
                                             <form action="${pageContext.request.contextPath}/admin/qna" method="post" class="d-inline">
                                                 <input type="hidden" name="action" value="approve-question"/>
@@ -99,7 +99,7 @@
                                         <td>${a.question.content}</td>
                                         <td>${a.user.fullName}</td>
                                         <td>${a.content}</td>
-                                        <td>${a.createdDate}</td>
+                                        <td>${a.createdDateDisplay}</td>
                                         <td>
                                             <a href="${pageContext.request.contextPath}/product-details?id=${a.question.product.id}#Qna" target="_blank">
                                                 Open

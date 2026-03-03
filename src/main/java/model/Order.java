@@ -6,12 +6,15 @@ package model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "Orders")
 public class Order {
+
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,6 +95,11 @@ public class Order {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    @Transient
+    public String getCreatedDateDisplay() {
+        return createdDate == null ? "" : createdDate.format(DISPLAY_FORMATTER);
     }
 
     public Account getUser() {

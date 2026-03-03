@@ -60,7 +60,7 @@
                 <div class="card-body-icon">
                     <i class="fas fa-fw fa-life-ring"></i>
                 </div>
-                <div class="mr-5">${empty orderCount ? 0 : notificationCount} New Notification!</div>
+                <div class="mr-5">${empty notificationCount ? 0 : notificationCount} New Notification!</div>
             </div>
             <a class="card-footer text-white clearfix small z-1" href="${pageContext.request.contextPath}/admin/qna">
                 <span class="float-left">View Q&A</span>
