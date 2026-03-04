@@ -141,6 +141,26 @@ public class HomeController extends HttpServlet {
                 product = productDAO.getProductByGender(gender, page, sort);
                 pageControl.setUrlPattern(requestURL + "?search=gender&gender=" + gender + sortQuery + "&");
                 break;
+            case "collection":
+                String collection = normalizeCollection(request.getParameter("collection"));
+                String genderInCollection = normalizeGender(request.getParameter("gender"));
+                if (collection == null) {
+                    product = productDAO.getAllProductsPaging(page, sort);
+                    totalRecord = productDAO.getTotalProducts();
+                    pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
+                    break;
+                }
+
+                if (genderInCollection == null) {
+                    totalRecord = productDAO.getTotalRecordByCollection(collection);
+                    product = productDAO.getProductByCollection(collection, page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + collection + sortQuery + "&");
+                } else {
+                    totalRecord = productDAO.getTotalRecordByCollectionAndGender(collection, genderInCollection);
+                    product = productDAO.getProductByCollectionAndGender(collection, genderInCollection, page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + collection + "&gender=" + genderInCollection + sortQuery + "&");
+                }
+                break;
             case "price":
                 double min = parseDoubleOrDefault(request.getParameter("min"), 0);
                 Double max = parseNullableDouble(request.getParameter("max"));
@@ -238,5 +258,22 @@ public class HomeController extends HttpServlet {
         }
 
         return null;
+    }
+
+    private String normalizeCollection(String rawCollection) {
+        if (rawCollection == null || rawCollection.isBlank()) {
+            return null;
+        }
+
+        String normalized = rawCollection.trim().toUpperCase();
+        switch (normalized) {
+            case "SPRING":
+            case "SUMMER":
+            case "AUTUMN":
+            case "WINTER":
+                return normalized;
+            default:
+                return null;
+        }
     }
 }

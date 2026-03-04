@@ -7,6 +7,7 @@ package dal.implement;
 import dal.JPAUtil;
 import jakarta.persistence.*;
 import java.util.List;
+import model.CollectionSeason;
 import model.Gender;
 import model.Product;
 
@@ -130,6 +131,42 @@ public class ProductDAO {
         return list;
     }
 
+    public List<Product> getProductByCollection(String collection, int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.collectionSeason = :collection"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public List<Product> getProductByCollectionAndGender(String collection, String gender, int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.collectionSeason = :collection "
+                + "AND p.gender = :gender"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setParameter("gender", Gender.valueOf(gender))
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
     // Overload de giu tuong thich voi code cu.
     public List<Product> getProductByCategory(int categoryId, int page) {
         return getProductByCategory(categoryId, page, null);
@@ -225,6 +262,35 @@ public class ProductDAO {
                 + "WHERE p.category.id = :cid AND p.gender = :gender",
                 Long.class)
                 .setParameter("cid", categoryId)
+                .setParameter("gender", Gender.valueOf(gender))
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalRecordByCollection(String collection) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p WHERE p.collectionSeason = :collection",
+                Long.class)
+                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalRecordByCollectionAndGender(String collection, String gender) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.collectionSeason = :collection "
+                + "AND p.gender = :gender",
+                Long.class)
+                .setParameter("collection", CollectionSeason.valueOf(collection))
                 .setParameter("gender", Gender.valueOf(gender))
                 .getSingleResult();
 

@@ -99,17 +99,54 @@
                                 </ul>
                             </div>
                             <div class="left-title mb-20">
-                                <h4>Manufacturer</h4>
+                                <h4>Collection</h4>
                             </div>
                             <div class="left-menu mb-30">
                                 <ul>
-                                    <li><a href="#">Adidas<span>(4)</span></a></li>
-                                    <li><a href="#">Chanel<span>(7)</span></a></li>
-                                    <li><a href="#">DKNY <span>(3)</span></a></li>
-                                    <li><a href="#">Dolce<span>(3)</span></a></li>
-                                    <li><a href="#">Gabbana<span>(2)</span></a></li>
-                                    <li><a href="#">Nike<span>(3)</span></a></li>
-                                    <li><a href="#">Other <span>(1)</span></a></li>
+                                    <c:url var="springCollectionUrl" value="home">
+                                        <c:param name="search" value="collection"/>
+                                        <c:param name="collection" value="SPRING"/>
+                                        <c:if test="${not empty param.gender}">
+                                            <c:param name="gender" value="${param.gender}"/>
+                                        </c:if>
+                                        <c:if test="${not empty param.sort}">
+                                            <c:param name="sort" value="${param.sort}"/>
+                                        </c:if>
+                                    </c:url>
+                                    <c:url var="summerCollectionUrl" value="home">
+                                        <c:param name="search" value="collection"/>
+                                        <c:param name="collection" value="SUMMER"/>
+                                        <c:if test="${not empty param.gender}">
+                                            <c:param name="gender" value="${param.gender}"/>
+                                        </c:if>
+                                        <c:if test="${not empty param.sort}">
+                                            <c:param name="sort" value="${param.sort}"/>
+                                        </c:if>
+                                    </c:url>
+                                    <c:url var="autumnCollectionUrl" value="home">
+                                        <c:param name="search" value="collection"/>
+                                        <c:param name="collection" value="AUTUMN"/>
+                                        <c:if test="${not empty param.gender}">
+                                            <c:param name="gender" value="${param.gender}"/>
+                                        </c:if>
+                                        <c:if test="${not empty param.sort}">
+                                            <c:param name="sort" value="${param.sort}"/>
+                                        </c:if>
+                                    </c:url>
+                                    <c:url var="winterCollectionUrl" value="home">
+                                        <c:param name="search" value="collection"/>
+                                        <c:param name="collection" value="WINTER"/>
+                                        <c:if test="${not empty param.gender}">
+                                            <c:param name="gender" value="${param.gender}"/>
+                                        </c:if>
+                                        <c:if test="${not empty param.sort}">
+                                            <c:param name="sort" value="${param.sort}"/>
+                                        </c:if>
+                                    </c:url>
+                                    <li><a href="${springCollectionUrl}">Spring Collection</a></li>
+                                    <li><a href="${summerCollectionUrl}">Summer Collection</a></li>
+                                    <li><a href="${autumnCollectionUrl}">Autumn Collection</a></li>
+                                    <li><a href="${winterCollectionUrl}">Winter Collection</a></li>
                                 </ul>
                             </div>
                             <div class="left-title mb-20">
@@ -324,6 +361,9 @@
                                     </c:if>
                                     <c:if test="${not empty param.gender}">
                                         <input type="hidden" name="gender" value="${param.gender}"/>
+                                    </c:if>
+                                    <c:if test="${not empty param.collection}">
+                                        <input type="hidden" name="collection" value="${param.collection}"/>
                                     </c:if>
                                     <c:if test="${not empty param.min}">
                                         <input type="hidden" name="min" value="${param.min}"/>

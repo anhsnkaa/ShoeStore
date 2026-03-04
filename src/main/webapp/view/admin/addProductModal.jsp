@@ -44,6 +44,23 @@
                             </div>
                         </div>
                     </div>
+                    <!--Gender-->
+                    <div class="form-group">
+                        <label for="gender">Gender: </label>
+                        <select class="custom-select" id="gender" name="gender" required>
+                            <option value="MEN">Men</option>
+                            <option value="WOMEN">Women</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="collection">Collection: </label>
+                        <select class="custom-select" id="collection" name="collection" required>
+                            <option value="SPRING">Spring</option>
+                            <option value="SUMMER">Summer</option>
+                            <option value="AUTUMN">Autumn</option>
+                            <option value="WINTER">Winter</option>
+                        </select>
+                    </div>
                     <!--Image-->
                     <div class="form-group">
                         <label for="image">Image: </label>

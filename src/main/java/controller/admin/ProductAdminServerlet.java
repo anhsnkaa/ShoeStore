@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
+import model.CollectionSeason;
+import model.Gender;
 import model.Product;
 import model.ProductImage;
 import model.ProductSize;
@@ -61,6 +63,8 @@ public class ProductAdminServerlet extends HttpServlet {
             out.print("\"price\":" + p.getPrice() + ",");
             out.print("\"description\":\"" + p.getDescription() + "\",");
             out.print("\"categoryId\":" + p.getCategory().getId() + ",");
+            out.print("\"gender\":\"" + (p.getGender() == null ? "" : p.getGender().name()) + "\",");
+            out.print("\"collection\":\"" + (p.getCollectionSeason() == null ? "" : p.getCollectionSeason().name()) + "\",");
             out.print("\"sizes\":[");
 
             for (int i = 0; i < sizes.size(); i++) {
@@ -139,6 +143,14 @@ public class ProductAdminServerlet extends HttpServlet {
             String description = request.getParameter("description");
             //get categoryid
             int categoryId = Integer.parseInt(request.getParameter("category"));
+            Gender gender = parseGender(request.getParameter("gender"));
+            CollectionSeason collection = parseCollection(request.getParameter("collection"));
+            if (gender == null) {
+                gender = Gender.MEN;
+            }
+            if (collection == null) {
+                collection = CollectionSeason.SPRING;
+            }
             Category category = categoryDAO.findById(categoryId);
             //image
             // ===== CREATE PRODUCT =====
@@ -147,6 +159,8 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setPrice(price);
             product.setDescription(description);
             product.setCategory(category);
+            product.setGender(gender);
+            product.setCollectionSeason(collection);
 
             // ===== UPLOAD MULTIPLE IMAGES =====
             for (Part part : request.getParts()) {
@@ -218,6 +232,8 @@ public class ProductAdminServerlet extends HttpServlet {
             int price = Integer.parseInt(request.getParameter("price"));
             String description = request.getParameter("description");
             int categoryId = Integer.parseInt(request.getParameter("category"));
+            Gender gender = parseGender(request.getParameter("gender"));
+            CollectionSeason collection = parseCollection(request.getParameter("collection"));
 
             Category category = categoryDAO.findById(categoryId);
 
@@ -228,6 +244,12 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setPrice(price);
             product.setDescription(description);
             product.setCategory(category);
+            if (gender != null) {
+                product.setGender(gender);
+            }
+            if (collection != null) {
+                product.setCollectionSeason(collection);
+            }
 
             // ===== XỬ LÝ IMAGE =====
             for (Part part : request.getParts()) {
@@ -286,6 +308,30 @@ public class ProductAdminServerlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private Gender parseGender(String rawGender) {
+        if (rawGender == null || rawGender.isBlank()) {
+            return null;
+        }
+
+        try {
+            return Gender.valueOf(rawGender.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private CollectionSeason parseCollection(String rawCollection) {
+        if (rawCollection == null || rawCollection.isBlank()) {
+            return null;
+        }
+
+        try {
+            return CollectionSeason.valueOf(rawCollection.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 

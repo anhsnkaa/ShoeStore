@@ -287,6 +287,8 @@
                             $("#editPrice").val(data.price);
                             $("#editDescription").val(data.description);
                             $("#editCategory").val(data.categoryId);
+                            $("#editGender").val(data.gender || "MEN");
+                            $("#editCollection").val(data.collection || "SPRING");
 
                             let html = "";
 

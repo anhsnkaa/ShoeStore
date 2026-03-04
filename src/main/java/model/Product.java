@@ -25,6 +25,10 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "collection")
+    private CollectionSeason collectionSeason;
+
     // 🔥 Giảm giá (%)
     private Double discount;
 
@@ -56,6 +60,7 @@ public class Product {
         this.createdDate = LocalDateTime.now();
         this.discount = 0.0;
         this.featured = false;
+        this.collectionSeason = CollectionSeason.SPRING;
     }
 
     // ===== BUSINESS METHOD =====
@@ -123,6 +128,14 @@ public class Product {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public CollectionSeason getCollectionSeason() {
+        return collectionSeason;
+    }
+
+    public void setCollectionSeason(CollectionSeason collectionSeason) {
+        this.collectionSeason = collectionSeason;
     }
 
     public Double getDiscount() {
