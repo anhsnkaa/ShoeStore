@@ -88,6 +88,7 @@ public class DashboardServerlet extends HttpServlet {
                 ProductSize ps = sizes.get(i);
 
                 out.print("{");
+                out.print("\"color\":\"" + escapeJson(ps.getColor()) + "\",");
                 out.print("\"size\":" + ps.getSize() + ",");
                 out.print("\"quantity\":" + ps.getQuantity());
                 out.print("}");
@@ -135,5 +136,17 @@ public class DashboardServerlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
+    }
 
 }

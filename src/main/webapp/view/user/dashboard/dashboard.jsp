@@ -115,6 +115,7 @@
                                                                         <thead>
                                                                             <tr>
                                                                                 <th>Product</th>
+                                                                                <th>Color</th>
                                                                                 <th>Size</th>
                                                                                 <th>Qty</th>
                                                                                 <th>Price</th>
@@ -124,12 +125,13 @@
                                                                         <tbody>
                                                                             <c:if test="${empty o.orderDetails}">
                                                                                 <tr>
-                                                                                    <td colspan="5" class="text-center">No items in this order</td>
+                                                                                    <td colspan="6" class="text-center">No items in this order</td>
                                                                                 </tr>
                                                                             </c:if>
                                                                             <c:forEach items="${o.orderDetails}" var="od">
                                                                                 <tr>
                                                                                     <td>${od.product.name}</td>
+                                                                                    <td>${od.color}</td>
                                                                                     <td>${od.size}</td>
                                                                                     <td>${od.quantity}</td>
                                                                                     <td>$${od.price}</td>

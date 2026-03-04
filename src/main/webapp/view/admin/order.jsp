@@ -132,6 +132,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Product</th>
+                                                    <th>Color</th>
                                                     <th>Size</th>
                                                     <th>Qty</th>
                                                     <th>Price</th>
@@ -142,6 +143,7 @@
                                                 <c:forEach items="${o.orderDetails}" var="od">
                                                     <tr>
                                                         <td>${od.product.name}</td>
+                                                        <td>${od.color}</td>
                                                         <td>${od.size}</td>
                                                         <td>${od.quantity}</td>
                                                         <td>$${od.price}</td>

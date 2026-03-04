@@ -40,15 +40,8 @@
                         <label>Category</label>
                         <select class="form-control" name="category" id="editCategory">
                             <c:forEach items="${listCategory}" var="c">
-                                <option value="${c.id}">${c.name}</option>
+                                <option value="${c.id}">${c.name} <c:if test="${not empty c.gender and not empty c.gender.name}">(${c.gender.name})</c:if></option>
                             </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select class="form-control" name="gender" id="editGender" required>
-                            <option value="MEN">Men</option>
-                            <option value="WOMEN">Women</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -109,12 +102,18 @@
                                   name="description"
                                   id="editDescription"></textarea>
                     </div>
-                    <!-- Size table -->
+                    <!-- Variant table -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="mb-0">Color / Size / Quantity</label>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addVariantRow('editSizeTable')">Add variant</button>
+                    </div>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>Color</th>
                                 <th>Size</th>
                                 <th>Quantity</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="editSizeTable"></tbody>

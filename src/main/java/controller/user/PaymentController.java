@@ -86,6 +86,7 @@ public class PaymentController extends HttpServlet {
         //get ve product id va size id
         int productId = parseIntOrDefault(request.getParameter("productId"), -1);
         int sizeId = parseIntOrDefault(request.getParameter("sizeId"), -1);
+        String requestedColor = normalizeColor(request.getParameter("color"));
         //get ve quantity
         int quantity = Math.max(1, parseIntOrDefault(request.getParameter("quantity"), 1));
 
@@ -109,6 +110,16 @@ public class PaymentController extends HttpServlet {
             return;
         }
 
+        String selectedColor = normalizeColor(productSize.getColor());
+        if (selectedColor == null) {
+            selectedColor = requestedColor;
+        }
+
+        if (requestedColor != null && selectedColor != null && !requestedColor.equals(selectedColor)) {
+            setCartMessage(session, "error", "Selected color is invalid.");
+            return;
+        }
+
         int availableQuantity = Math.max(0, productSize.getQuantity());
         if (availableQuantity <= 0) {
             setCartMessage(session, "error", "Selected size is out of stock.");
@@ -119,7 +130,7 @@ public class PaymentController extends HttpServlet {
         boolean existsInCart = false;
 
         for (OrderDetail obj : cart.getOrderDetails()) {
-            if (obj.getProduct().getId() == productId && obj.getSize() == productSize.getSize()) {
+            if (isSameCartLine(obj, productId, productSize.getSize(), selectedColor)) {
                 int newQuantity = obj.getQuantity() + quantity;
                 if (newQuantity > availableQuantity) {
                     obj.setQuantity(availableQuantity);
@@ -137,6 +148,7 @@ public class PaymentController extends HttpServlet {
             od.setProduct(product);
             od.setPrice(product.getFinalPrice());
             od.setSize(productSize.getSize());
+            od.setColor(selectedColor);
             if (quantity > availableQuantity) {
                 od.setQuantity(availableQuantity);
                 limitedByStock = true;
@@ -172,6 +184,7 @@ public class PaymentController extends HttpServlet {
             //get ve product id
             int id = Integer.parseInt(request.getParameter("id"));
             int size = parseIntOrDefault(request.getParameter("size"), Integer.MIN_VALUE);
+            String color = normalizeColor(request.getParameter("color"));
             //get ve quantity
             int quantity = Math.max(1, Integer.parseInt(request.getParameter("quantity")));
             //lay ve cart
@@ -185,7 +198,8 @@ public class PaymentController extends HttpServlet {
             OrderDetail target = null;
             for (OrderDetail obj : cart.getOrderDetails()) {
                 if (obj.getProduct().getId() == id
-                        && (size == Integer.MIN_VALUE || obj.getSize() == size)) {
+                        && (size == Integer.MIN_VALUE || obj.getSize() == size)
+                        && (color == null || isSameColor(obj.getColor(), color))) {
                     target = obj;
                     break;
                 }
@@ -195,7 +209,7 @@ public class PaymentController extends HttpServlet {
                 return;
             }
 
-            int availableQuantity = getAvailableQuantity(target.getProduct().getId(), target.getSize());
+            int availableQuantity = getAvailableQuantity(target.getProduct().getId(), target.getSize(), target.getColor());
             if (availableQuantity <= 0) {
                 cart.getOrderDetails().remove(target);
                 setCartMessage(session, "error", "Product is out of stock and was removed from cart.");
@@ -217,6 +231,7 @@ public class PaymentController extends HttpServlet {
         HttpSession session = request.getSession();
         int id = Integer.parseInt(request.getParameter("id"));
         int size = parseIntOrDefault(request.getParameter("size"), Integer.MIN_VALUE);
+        String color = normalizeColor(request.getParameter("color"));
         Order cart = (Order) session.getAttribute("cart");
 
         // Neu cart null thi khong can xu ly tiep.
@@ -227,7 +242,8 @@ public class PaymentController extends HttpServlet {
         OrderDetail od = null;
         for (OrderDetail obj : cart.getOrderDetails()) {
             if (obj.getProduct().getId() == id
-                    && (size == Integer.MIN_VALUE || obj.getSize() == size)) {
+                    && (size == Integer.MIN_VALUE || obj.getSize() == size)
+                    && (color == null || isSameColor(obj.getColor(), color))) {
                 od = obj;
                 break;
             }
@@ -261,7 +277,7 @@ public class PaymentController extends HttpServlet {
 
         boolean adjustedByStock = false;
         for (OrderDetail od : cart.getOrderDetails()) {
-            int availableQuantity = getAvailableQuantity(od.getProduct().getId(), od.getSize());
+            int availableQuantity = getAvailableQuantity(od.getProduct().getId(), od.getSize(), od.getColor());
 
             if (availableQuantity <= 0) {
                 session.setAttribute("checkoutType", "error");
@@ -323,9 +339,42 @@ public class PaymentController extends HttpServlet {
         return total;
     }
 
-    private int getAvailableQuantity(int productId, int size) {
-        ProductSize ps = productSizeDAO.getByProductAndSize(productId, size);
+    private int getAvailableQuantity(int productId, int size, String color) {
+        ProductSize ps = productSizeDAO.getByProductSizeAndColor(productId, size, color);
         return ps == null ? 0 : Math.max(0, ps.getQuantity());
+    }
+
+    private boolean isSameCartLine(OrderDetail od, int productId, int size, String color) {
+        if (od == null || od.getProduct() == null) {
+            return false;
+        }
+
+        return od.getProduct().getId() == productId
+                && od.getSize() == size
+                && isSameColor(od.getColor(), color);
+    }
+
+    private boolean isSameColor(String a, String b) {
+        String colorA = normalizeColor(a);
+        String colorB = normalizeColor(b);
+
+        if (colorA == null && colorB == null) {
+            return true;
+        }
+
+        if (colorA == null || colorB == null) {
+            return false;
+        }
+
+        return colorA.equals(colorB);
+    }
+
+    private String normalizeColor(String rawColor) {
+        if (rawColor == null || rawColor.isBlank()) {
+            return null;
+        }
+
+        return rawColor.trim().toUpperCase();
     }
 
     private int parseIntOrDefault(String raw, int defaultValue) {

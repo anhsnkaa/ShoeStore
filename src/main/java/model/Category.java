@@ -25,6 +25,10 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 
+    @ManyToOne
+    @JoinColumn(name = "gender_id")
+    private Gender gender;
+
     public Category() {
     }
 
@@ -50,6 +54,14 @@ public class Category {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
     
 }

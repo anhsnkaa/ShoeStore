@@ -118,6 +118,8 @@
                                             <td class="product-name">
                                                 ${od.product.name}
                                                 <br>
+                                                <small>Color: ${od.color}</small>
+                                                <br>
                                                 <small>Size: ${od.size}</small>
                                             </td>
 
@@ -131,6 +133,7 @@
                                                 <form action="${pageContext.request.contextPath}/payment?action=change-quantity" method="POST">
                                                     <input type="hidden" name="id" value="${od.product.id}"/>
                                                     <input type="hidden" name="size" value="${od.size}"/>
+                                                    <input type="hidden" name="color" value="${od.color}"/>
                                                     <input type="number"
                                                            class="qty-input"
                                                            data-price="${od.price}"
@@ -152,6 +155,7 @@
                                                 <form action="${pageContext.request.contextPath}/payment?action=delete-product" method="POST">
                                                     <input type="hidden" name="id" value="${od.product.id}"/>
                                                     <input type="hidden" name="size" value="${od.size}"/>
+                                                    <input type="hidden" name="color" value="${od.color}"/>
                                                     <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
                                                         <i class="fa fa-times"></i>
                                                     </button>

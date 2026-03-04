@@ -36,21 +36,13 @@
                         <div class="input-group">
                             <select class="custom-select" id="category" name="category">
                                 <c:forEach items="${listCategory}" var="c">
-                                    <option value="${c.id}">${c.name}</option>
+                                    <option value="${c.id}">${c.name} <c:if test="${not empty c.gender and not empty c.gender.name}">(${c.gender.name})</c:if></option>
                                 </c:forEach>
                             </select>
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary" type="button">Category</button>
                             </div>
                         </div>
-                    </div>
-                    <!--Gender-->
-                    <div class="form-group">
-                        <label for="gender">Gender: </label>
-                        <select class="custom-select" id="gender" name="gender" required>
-                            <option value="MEN">Men</option>
-                            <option value="WOMEN">Women</option>
-                        </select>
                     </div>
                     <div class="form-group">
                         <label for="collection">Collection: </label>
@@ -103,31 +95,22 @@
                         <label for="description">Description:</label>
                         <textarea class="form-control" name="description"></textarea>
                     </div>
-                    <!-- Size & Quantity -->
+                    <!-- Color / Size / Quantity -->
                     <div class="form-group">
-                        <label>Size & Quantity</label>
-
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="mb-0">Color / Size / Quantity</label>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addVariantRow('addVariantTable')">Add variant</button>
+                        </div>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
+                                    <th>Color</th>
                                     <th>Size</th>
                                     <th>Quantity</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <c:forEach begin="36" end="44" var="s">
-                                    <tr>
-                                        <td>${s}</td>
-                                        <td>
-                                            <input type="number"
-                                                   name="sizeQty_${s}"
-                                                   class="form-control"
-                                                   min="0"
-                                                   value="0">
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
+                            <tbody id="addVariantTable"></tbody>
                         </table>
                     </div>
                 </form>
@@ -145,7 +128,6 @@
         let name = $('#nameInput').val();
 //        let author = $('#authorInput').val();
         let price = $('#priceInput').val();
-        let quantity = $('#quantityInput').val();
 
         //xoá thông báo lỗi hiện tại
         $('.error').html('');
@@ -174,6 +156,47 @@
             event.preventDefault();
         }
     }
+
+    function addVariantRow(tableId, colorValue, sizeValue, qtyValue) {
+        let tbody = document.getElementById(tableId);
+        if (!tbody) {
+            return;
+        }
+
+        let safeColor = String(colorValue || "")
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+        let tr = document.createElement("tr");
+        tr.innerHTML = ""
+                + "<td><input type='text' name='variantColor' class='form-control' value='" + safeColor + "' oninput='this.value = this.value.toUpperCase()' placeholder='EX: BLACK, INFERNO' required></td>"
+                + "<td><input type='number' name='variantSize' class='form-control' min='1' value='" + (sizeValue || 36) + "' required></td>"
+                + "<td><input type='number' name='variantQty' class='form-control' min='0' value='" + (qtyValue || 0) + "' required></td>"
+                + "<td><button type='button' class='btn btn-sm btn-outline-danger' onclick='removeVariantRow(this)'>Remove</button></td>";
+
+        tbody.appendChild(tr);
+    }
+
+    function removeVariantRow(button) {
+        let row = button.closest("tr");
+        if (!row) {
+            return;
+        }
+
+        let tbody = row.parentElement;
+        row.remove();
+
+        if (tbody && tbody.children.length === 0) {
+            addVariantRow(tbody.id);
+        }
+    }
+
+    (function initVariantRows() {
+        addVariantRow('addVariantTable', '', 36, 0);
+    })();
 
     function displayImages(input) {
 

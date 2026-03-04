@@ -41,7 +41,7 @@ public class HomeController extends HttpServlet {
         List<Product> listProduct = findProductDoGet(request, pageControl);
         // Lay danh sach category de hien thi o sidebar.
         List<Category> listCategory = selectedGender == null
-                ? categoryDAO.getAllCategories()
+                ? categoryDAO.getDistinctCategoriesByName()
                 : categoryDAO.getCategoriesByGender(selectedGender);
         List<String> listCollection = selectedGender == null
                 ? productDAO.getAllCollections()
@@ -120,8 +120,16 @@ public class HomeController extends HttpServlet {
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
                 String selectedGender = normalizeGender(request.getParameter("gender"));
                 if (selectedGender == null) {
-                    totalRecord = productDAO.getTotalRecordByCategory(categoryId);
-                    product = productDAO.getProductByCategory(categoryId, page, sort);
+                    Category category = categoryDAO.findById(categoryId);
+                    if (category == null || category.getName() == null || category.getName().isBlank()) {
+                        product = List.of();
+                        totalRecord = 0;
+                        pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
+                        break;
+                    }
+
+                    totalRecord = productDAO.getTotalRecordByCategoryName(category.getName());
+                    product = productDAO.getProductByCategoryName(category.getName(), page, sort);
                     pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
                 } else {
                     totalRecord = productDAO.getTotalRecordByCategoryAndGender(categoryId, selectedGender);

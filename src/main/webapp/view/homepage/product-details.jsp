@@ -122,6 +122,23 @@
 
                                                 <input type="hidden" name="productId" value="${product.id}">
 
+                                                <!-- COLOR -->
+                                                <div class="choose-color mb-3">
+                                                    <p>Color</p>
+                                                    <select id="colorSelect" name="color" class="form-control" required>
+                                                        <c:choose>
+                                                            <c:when test="${empty listColor}">
+                                                                <option value="" disabled selected>No color available</option>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <c:forEach items="${listColor}" var="colorName">
+                                                                    <option value="${colorName}">${colorName}</option>
+                                                                </c:forEach>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </select>
+                                                </div>
+
                                                 <!-- SIZE -->
                                                 <div class="choose-size mb-3">
                                                     <p>Size</p>
@@ -129,7 +146,7 @@
                                                         <c:forEach items="${listProductSize}" var="s">
                                                             <c:choose>
                                                                 <c:when test="${s.quantity > 0}">
-                                                                    <option value="${s.id}" data-qty="${s.quantity}">
+                                                                    <option value="${s.id}" data-color="${s.color}" data-qty="${s.quantity}">
                                                                         ${s.size} - Available ${s.quantity}
                                                                     </option>
                                                                 </c:when>
@@ -775,21 +792,37 @@
                 }
 
                 var sizeSelect = document.getElementById("sizeSelect");
+                var colorSelect = document.getElementById("colorSelect");
                 var qtyInput = document.getElementById("qtyInput");
                 var addToCartForm = document.getElementById("addToCartForm");
+                var submitButton = addToCartForm ? addToCartForm.querySelector("button[type='submit']") : null;
 
                 function syncMaxQuantity() {
                     if (!sizeSelect || !qtyInput || sizeSelect.selectedIndex < 0) {
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                        }
                         return;
                     }
 
                     var selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+                    if (!selectedOption || selectedOption.disabled) {
+                        qtyInput.setAttribute("max", "1");
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                        }
+                        return;
+                    }
+
                     var availableQty = parseInt(selectedOption.getAttribute("data-qty") || "1", 10);
                     if (isNaN(availableQty) || availableQty < 1) {
                         availableQty = 1;
                     }
 
                     qtyInput.setAttribute("max", String(availableQty));
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                    }
 
                     var currentQty = parseInt(qtyInput.value || "1", 10);
                     if (isNaN(currentQty) || currentQty < 1) {
@@ -799,14 +832,60 @@
                     }
                 }
 
-                if (sizeSelect) {
-                    sizeSelect.addEventListener("change", syncMaxQuantity);
+                function syncSizesByColor() {
+                    if (!colorSelect || !sizeSelect) {
+                        syncMaxQuantity();
+                        return;
+                    }
+
+                    var selectedColor = (colorSelect.value || "").trim().toUpperCase();
+                    var firstMatched = -1;
+
+                    for (var i = 0; i < sizeSelect.options.length; i++) {
+                        var option = sizeSelect.options[i];
+                        var optionColor = (option.getAttribute("data-color") || "").trim().toUpperCase();
+                        var matched = selectedColor === "" || optionColor === selectedColor;
+
+                        option.disabled = !matched;
+                        option.hidden = !matched;
+
+                        if (matched && firstMatched === -1) {
+                            firstMatched = i;
+                        }
+                    }
+
+                    if (firstMatched >= 0) {
+                        sizeSelect.selectedIndex = firstMatched;
+                        qtyInput.disabled = false;
+                    } else {
+                        qtyInput.disabled = true;
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                        }
+                    }
+
                     syncMaxQuantity();
                 }
 
+                if (sizeSelect) {
+                    sizeSelect.addEventListener("change", syncMaxQuantity);
+                }
+
+                if (colorSelect) {
+                    colorSelect.addEventListener("change", syncSizesByColor);
+                }
+
+                syncSizesByColor();
+
                 if (addToCartForm) {
                     addToCartForm.addEventListener("submit", function (event) {
-                        syncMaxQuantity();
+                        syncSizesByColor();
+
+                        if (!sizeSelect || sizeSelect.selectedIndex < 0 || sizeSelect.options[sizeSelect.selectedIndex].disabled) {
+                            event.preventDefault();
+                            alert("Please choose an available color and size.");
+                            return;
+                        }
 
                         var maxQty = parseInt(qtyInput.getAttribute("max") || "1", 10);
                         var enteredQty = parseInt(qtyInput.value || "1", 10);

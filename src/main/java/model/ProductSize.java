@@ -16,6 +16,9 @@ public class ProductSize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name = "color", columnDefinition = "NVARCHAR(100)")
+    private String color;
     
     private int size;
     
@@ -35,6 +38,13 @@ public class ProductSize {
         this.product = product;
     }
 
+    public ProductSize(String color, int size, int quantity, Product product) {
+        setColor(color);
+        this.size = size;
+        this.quantity = quantity;
+        this.product = product;
+    }
+
     public int getId() {
         return id;
     }
@@ -45,6 +55,19 @@ public class ProductSize {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        if (color == null || color.isBlank()) {
+            this.color = null;
+            return;
+        }
+
+        this.color = color.trim().toUpperCase();
     }
 
     public int getQuantity() {
@@ -65,7 +88,7 @@ public class ProductSize {
 
     @Override
     public String toString() {
-        return String.format("%s %s", size, quantity);
+        return String.format("%s %s %s", color, size, quantity);
     }
     
     

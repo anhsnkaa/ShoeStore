@@ -21,12 +21,13 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
-import model.Gender;
 import model.Product;
 import model.ProductImage;
 import model.ProductSize;
@@ -68,7 +69,11 @@ public class ProductAdminServerlet extends HttpServlet {
             out.print("\"price\":" + p.getPrice() + ",");
             out.print("\"description\":\"" + escapeJson(p.getDescription()) + "\",");
             out.print("\"categoryId\":" + p.getCategory().getId() + ",");
-            out.print("\"gender\":\"" + (p.getGender() == null ? "" : p.getGender().name()) + "\",");
+            String genderName = "";
+            if (p.getCategory() != null && p.getCategory().getGender() != null && p.getCategory().getGender().getName() != null) {
+                genderName = p.getCategory().getGender().getName();
+            }
+            out.print("\"gender\":\"" + escapeJson(genderName) + "\",");
             out.print("\"collection\":\"" + escapeJson(p.getCollectionSeason()) + "\",");
             out.print("\"featured\":" + Boolean.TRUE.equals(p.getFeatured()) + ",");
             out.print("\"discount\":" + (p.getDiscount() == null ? 0 : p.getDiscount()) + ",");
@@ -80,6 +85,7 @@ public class ProductAdminServerlet extends HttpServlet {
                 ProductSize ps = sizes.get(i);
 
                 out.print("{");
+                out.print("\"color\":\"" + escapeJson(ps.getColor()) + "\",");
                 out.print("\"size\":" + ps.getSize() + ",");
                 out.print("\"quantity\":" + ps.getQuantity());
                 out.print("}");
@@ -152,7 +158,6 @@ public class ProductAdminServerlet extends HttpServlet {
             String description = request.getParameter("description");
             //get categoryid
             int categoryId = Integer.parseInt(request.getParameter("category"));
-            Gender gender = parseGender(request.getParameter("gender"));
             String collection = parseCollection(request.getParameter("collection"));
             double discount = clampDiscount(parseDoubleOrDefault(request.getParameter("discount"), 0));
             boolean featured = request.getParameter("featured") != null;
@@ -168,10 +173,10 @@ public class ProductAdminServerlet extends HttpServlet {
                 saleEndAt = null;
             }
 
-            if (gender == null) {
-                gender = Gender.MEN;
-            }
             Category category = categoryDAO.findById(categoryId);
+            if (category == null) {
+                return;
+            }
             //image
             // ===== CREATE PRODUCT =====
             Product product = new Product();
@@ -179,7 +184,6 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setPrice(price);
             product.setDescription(description);
             product.setCategory(category);
-            product.setGender(gender);
             product.setCollectionSeason(collection);
             product.setDiscount(discount);
             product.setFeatured(featured);
@@ -191,23 +195,9 @@ public class ProductAdminServerlet extends HttpServlet {
             appendImagesToProduct(product, uploadedImagePaths);
 
             // ===== ADD SIZE =====
-            for (int s = 36; s <= 44; s++) {
-                String paramName = "sizeQty_" + s;
-                String qtyStr = request.getParameter(paramName);
-
-                if (qtyStr != null && !qtyStr.isEmpty()) {
-
-                    int quantity = Integer.parseInt(qtyStr);
-
-                    if (quantity > 0) {
-
-                        ProductSize ps = new ProductSize();
-                        ps.setSize(s);
-                        ps.setQuantity(quantity);
-
-                        product.addSize(ps);
-                    }
-                }
+            List<ProductSize> variants = parseVariantEntries(request, product);
+            for (ProductSize variant : variants) {
+                product.addSize(variant);
             }
             // LƯU PRODUCT 
             productDAO.addProduct(product);
@@ -228,7 +218,6 @@ public class ProductAdminServerlet extends HttpServlet {
             int price = Integer.parseInt(request.getParameter("price"));
             String description = request.getParameter("description");
             int categoryId = Integer.parseInt(request.getParameter("category"));
-            Gender gender = parseGender(request.getParameter("gender"));
             String collection = parseCollection(request.getParameter("collection"));
             double discount = clampDiscount(parseDoubleOrDefault(request.getParameter("discount"), 0));
             boolean featured = request.getParameter("featured") != null;
@@ -245,6 +234,9 @@ public class ProductAdminServerlet extends HttpServlet {
             }
 
             Category category = categoryDAO.findById(categoryId);
+            if (category == null) {
+                return;
+            }
 
             // 🔥 Lấy product cũ
             Product product = productDAO.getProductById(id);
@@ -253,9 +245,6 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setPrice(price);
             product.setDescription(description);
             product.setCategory(category);
-            if (gender != null) {
-                product.setGender(gender);
-            }
             product.setCollectionSeason(collection);
             product.setDiscount(discount);
             product.setFeatured(featured);
@@ -279,24 +268,10 @@ public class ProductAdminServerlet extends HttpServlet {
             productSizeDAO.deleteByProductId(id);
 
             // 2️⃣ INSERT SIZE MỚI
-            for (int s = 36; s <= 44; s++) {
-
-                String qtyStr = request.getParameter("sizeQty_" + s);
-
-                if (qtyStr != null && !qtyStr.isEmpty()) {
-
-                    int quantity = Integer.parseInt(qtyStr);
-
-                    if (quantity > 0) {
-
-                        ProductSize ps = new ProductSize();
-                        ps.setSize(s);
-                        ps.setQuantity(quantity);
-                        ps.setProduct(product);
-
-                        productSizeDAO.addProductSize(ps);
-                    }
-                }
+            List<ProductSize> variants = parseVariantEntries(request, product);
+            for (ProductSize variant : variants) {
+                variant.setProduct(product);
+                productSizeDAO.addProductSize(variant);
             }
 
         } catch (Exception e) {
@@ -304,16 +279,62 @@ public class ProductAdminServerlet extends HttpServlet {
         }
     }
 
-    private Gender parseGender(String rawGender) {
-        if (rawGender == null || rawGender.isBlank()) {
+    private List<ProductSize> parseVariantEntries(HttpServletRequest request, Product product) {
+        List<ProductSize> variants = new ArrayList<>();
+
+        String[] colors = request.getParameterValues("variantColor");
+        String[] sizes = request.getParameterValues("variantSize");
+        String[] quantities = request.getParameterValues("variantQty");
+
+        if (colors == null || sizes == null || quantities == null) {
+            return variants;
+        }
+
+        int len = Math.min(colors.length, Math.min(sizes.length, quantities.length));
+        Map<String, ProductSize> deduplicated = new LinkedHashMap<>();
+
+        for (int i = 0; i < len; i++) {
+            String color = normalizeColor(colors[i]);
+            int size = parseIntOrDefault(sizes[i], -1);
+            int quantity = parseIntOrDefault(quantities[i], 0);
+
+            if (color == null || size <= 0 || quantity <= 0) {
+                continue;
+            }
+
+            String key = color + "#" + size;
+            ProductSize existing = deduplicated.get(key);
+            if (existing != null) {
+                existing.setQuantity(existing.getQuantity() + quantity);
+                continue;
+            }
+
+            ProductSize ps = new ProductSize();
+            ps.setColor(color);
+            ps.setSize(size);
+            ps.setQuantity(quantity);
+            ps.setProduct(product);
+            deduplicated.put(key, ps);
+        }
+
+        variants.addAll(deduplicated.values());
+        return variants;
+    }
+
+    private int parseIntOrDefault(String raw, int defaultValue) {
+        try {
+            return Integer.parseInt(raw);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private String normalizeColor(String rawColor) {
+        if (rawColor == null || rawColor.isBlank()) {
             return null;
         }
 
-        try {
-            return Gender.valueOf(rawGender.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return rawColor.trim().toUpperCase();
     }
 
     private String parseCollection(String rawCollection) {

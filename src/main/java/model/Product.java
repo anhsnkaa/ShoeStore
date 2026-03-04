@@ -21,10 +21,6 @@ public class Product {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
-    // 🔥 Gender (Nam / Nữ)
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     @Column(name = "collection", columnDefinition = "NVARCHAR(100)")
     private String collectionSeason;
 
@@ -161,14 +157,6 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
     }
 
     public String getCollectionSeason() {

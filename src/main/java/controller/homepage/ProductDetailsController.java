@@ -50,6 +50,7 @@ public class ProductDetailsController extends HttpServlet {
 
         //get ve list productSizeDAO
         List<ProductSize> listProductSize = productSizeDAO.getSizesByProduct(id);
+        List<String> listColor = productSizeDAO.getColorsByProduct(id);
         Map<Integer, List<Answer>> answersByQuestion = new HashMap<>();
         for (Question q : qnaQuestions) {
             List<Answer> answers = answerDAO.getApprovedByQuestionId(q.getId());
@@ -59,6 +60,7 @@ public class ProductDetailsController extends HttpServlet {
         request.setAttribute("qnaQuestions", qnaQuestions);
         request.setAttribute("answersByQuestion", answersByQuestion);
         request.setAttribute("product", productFindById);
+        request.setAttribute("listColor", listColor);
         request.setAttribute("listProductSize", listProductSize);
         request.getRequestDispatcher("view/homepage/product-details.jsp").forward(request, response);
     }

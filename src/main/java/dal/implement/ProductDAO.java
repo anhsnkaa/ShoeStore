@@ -8,7 +8,6 @@ import dal.JPAUtil;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import model.Gender;
 import model.Product;
 
 /**
@@ -38,7 +37,11 @@ public class ProductDAO {
     public List<Product> getAllProductsPaging(int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
-        String jpql = "SELECT p FROM Product p" + buildOrderByClause(sort);
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 GROUP BY UPPER(p2.name)"
+                + ")"
+                + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
                 .setFirstResult((page - 1) * PAGE_SIZE)
@@ -115,14 +118,49 @@ public class ProductDAO {
 
     public List<Product> getProductByCategoryAndGender(int categoryId, String gender, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return List.of();
+        }
 
         String jpql = "SELECT p FROM Product p "
-                + "WHERE p.category.id = :cid AND p.gender = :gender"
+                + "WHERE p.category.id = :cid "
+                + "AND UPPER(p.category.gender.name) = :gender"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
                 .setParameter("cid", categoryId)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public List<Product> getProductByCategoryName(String categoryName, int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        String normalizedCategoryName = normalizeCategoryNameValue(categoryName);
+        if (normalizedCategoryName == null) {
+            em.close();
+            return List.of();
+        }
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE UPPER(p.category.name) = :cname "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE UPPER(p2.category.name) = :cname "
+                + "GROUP BY UPPER(p2.name)"
+                + ")"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("cname", normalizedCategoryName)
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
                 .getResultList();
@@ -141,7 +179,12 @@ public class ProductDAO {
         }
 
         String jpql = "SELECT p FROM Product p "
-                + "WHERE UPPER(p.collectionSeason) = :collection"
+                + "WHERE UPPER(p.collectionSeason) = :collection "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE UPPER(p2.collectionSeason) = :collection "
+                + "GROUP BY UPPER(p2.name)"
+                + ")"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
@@ -157,20 +200,21 @@ public class ProductDAO {
     public List<Product> getProductByCollectionAndGender(String collection, String gender, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
         String normalizedCollection = normalizeCollectionValue(collection);
+        String normalizedGender = normalizeGenderValue(gender);
 
-        if (normalizedCollection == null) {
+        if (normalizedCollection == null || normalizedGender == null) {
             em.close();
             return List.of();
         }
 
         String jpql = "SELECT p FROM Product p "
                 + "WHERE UPPER(p.collectionSeason) = :collection "
-                + "AND p.gender = :gender"
+                + "AND UPPER(p.category.gender.name) = :gender"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
                 .setParameter("collection", normalizedCollection)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
                 .getResultList();
@@ -183,7 +227,12 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         String jpql = "SELECT p FROM Product p "
-                + "WHERE p.featured = true"
+                + "WHERE p.featured = true "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE p2.featured = true "
+                + "GROUP BY UPPER(p2.name)"
+                + ")"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
@@ -197,14 +246,20 @@ public class ProductDAO {
 
     public List<Product> getHotProductsByGender(String gender, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return List.of();
+        }
 
         String jpql = "SELECT p FROM Product p "
                 + "WHERE p.featured = true "
-                + "AND p.gender = :gender"
+                + "AND UPPER(p.category.gender.name) = :gender"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
                 .getResultList();
@@ -220,7 +275,14 @@ public class ProductDAO {
         String jpql = "SELECT p FROM Product p "
                 + "WHERE p.discount > 0 "
                 + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
-                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now)"
+                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now) "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE p2.discount > 0 "
+                + "AND (p2.saleStartAt IS NULL OR p2.saleStartAt <= :now) "
+                + "AND (p2.saleEndAt IS NULL OR p2.saleEndAt >= :now) "
+                + "GROUP BY UPPER(p2.name)"
+                + ")"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
@@ -236,17 +298,23 @@ public class ProductDAO {
     public List<Product> getSaleProductsByGender(String gender, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
         LocalDateTime now = LocalDateTime.now();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return List.of();
+        }
 
         String jpql = "SELECT p FROM Product p "
                 + "WHERE p.discount > 0 "
                 + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
                 + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now) "
-                + "AND p.gender = :gender"
+                + "AND UPPER(p.category.gender.name) = :gender"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
                 .setParameter("now", now)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
                 .getResultList();
@@ -264,7 +332,14 @@ public class ProductDAO {
     public List<Product> getProductByKeyword(String keyword, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
-        String jpql = "SELECT p FROM Product p WHERE p.name LIKE :kw" + buildOrderByClause(sort);
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.name LIKE :kw "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE p2.name LIKE :kw "
+                + "GROUP BY UPPER(p2.name)"
+                + ")"
+                + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
                 .setParameter("kw", "%" + keyword + "%")
@@ -287,14 +362,28 @@ public class ProductDAO {
 
         List<Product> list;
         if (max == null) {
-            String jpql = "SELECT p FROM Product p WHERE p.price >= :min" + buildOrderByClause(sort);
+            String jpql = "SELECT p FROM Product p "
+                    + "WHERE p.price >= :min "
+                    + "AND p.id IN ("
+                    + "SELECT MIN(p2.id) FROM Product p2 "
+                    + "WHERE p2.price >= :min "
+                    + "GROUP BY UPPER(p2.name)"
+                    + ")"
+                    + buildOrderByClause(sort);
             list = em.createQuery(jpql, Product.class)
                     .setParameter("min", min)
                     .setFirstResult((page - 1) * PAGE_SIZE)
                     .setMaxResults(PAGE_SIZE)
                     .getResultList();
         } else {
-            String jpql = "SELECT p FROM Product p WHERE p.price >= :min AND p.price <= :max" + buildOrderByClause(sort);
+            String jpql = "SELECT p FROM Product p "
+                    + "WHERE p.price >= :min AND p.price <= :max "
+                    + "AND p.id IN ("
+                    + "SELECT MIN(p2.id) FROM Product p2 "
+                    + "WHERE p2.price >= :min AND p2.price <= :max "
+                    + "GROUP BY UPPER(p2.name)"
+                    + ")"
+                    + buildOrderByClause(sort);
             list = em.createQuery(jpql, Product.class)
                     .setParameter("min", min)
                     .setParameter("max", max)
@@ -333,7 +422,13 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p WHERE p.name LIKE :kw",
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.name LIKE :kw "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE p2.name LIKE :kw "
+                + "GROUP BY UPPER(p2.name)"
+                + ")",
                 Long.class)
                 .setParameter("kw", "%" + keyword + "%")
                 .getSingleResult();
@@ -344,13 +439,45 @@ public class ProductDAO {
 
     public int getTotalRecordByCategoryAndGender(int categoryId, String gender) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return 0;
+        }
 
         Long total = em.createQuery(
                 "SELECT COUNT(p) FROM Product p "
-                + "WHERE p.category.id = :cid AND p.gender = :gender",
+                + "WHERE p.category.id = :cid "
+                + "AND UPPER(p.category.gender.name) = :gender",
                 Long.class)
                 .setParameter("cid", categoryId)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalRecordByCategoryName(String categoryName) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedCategoryName = normalizeCategoryNameValue(categoryName);
+
+        if (normalizedCategoryName == null) {
+            em.close();
+            return 0;
+        }
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE UPPER(p.category.name) = :cname "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE UPPER(p2.category.name) = :cname "
+                + "GROUP BY UPPER(p2.name)"
+                + ")",
+                Long.class)
+                .setParameter("cname", normalizedCategoryName)
                 .getSingleResult();
 
         em.close();
@@ -367,7 +494,13 @@ public class ProductDAO {
         }
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p WHERE UPPER(p.collectionSeason) = :collection",
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE UPPER(p.collectionSeason) = :collection "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE UPPER(p2.collectionSeason) = :collection "
+                + "GROUP BY UPPER(p2.name)"
+                + ")",
                 Long.class)
                 .setParameter("collection", normalizedCollection)
                 .getSingleResult();
@@ -379,8 +512,9 @@ public class ProductDAO {
     public int getTotalRecordByCollectionAndGender(String collection, String gender) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
         String normalizedCollection = normalizeCollectionValue(collection);
+        String normalizedGender = normalizeGenderValue(gender);
 
-        if (normalizedCollection == null) {
+        if (normalizedCollection == null || normalizedGender == null) {
             em.close();
             return 0;
         }
@@ -388,10 +522,10 @@ public class ProductDAO {
         Long total = em.createQuery(
                 "SELECT COUNT(p) FROM Product p "
                 + "WHERE UPPER(p.collectionSeason) = :collection "
-                + "AND p.gender = :gender",
+                + "AND UPPER(p.category.gender.name) = :gender",
                 Long.class)
                 .setParameter("collection", normalizedCollection)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .getSingleResult();
 
         em.close();
@@ -415,15 +549,21 @@ public class ProductDAO {
 
     public List<String> getCollectionsByGender(String gender) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return List.of();
+        }
 
         List<String> list = em.createQuery(
                 "SELECT DISTINCT p.collectionSeason FROM Product p "
                 + "WHERE p.collectionSeason IS NOT NULL "
                 + "AND TRIM(p.collectionSeason) <> '' "
-                + "AND p.gender = :gender "
+                + "AND UPPER(p.category.gender.name) = :gender "
                 + "ORDER BY p.collectionSeason",
                 String.class)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .getResultList();
 
         em.close();
@@ -434,7 +574,13 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p WHERE p.featured = true",
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.featured = true "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE p2.featured = true "
+                + "GROUP BY UPPER(p2.name)"
+                + ")",
                 Long.class)
                 .getSingleResult();
 
@@ -444,13 +590,19 @@ public class ProductDAO {
 
     public int getTotalHotProductsByGender(String gender) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return 0;
+        }
 
         Long total = em.createQuery(
                 "SELECT COUNT(p) FROM Product p "
                 + "WHERE p.featured = true "
-                + "AND p.gender = :gender",
+                + "AND UPPER(p.category.gender.name) = :gender",
                 Long.class)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .getSingleResult();
 
         em.close();
@@ -465,7 +617,14 @@ public class ProductDAO {
                 "SELECT COUNT(p) FROM Product p "
                 + "WHERE p.discount > 0 "
                 + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
-                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now)",
+                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now) "
+                + "AND p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 "
+                + "WHERE p2.discount > 0 "
+                + "AND (p2.saleStartAt IS NULL OR p2.saleStartAt <= :now) "
+                + "AND (p2.saleEndAt IS NULL OR p2.saleEndAt >= :now) "
+                + "GROUP BY UPPER(p2.name)"
+                + ")",
                 Long.class)
                 .setParameter("now", now)
                 .getSingleResult();
@@ -477,16 +636,22 @@ public class ProductDAO {
     public int getTotalSaleProductsByGender(String gender) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
         LocalDateTime now = LocalDateTime.now();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return 0;
+        }
 
         Long total = em.createQuery(
                 "SELECT COUNT(p) FROM Product p "
                 + "WHERE p.discount > 0 "
                 + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
                 + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now) "
-                + "AND p.gender = :gender",
+                + "AND UPPER(p.category.gender.name) = :gender",
                 Long.class)
                 .setParameter("now", now)
-                .setParameter("gender", Gender.valueOf(gender))
+                .setParameter("gender", normalizedGender)
                 .getSingleResult();
 
         em.close();
@@ -501,13 +666,25 @@ public class ProductDAO {
         Long total;
         if (max == null) {
             total = em.createQuery(
-                    "SELECT COUNT(p) FROM Product p WHERE p.price >= :min",
+                    "SELECT COUNT(p) FROM Product p "
+                    + "WHERE p.price >= :min "
+                    + "AND p.id IN ("
+                    + "SELECT MIN(p2.id) FROM Product p2 "
+                    + "WHERE p2.price >= :min "
+                    + "GROUP BY UPPER(p2.name)"
+                    + ")",
                     Long.class)
                     .setParameter("min", min)
                     .getSingleResult();
         } else {
             total = em.createQuery(
-                    "SELECT COUNT(p) FROM Product p WHERE p.price >= :min AND p.price <= :max",
+                    "SELECT COUNT(p) FROM Product p "
+                    + "WHERE p.price >= :min AND p.price <= :max "
+                    + "AND p.id IN ("
+                    + "SELECT MIN(p2.id) FROM Product p2 "
+                    + "WHERE p2.price >= :min AND p2.price <= :max "
+                    + "GROUP BY UPPER(p2.name)"
+                    + ")",
                     Long.class)
                     .setParameter("min", min)
                     .setParameter("max", max)
@@ -524,7 +701,10 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p",
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.id IN ("
+                + "SELECT MIN(p2.id) FROM Product p2 GROUP BY UPPER(p2.name)"
+                + ")",
                 Long.class)
                 .getSingleResult();
 
@@ -563,11 +743,19 @@ public class ProductDAO {
     public List<Product> getProductByGender(String gender, int page, String sort) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
 
-        String jpql = "SELECT p FROM Product p WHERE p.gender = :gender" + buildOrderByClause(sort);
+        if (normalizedGender == null) {
+            em.close();
+            return List.of();
+        }
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE UPPER(p.category.gender.name) = :gender"
+                + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
-                .setParameter("gender", Gender.valueOf(gender)) // 🔥 QUAN TRỌNG
+                .setParameter("gender", normalizedGender)
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
                 .getResultList();
@@ -585,12 +773,18 @@ public class ProductDAO {
     public int getTotalRecordByGender(String gender) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedGender = normalizeGenderValue(gender);
+
+        if (normalizedGender == null) {
+            em.close();
+            return 0;
+        }
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p WHERE p.gender = :gender",
+                "SELECT COUNT(p) FROM Product p WHERE UPPER(p.category.gender.name) = :gender",
                 Long.class
         )
-                .setParameter("gender", Gender.valueOf(gender)) // 🔥 QUAN TRỌNG
+                .setParameter("gender", normalizedGender)
                 .getSingleResult();
 
         em.close();
@@ -618,6 +812,22 @@ public class ProductDAO {
     }
 
     private String normalizeCollectionValue(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+
+        return raw.trim().toUpperCase();
+    }
+
+    private String normalizeGenderValue(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+
+        return raw.trim().toUpperCase();
+    }
+
+    private String normalizeCategoryNameValue(String raw) {
         if (raw == null || raw.isBlank()) {
             return null;
         }

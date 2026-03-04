@@ -135,16 +135,24 @@ public class OrderDAO {
                     return -1;
                 }
 
+                String color = detail.getColor() == null ? null : detail.getColor().trim().toUpperCase();
+                if (color == null || color.isBlank()) {
+                    em.getTransaction().rollback();
+                    return -1;
+                }
+
                 int updated = em.createQuery(
                         "UPDATE ProductSize ps "
                         + "SET ps.quantity = ps.quantity - :qty "
                         + "WHERE ps.product.id = :pid "
                         + "AND ps.size = :size "
+                        + "AND UPPER(ps.color) = :color "
                         + "AND ps.quantity >= :qty"
                 )
                         .setParameter("qty", detail.getQuantity())
                         .setParameter("pid", detail.getProduct().getId())
                         .setParameter("size", detail.getSize())
+                        .setParameter("color", color)
                         .executeUpdate();
 
                 if (updated == 0) {
@@ -202,16 +210,24 @@ public class OrderDAO {
             }
 
             for (OrderDetail detail : order.getOrderDetails()) {
+                String color = detail.getColor() == null ? null : detail.getColor().trim().toUpperCase();
+                if (color == null || color.isBlank()) {
+                    em.getTransaction().rollback();
+                    return false;
+                }
+
                 int updated = em.createQuery(
                         "UPDATE ProductSize ps "
                         + "SET ps.quantity = ps.quantity - :qty "
                         + "WHERE ps.product.id = :pid "
                         + "AND ps.size = :size "
+                        + "AND UPPER(ps.color) = :color "
                         + "AND ps.quantity >= :qty"
                 )
                         .setParameter("qty", detail.getQuantity())
                         .setParameter("pid", detail.getProduct().getId())
                         .setParameter("size", detail.getSize())
+                        .setParameter("color", color)
                         .executeUpdate();
 
                 if (updated == 0) {

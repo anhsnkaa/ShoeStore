@@ -16,6 +16,9 @@ public class OrderDetail {
 
     private int size;
 
+    @Column(name = "color", columnDefinition = "NVARCHAR(100)")
+    private String color;
+
     private double price;   // snapshot price
 
     private int quantity;
@@ -52,6 +55,19 @@ public class OrderDetail {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        if (color == null || color.isBlank()) {
+            this.color = null;
+            return;
+        }
+
+        this.color = color.trim().toUpperCase();
     }
 
     public double getPrice() {

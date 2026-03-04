@@ -7,6 +7,7 @@
         
         <!-- Entity classes -->
         <class>model.Category</class>
+        <class>model.Gender</class>
         <class>model.Product</class>
         <class>model.ProductSize</class>
         <class>model.Account</class>

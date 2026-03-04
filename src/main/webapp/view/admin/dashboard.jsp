@@ -97,7 +97,7 @@
                                                 <th>Image</th>
                                                 <th>Price</th>
                                                 <th>Category</th>
-                                                <th>Size/Image</th>
+                                                <th>Variant/Image</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -124,14 +124,19 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>$${p.price}</td>
-                                                <td>${p.category.name}</td>
+                                                <td>
+                                                    ${p.category.name}
+                                                    <c:if test="${not empty p.category.gender and not empty p.category.gender.name}">
+                                                        (${p.category.gender.name})
+                                                    </c:if>
+                                                </td>
                                                 <td>
                                                     <div class="d-flex flex-column align-items-start">
                                                         <button class="btn btn-info btn-sm mb-1"
                                                                 data-toggle="modal"
                                                                 data-target="#sizeModal"
                                                                 onclick="loadSizes(${p.id})">
-                                                            View Sizes
+                                                            View Variants
                                                         </button>
                                                         <button class="btn btn-secondary btn-sm"
                                                                 data-toggle="modal"
@@ -189,7 +194,7 @@
                     <div class="modal-content">
 
                         <div class="modal-header">
-                            <h5 class="modal-title">Available Sizes</h5>
+                            <h5 class="modal-title">Available Variants</h5>
                             <button type="button" class="close" data-dismiss="modal">
                                 &times;
                             </button>
@@ -232,6 +237,7 @@
                     $.ajax({
                         url: "<%= request.getContextPath() %>/admin/dashboard",
                         type: "GET",
+                        dataType: "json",
                         data: {
                             action: "getSizes",
                             id: productId
@@ -241,12 +247,14 @@
                             var html = "";
                             html += "<table class='table table-bordered'>";
                             html += "<tr>";
+                            html += "<th>Color</th>";
                             html += "<th>Size</th>";
                             html += "<th>Quantity</th>";
                             html += "</tr>";
 
                             for (var i = 0; i < data.length; i++) {
                                 html += "<tr>";
+                                html += "<td>" + (data[i].color || "") + "</td>";
                                 html += "<td>" + data[i].size + "</td>";
                                 html += "<td>" + data[i].quantity + "</td>";
                                 html += "</tr>";
@@ -292,37 +300,21 @@
                             $("#editPrice").val(data.price);
                             $("#editDescription").val(data.description);
                             $("#editCategory").val(data.categoryId);
-                            $("#editGender").val(data.gender || "MEN");
                             $("#editCollection").val(data.collection || "");
                             $("#editFeatured").prop("checked", !!data.featured);
                             $("#editDiscount").val(data.discount || 0);
                             $("#editSaleStartAt").val(data.saleStartAt || "");
                             $("#editSaleEndAt").val(data.saleEndAt || "");
 
-                            let html = "";
+                            $("#editSizeTable").html("");
 
-                            for (let s = 36; s <= 44; s++) {
-
-                                let qty = 0;
-
-                                if (data.sizes) {
-                                    data.sizes.forEach(function (item) {
-                                        if (parseInt(item.size) == s) {
-                                            qty = item.quantity;
-                                        }
-                                    });
-                                }
-
-                                html +=
-                                        "<tr>" +
-                                        "<td>" + s + "</td>" +
-                                        "<td><input type='number' name='sizeQty_" + s +
-                                        "' value='" + qty +
-                                        "' class='form-control'></td>" +
-                                        "</tr>";
+                            if (data.sizes && data.sizes.length > 0) {
+                                data.sizes.forEach(function (item) {
+                                    addVariantRow("editSizeTable", item.color || "", item.size || 36, item.quantity || 0);
+                                });
+                            } else {
+                                addVariantRow("editSizeTable", "", 36, 0);
                             }
-
-                            $("#editSizeTable").html(html);
                         }
                     });
                 }
