@@ -40,13 +40,36 @@
             <jsp:include page="../common/admin/sidebar.jsp"></jsp:include>
                 <div id="content-wrapper">
 
-                    <div class="container-fluid">
+                     <div class="container-fluid">
 
-                        <!-- Breadcrumbs-->
-                    <jsp:include page="../common/admin/breadcrumbs.jsp"></jsp:include>
+                         <!-- Breadcrumbs-->
+                     <jsp:include page="../common/admin/breadcrumbs.jsp"></jsp:include>
 
-                        <!-- Icon Cards-->
-                    <jsp:include page="../common/admin/iconcard.jsp"></jsp:include>
+                        <c:if test="${not empty sessionScope.authMessage}">
+                            <c:choose>
+                                <c:when test="${sessionScope.authType == 'success'}">
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        ${sessionScope.authMessage}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        ${sessionScope.authMessage}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:remove var="authType" scope="session"/>
+                            <c:remove var="authMessage" scope="session"/>
+                        </c:if>
+
+                          <!-- Icon Cards-->
+                      <jsp:include page="../common/admin/iconcard.jsp"></jsp:include>
                         <!-- Area Chart Example-->
                         <div class="card mb-3">
                             <div class="card-header">
@@ -177,9 +200,9 @@
                 </div>
             </div>
             <!-- image modal-->
-            <div class="modal fade" id="imageModal" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
+             <div class="modal fade" id="imageModal" tabindex="-1">
+                 <div class="modal-dialog modal-lg">
+                     <div class="modal-content">
 
                         <div class="modal-header">
                             <h5 class="modal-title">Product Images</h5>
@@ -194,12 +217,12 @@
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </div>
+                     </div>
+                 </div>
+             </div>
 
-            <script>
-                function loadSizes(productId) {
+              <script>
+                  function loadSizes(productId) {
 
                     $.ajax({
                         url: "<%= request.getContextPath() %>/admin/dashboard",

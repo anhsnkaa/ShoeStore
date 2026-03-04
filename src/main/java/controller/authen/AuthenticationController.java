@@ -74,6 +74,12 @@ public class AuthenticationController extends HttpServlet {
             case "sign-up":
                 url = signUpDoPost(request, response);
                 break;
+            case "change-password":
+                changePasswordDoPost(request, response);
+                return;
+            case "update-profile":
+                updateProfileDoPost(request, response);
+                return;
             default:
                 url = "home";
         }
@@ -153,5 +159,118 @@ public class AuthenticationController extends HttpServlet {
 
             return "home";
         }
+    }
+
+    private void changePasswordDoPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("account") == null) {
+            response.sendRedirect(request.getContextPath() + "/authen?action=login");
+            return;
+        }
+        Account account = (Account) session.getAttribute("account");
+        String currentPassword = request.getParameter("currentPassword") == null ? "" : request.getParameter("currentPassword").trim();
+        String newPassword = request.getParameter("newPassword") == null ? "" : request.getParameter("newPassword").trim();
+        String confirmPassword = request.getParameter("confirmPassword") == null ? "" : request.getParameter("confirmPassword").trim();
+        String target = request.getParameter("target") == null ? "" : request.getParameter("target").trim();
+        String redirectUrl;
+        if ("admin".equals(target)) {
+            redirectUrl = request.getContextPath() + "/admin/dashboard";
+        } else if ("user".equals(target)) {
+            redirectUrl = request.getContextPath() + "/dashboard";
+        } else {
+            redirectUrl = (account.getRole() != null && account.getRole().getId() == 1)
+                    ? request.getContextPath() + "/admin/dashboard"
+                    : request.getContextPath() + "/dashboard";
+        }
+        if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Please fill all password fields.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        if (!account.getPassword().equals(currentPassword)) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Current password is incorrect.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Confirm password does not match.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        if (newPassword.length() < 6) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "New password must be at least 6 characters.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        boolean ok = accountDAO.updatePassword(account.getId(), newPassword);
+        if (!ok) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Change password failed.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        account.setPassword(newPassword);
+        session.setAttribute("account", account);
+        session.setAttribute("authType", "success");
+        session.setAttribute("authMessage", "Password changed successfully.");
+        response.sendRedirect(redirectUrl);
+    }
+
+    private void updateProfileDoPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("account") == null) {
+            response.sendRedirect(request.getContextPath() + "/authen?action=login");
+            return;
+        }
+        Account account = (Account) session.getAttribute("account");
+        String fullName = request.getParameter("fullName") == null ? "" : request.getParameter("fullName").trim();
+        String email = request.getParameter("email") == null ? "" : request.getParameter("email").trim();
+        String phone = request.getParameter("phone") == null ? "" : request.getParameter("phone").trim();
+        String address = request.getParameter("address") == null ? "" : request.getParameter("address").trim();
+        String target = request.getParameter("target") == null ? "" : request.getParameter("target").trim();
+        String redirectUrl;
+        if ("admin".equals(target)) {
+            redirectUrl = request.getContextPath() + "/admin/dashboard";
+        } else if ("user".equals(target)) {
+            redirectUrl = request.getContextPath() + "/dashboard";
+        } else {
+            redirectUrl = (account.getRole() != null && account.getRole().getId() == 1)
+                    ? request.getContextPath() + "/admin/dashboard"
+                    : request.getContextPath() + "/dashboard";
+        }
+        if (fullName.isEmpty() || email.isEmpty()) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Full name and email are required.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        if (accountDAO.isEmailExistsExceptId(account.getId(), email)) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Email already exists.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        Account updated = new Account();
+        updated.setId(account.getId());
+        updated.setFullName(fullName);
+        updated.setEmail(email);
+        updated.setPhone(phone);
+        updated.setAddress(address);
+        boolean ok = accountDAO.updateProfile(updated);
+        if (!ok) {
+            session.setAttribute("authType", "error");
+            session.setAttribute("authMessage", "Update profile failed.");
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+        Account fresh = accountDAO.findById(account.getId());
+        session.setAttribute("account", fresh);
+        session.setAttribute("authType", "success");
+        session.setAttribute("authMessage", "Profile updated successfully.");
+        response.sendRedirect(redirectUrl);
     }
 }

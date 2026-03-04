@@ -40,8 +40,31 @@
             <jsp:include page="../../common/user/sidebar.jsp"></jsp:include>
                 <div id="content-wrapper">
                     <div class="container-fluid">
-                        <c:choose>
-                            <c:when test="${not empty orders}">
+                        <c:if test="${not empty sessionScope.authMessage}">
+                            <c:choose>
+                                <c:when test="${sessionScope.authType == 'success'}">
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        ${sessionScope.authMessage}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        ${sessionScope.authMessage}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:remove var="authType" scope="session"/>
+                            <c:remove var="authMessage" scope="session"/>
+                        </c:if>
+
+                          <c:choose>
+                             <c:when test="${not empty orders}">
                             <!-- Breadcrumbs -->
                             <jsp:include page="../../common/user/breadcrumbs.jsp"></jsp:include>
                                 <!-- Icon Cards -->
@@ -283,6 +306,7 @@
                     }
                 }
         </script>
+
         <!-- Logout Modal-->
         <jsp:include page="../../common/user/logoutmodel.jsp"></jsp:include>
             <!-- Bootstrap core JavaScript-->

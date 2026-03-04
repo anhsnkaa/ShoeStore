@@ -89,6 +89,71 @@ public class AccountDAO {
             e.printStackTrace();
         } finally {
             em.close();
-        }   
+        }
+    }
+
+    public boolean updatePassword(int accountId, String newPassword) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Account acc = em.find(Account.class, accountId);
+            if (acc == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            acc.setPassword(newPassword);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean isEmailExistsExceptId(int accountId, String email) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            Long count = em.createQuery(
+                    "SELECT COUNT(a) FROM Account a WHERE a.email = :email AND a.id <> :id",
+                    Long.class
+            )
+                    .setParameter("email", email)
+                    .setParameter("id", accountId)
+                    .getSingleResult();
+            return count > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean updateProfile(Account updated) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Account acc = em.find(Account.class, updated.getId());
+            if (acc == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            acc.setFullName(updated.getFullName());
+            acc.setEmail(updated.getEmail());
+            acc.setPhone(updated.getPhone());
+            acc.setAddress(updated.getAddress());
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
     }
 }
