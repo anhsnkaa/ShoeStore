@@ -93,7 +93,6 @@
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th>Id</th>
                                                 <th>Name</th>
                                                 <th>Image</th>
                                                 <th>Price</th>
@@ -105,7 +104,6 @@
                                         <tbody>
                                         <c:forEach items="${listProduct}" var="p">
                                             <tr>
-                                                <td>${p.id}</td>
                                                 <td>
                                                     ${p.name}
                                                     <c:if test="${p.hot}">
@@ -128,18 +126,20 @@
                                                 <td>$${p.price}</td>
                                                 <td>${p.category.name}</td>
                                                 <td>
-                                                    <button class="btn btn-info btn-sm"
-                                                            data-toggle="modal"
-                                                            data-target="#sizeModal"
-                                                            onclick="loadSizes(${p.id})">
-                                                        View Sizes
-                                                    </button>
-                                                    <button class="btn btn-secondary btn-sm mt-1"
-                                                            data-toggle="modal"
-                                                            data-target="#imageModal"
-                                                            onclick="loadImages(${p.id})">
-                                                        View Images
-                                                    </button>
+                                                    <div class="d-flex flex-column align-items-start">
+                                                        <button class="btn btn-info btn-sm mb-1"
+                                                                data-toggle="modal"
+                                                                data-target="#sizeModal"
+                                                                onclick="loadSizes(${p.id})">
+                                                            View Sizes
+                                                        </button>
+                                                        <button class="btn btn-secondary btn-sm"
+                                                                data-toggle="modal"
+                                                                data-target="#imageModal"
+                                                                onclick="loadImages(${p.id})">
+                                                            View Images
+                                                        </button>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-warning btn-sm"

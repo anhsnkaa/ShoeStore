@@ -102,6 +102,7 @@
                                 </label>
                             </div>
                         </div>
+                        <small class="form-text text-muted">Upload ảnh mới sẽ thay toàn bộ ảnh cũ của sản phẩm.</small>
 
                         <!-- Preview nhiều ảnh -->
                         <div id="editPreviewContainer" class="row mt-2"></div>

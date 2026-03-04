@@ -20,7 +20,9 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
@@ -188,37 +190,9 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setSaleStartAt(saleStartAt);
             product.setSaleEndAt(saleEndAt);
 
-            // ===== UPLOAD MULTIPLE IMAGES =====
-            for (Part part : request.getParts()) {
-
-                if ("images".equals(part.getName())
-                        && part.getSubmittedFileName() != null
-                        && !part.getSubmittedFileName().trim().isEmpty()) {
-
-                    String path = request.getServletContext().getRealPath("/images");
-                    File dir = new File(path);
-
-                    if (!dir.exists()) {
-                        dir.mkdirs();
-                    }
-
-                    File image = new File(dir, part.getSubmittedFileName());
-                    part.write(image.getAbsolutePath());
-
-                    String imagePath = "images/" + part.getSubmittedFileName();
-
-                    ProductImage img = new ProductImage();
-                    img.setImageUrl(imagePath);
-                    img.setIsMain(false);
-
-                    product.addImage(img); // 🔥 DÙNG CASCADE
-                }
-            }
-
-            // SET ẢNH ĐẦU LÀ ẢNH CHÍNH
-            if (!product.getImages().isEmpty()) {
-                product.getImages().get(0).setIsMain(true);
-            }
+            // ===== UPLOAD MULTIPLE IMAGES (UNIQUE FILE NAME) =====
+            List<String> uploadedImagePaths = storeUploadedImagePaths(request);
+            appendImagesToProduct(product, uploadedImagePaths);
 
             // ===== ADD SIZE =====
             for (int s = 36; s <= 44; s++) {
@@ -295,30 +269,12 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setSaleEndAt(saleEndAt);
 
             // ===== XỬ LÝ IMAGE =====
-            for (Part part : request.getParts()) {
-
-                if ("images".equals(part.getName())
-                        && part.getSubmittedFileName() != null
-                        && !part.getSubmittedFileName().trim().isEmpty()) {
-
-                    String path = request.getServletContext().getRealPath("/images");
-                    File dir = new File(path);
-
-                    if (!dir.exists()) {
-                        dir.mkdirs();
-                    }
-
-                    File image = new File(dir, part.getSubmittedFileName());
-                    part.write(image.getAbsolutePath());
-
-                    String imagePath = "images/" + part.getSubmittedFileName();
-
-                    ProductImage img = new ProductImage();
-                    img.setImageUrl(imagePath);
-                    img.setIsMain(false);
-
-                    product.addImage(img);
-                }
+            List<String> uploadedImagePaths = storeUploadedImagePaths(request);
+            if (!uploadedImagePaths.isEmpty()) {
+                // Người dùng upload ảnh mới => thay toàn bộ ảnh cũ
+                productImageDAO.deleteByProductId(id);
+                product.getImages().clear();
+                appendImagesToProduct(product, uploadedImagePaths);
             }
 
             // ===== UPDATE PRODUCT =====
@@ -428,6 +384,65 @@ public class ProductAdminServerlet extends HttpServlet {
                 .replace("\"", "\\\"")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
+    }
+
+    private List<String> storeUploadedImagePaths(HttpServletRequest request) throws IOException, ServletException {
+        List<String> imagePaths = new ArrayList<>();
+
+        String path = request.getServletContext().getRealPath("/images");
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        for (Part part : request.getParts()) {
+            if (!"images".equals(part.getName())) {
+                continue;
+            }
+
+            String submittedFileName = part.getSubmittedFileName();
+            if (submittedFileName == null || submittedFileName.trim().isEmpty() || part.getSize() <= 0) {
+                continue;
+            }
+
+            String safeFileName = sanitizeFileName(submittedFileName);
+            String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "_" + safeFileName;
+
+            File image = new File(dir, uniqueFileName);
+            part.write(image.getAbsolutePath());
+
+            imagePaths.add("images/" + uniqueFileName);
+        }
+
+        return imagePaths;
+    }
+
+    private void appendImagesToProduct(Product product, List<String> imagePaths) {
+        if (imagePaths == null || imagePaths.isEmpty()) {
+            return;
+        }
+
+        for (String imagePath : imagePaths) {
+            ProductImage img = new ProductImage();
+            img.setImageUrl(imagePath);
+            img.setIsMain(false);
+            product.addImage(img);
+        }
+
+        if (!product.getImages().isEmpty()) {
+            product.getImages().get(0).setIsMain(true);
+        }
+    }
+
+    private String sanitizeFileName(String submittedFileName) {
+        String fileName = submittedFileName.trim();
+
+        int slash = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+        if (slash >= 0 && slash < fileName.length() - 1) {
+            fileName = fileName.substring(slash + 1);
+        }
+
+        return fileName.replaceAll("[^A-Za-z0-9._-]", "_");
     }
 
 }
