@@ -73,7 +73,17 @@
                                 <div class="left-menu mb-30">
                                     <ul>
                                     <c:forEach items="${listCategory}" var="c">
-                                        <li><a href="home?search=category&categoryId=${c.id}">${c.name}<span>(15)</span></a></li>
+                                        <c:url var="categoryUrl" value="home">
+                                            <c:param name="search" value="category"/>
+                                            <c:param name="categoryId" value="${c.id}"/>
+                                            <c:if test="${not empty param.gender}">
+                                                <c:param name="gender" value="${param.gender}"/>
+                                            </c:if>
+                                            <c:if test="${not empty param.sort}">
+                                                <c:param name="sort" value="${param.sort}"/>
+                                            </c:if>
+                                        </c:url>
+                                        <li><a href="${categoryUrl}">${c.name}<span>(15)</span></a></li>
                                         </c:forEach>
                                 </ul>
                             </div>

@@ -90,9 +90,7 @@ public class OrderAdminServerlet extends HttpServlet {
             String status = request.getParameter("status");
 
             boolean ok = false;
-            if ("CONFIRMED".equals(status)) {
-                ok = orderDAO.confirmOrderAndDeductStock(orderId);
-            } else if (isAllowedStatus(status)) {
+            if (isAllowedStatus(status)) {
                 ok = orderDAO.updateOrderStatus(orderId, status);
             }
 
@@ -101,7 +99,7 @@ public class OrderAdminServerlet extends HttpServlet {
                 session.setAttribute("orderMessage", "Order status updated successfully.");
             } else {
                 session.setAttribute("orderType", "error");
-                session.setAttribute("orderMessage", "Update failed. Check stock quantity or order status.");
+                session.setAttribute("orderMessage", "Update failed. Please check order status.");
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();

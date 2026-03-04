@@ -290,9 +290,9 @@ public class PaymentController extends HttpServlet {
         cart.setUser(account);
         cart.setTotalAmount(amount);
 
-        // Luu order, orderDetails duoc luu cung nho CascadeType.ALL.
+        // Luu order va tru kho ngay tai thoi diem checkout.
         OrderDAO orderDAO = new OrderDAO();
-        int orderId = orderDAO.insertOrder(cart);
+        int orderId = orderDAO.insertOrderAndDeductStock(cart);
 
         // Chi xoa cart khi luu thanh cong.
         if (orderId > 0) {
@@ -301,7 +301,7 @@ public class PaymentController extends HttpServlet {
             session.setAttribute("checkoutMessage", "Checkout successful.");
         } else {
             session.setAttribute("checkoutType", "error");
-            session.setAttribute("checkoutMessage", "Checkout failed. Please try again.");
+            session.setAttribute("checkoutMessage", "Checkout failed because stock changed. Please review your cart and try again.");
         }
 
         response.sendRedirect("payment");

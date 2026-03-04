@@ -11,6 +11,7 @@ import java.util.List;
 import model.Account;
 import model.Order;
 import model.OrderDetail;
+import model.Product;
 
 /**
  *
@@ -109,6 +110,66 @@ public class OrderDAO {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public int insertOrderAndDeductStock(Order order) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            if (order == null || order.getOrderDetails() == null || order.getOrderDetails().isEmpty()) {
+                return -1;
+            }
+
+            em.getTransaction().begin();
+
+            if (order.getUser() != null && order.getUser().getId() > 0) {
+                Account managedUser = em.getReference(Account.class, order.getUser().getId());
+                order.setUser(managedUser);
+            }
+
+            for (OrderDetail detail : order.getOrderDetails()) {
+                if (detail == null || detail.getProduct() == null || detail.getProduct().getId() <= 0 || detail.getQuantity() <= 0) {
+                    em.getTransaction().rollback();
+                    return -1;
+                }
+
+                int updated = em.createQuery(
+                        "UPDATE ProductSize ps "
+                        + "SET ps.quantity = ps.quantity - :qty "
+                        + "WHERE ps.product.id = :pid "
+                        + "AND ps.size = :size "
+                        + "AND ps.quantity >= :qty"
+                )
+                        .setParameter("qty", detail.getQuantity())
+                        .setParameter("pid", detail.getProduct().getId())
+                        .setParameter("size", detail.getSize())
+                        .executeUpdate();
+
+                if (updated == 0) {
+                    em.getTransaction().rollback();
+                    return -1;
+                }
+
+                detail.setProduct(em.getReference(Product.class, detail.getProduct().getId()));
+                detail.setOrder(order);
+            }
+
+            if (order.getStatus() == null || order.getStatus().isBlank()) {
+                order.setStatus("PENDING");
+            }
+
+            order.calculateTotal();
+            em.persist(order);
+            em.getTransaction().commit();
+            return order.getId();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return -1;
         } finally {
             em.close();
         }

@@ -8,6 +8,7 @@ import dal.JPAUtil;
 import jakarta.persistence.*;
 import java.util.List;
 import model.Category;
+import model.Gender;
 
 /**
  *
@@ -32,6 +33,24 @@ public class CategoryDAO {
         Category c = em.find(Category.class, id);
         em.close();
         return c;
+    }
+
+    public List<Category> getCategoriesByGender(String gender) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT c FROM Category c "
+                    + "JOIN c.products p "
+                    + "WHERE p.gender = :gender "
+                    + "ORDER BY c.name",
+                    Category.class
+            )
+                    .setParameter("gender", Gender.valueOf(gender))
+                    .getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     public void addCategory(Category c) {

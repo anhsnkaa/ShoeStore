@@ -33,17 +33,21 @@ public class HomeController extends HttpServlet {
             throws ServletException, IOException {
         // Khoi tao thong tin phan trang cho lan tai hien tai.
         PageControl pageControl = new PageControl();
+        String selectedGender = normalizeGender(request.getParameter("gender"));
 
         // Lay danh sach san pham theo bo loc + sort.
         List<Product> listProduct = findProductDoGet(request, pageControl);
         // Lay danh sach category de hien thi o sidebar.
-        List<Category> listCategory = categoryDAO.getAllCategories();
+        List<Category> listCategory = selectedGender == null
+                ? categoryDAO.getAllCategories()
+                : categoryDAO.getCategoriesByGender(selectedGender);
 
         // Day du lieu vao session de jsp dung truc tiep.
         HttpSession session = request.getSession();
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listCategory", listCategory);
         session.setAttribute("pageControl", pageControl);
+        request.setAttribute("selectedGender", selectedGender);
         // Chuyen huong den trang home.jsp.
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
     }
@@ -108,9 +112,16 @@ public class HomeController extends HttpServlet {
         switch (actionSearch) {
             case "category":
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-                totalRecord = productDAO.getTotalRecordByCategory(categoryId);
-                product = productDAO.getProductByCategory(categoryId, page, sort);
-                pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
+                String selectedGender = normalizeGender(request.getParameter("gender"));
+                if (selectedGender == null) {
+                    totalRecord = productDAO.getTotalRecordByCategory(categoryId);
+                    product = productDAO.getProductByCategory(categoryId, page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
+                } else {
+                    totalRecord = productDAO.getTotalRecordByCategoryAndGender(categoryId, selectedGender);
+                    product = productDAO.getProductByCategoryAndGender(categoryId, selectedGender, page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + "&gender=" + selectedGender + sortQuery + "&");
+                }
                 break;
             case "searchByKeyword":
                 String keyword = request.getParameter("keyword");
@@ -119,7 +130,13 @@ public class HomeController extends HttpServlet {
                 pageControl.setUrlPattern(requestURL + "?search=searchByKeyword&keyword=" + keyword + sortQuery + "&");
                 break;
             case "gender":
-                String gender = request.getParameter("gender");
+                String gender = normalizeGender(request.getParameter("gender"));
+                if (gender == null) {
+                    product = productDAO.getAllProductsPaging(page, sort);
+                    totalRecord = productDAO.getTotalProducts();
+                    pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
+                    break;
+                }
                 totalRecord = productDAO.getTotalRecordByGender(gender);
                 product = productDAO.getProductByGender(gender, page, sort);
                 pageControl.setUrlPattern(requestURL + "?search=gender&gender=" + gender + sortQuery + "&");
@@ -208,5 +225,18 @@ public class HomeController extends HttpServlet {
     // Tao query-string cho sort de giu trang thai khi loc + phan trang.
     private String buildSortQuery(String sort) {
         return sort == null ? "" : "&sort=" + sort;
+    }
+
+    private String normalizeGender(String rawGender) {
+        if (rawGender == null || rawGender.isBlank()) {
+            return null;
+        }
+
+        String normalized = rawGender.trim().toUpperCase();
+        if ("MEN".equals(normalized) || "WOMEN".equals(normalized)) {
+            return normalized;
+        }
+
+        return null;
     }
 }

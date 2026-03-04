@@ -112,6 +112,24 @@ public class ProductDAO {
         return list;
     }
 
+    public List<Product> getProductByCategoryAndGender(int categoryId, String gender, int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.category.id = :cid AND p.gender = :gender"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("cid", categoryId)
+                .setParameter("gender", Gender.valueOf(gender))
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
     // Overload de giu tuong thich voi code cu.
     public List<Product> getProductByCategory(int categoryId, int page) {
         return getProductByCategory(categoryId, page, null);
@@ -193,6 +211,21 @@ public class ProductDAO {
                 "SELECT COUNT(p) FROM Product p WHERE p.name LIKE :kw",
                 Long.class)
                 .setParameter("kw", "%" + keyword + "%")
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalRecordByCategoryAndGender(int categoryId, String gender) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.category.id = :cid AND p.gender = :gender",
+                Long.class)
+                .setParameter("cid", categoryId)
+                .setParameter("gender", Gender.valueOf(gender))
                 .getSingleResult();
 
         em.close();
