@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import model.Account;
+import model.Role;
 
 /**
  *
@@ -111,7 +112,7 @@ public class UserFilter implements Filter {
         } else {
             //da dang nhap roi
             //kiem tra xem quyen cua account
-            if (account.getRole().getId() != 2) {
+            if (!isUserRole(account.getRole())) {
                 resp.sendRedirect(req.getContextPath() + "/authen?action=login");
                 return;
             }
@@ -239,6 +240,19 @@ public class UserFilter implements Filter {
 
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);
+    }
+
+    private boolean isUserRole(Role role) {
+        if (role == null) {
+            return false;
+        }
+
+        String roleName = role.getName();
+        if (roleName != null && !roleName.isBlank()) {
+            return "USER".equalsIgnoreCase(roleName);
+        }
+
+        return role.getId() == 2;
     }
 
 }

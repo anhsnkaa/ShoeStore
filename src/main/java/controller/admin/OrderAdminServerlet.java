@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Order;
 
@@ -61,21 +62,51 @@ public class OrderAdminServerlet extends HttpServlet {
 
     private void showOrderList(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object orderMessage = session.getAttribute("orderMessage");
+            Object orderType = session.getAttribute("orderType");
+
+            if (orderMessage != null) {
+                request.setAttribute("orderMessage", orderMessage);
+                session.removeAttribute("orderMessage");
+            }
+
+            if (orderType != null) {
+                request.setAttribute("orderType", orderType);
+                session.removeAttribute("orderType");
+            }
+        }
+
         List<Order> orders = orderDAO.getAllOrders();
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("/view/admin/order.jsp").forward(request, response);
     }
 
     private void updateStatus(HttpServletRequest request) {
+        HttpSession session = request.getSession();
         try {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
             String status = request.getParameter("status");
 
-            if (isAllowedStatus(status)) {
-                orderDAO.updateOrderStatus(orderId, status);
+            boolean ok = false;
+            if ("CONFIRMED".equals(status)) {
+                ok = orderDAO.confirmOrderAndDeductStock(orderId);
+            } else if (isAllowedStatus(status)) {
+                ok = orderDAO.updateOrderStatus(orderId, status);
+            }
+
+            if (ok) {
+                session.setAttribute("orderType", "success");
+                session.setAttribute("orderMessage", "Order status updated successfully.");
+            } else {
+                session.setAttribute("orderType", "error");
+                session.setAttribute("orderMessage", "Update failed. Check stock quantity or order status.");
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
+            session.setAttribute("orderType", "error");
+            session.setAttribute("orderMessage", "Invalid order request.");
         }
     }
 

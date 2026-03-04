@@ -98,18 +98,18 @@
                                             </div>
                                         </div>
                                         <div class="product-add-form">
-                                            <form action="payment?action=add-product" method="POST">
+                                            <form action="${pageContext.request.contextPath}/payment?action=add-product" method="POST" id="addToCartForm">
 
                                                 <input type="hidden" name="productId" value="${product.id}">
 
                                                 <!-- SIZE -->
                                                 <div class="choose-size mb-3">
                                                     <p>Size</p>
-                                                    <select name="sizeId" class="form-control" required>
+                                                    <select id="sizeSelect" name="sizeId" class="form-control" required>
                                                         <c:forEach items="${listProductSize}" var="s">
                                                             <c:choose>
                                                                 <c:when test="${s.quantity > 0}">
-                                                                    <option value="${s.id}">
+                                                                    <option value="${s.id}" data-qty="${s.quantity}">
                                                                         ${s.size} - Available ${s.quantity}
                                                                     </option>
                                                                 </c:when>
@@ -125,7 +125,7 @@
 
 
                                                 <div class="quality-button">
-                                                    <input class="qty" type="number" value="1" name="quantity">
+                                                    <input id="qtyInput" class="qty" type="number" value="1" name="quantity" min="1" required>
                                                 </div>
 
                                                 <button type="submit" class="btn btn-dark">
@@ -752,6 +752,51 @@
                     if (trigger && window.bootstrap && bootstrap.Tab) {
                         bootstrap.Tab.getOrCreateInstance(trigger).show();
                     }
+                }
+
+                var sizeSelect = document.getElementById("sizeSelect");
+                var qtyInput = document.getElementById("qtyInput");
+                var addToCartForm = document.getElementById("addToCartForm");
+
+                function syncMaxQuantity() {
+                    if (!sizeSelect || !qtyInput || sizeSelect.selectedIndex < 0) {
+                        return;
+                    }
+
+                    var selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+                    var availableQty = parseInt(selectedOption.getAttribute("data-qty") || "1", 10);
+                    if (isNaN(availableQty) || availableQty < 1) {
+                        availableQty = 1;
+                    }
+
+                    qtyInput.setAttribute("max", String(availableQty));
+
+                    var currentQty = parseInt(qtyInput.value || "1", 10);
+                    if (isNaN(currentQty) || currentQty < 1) {
+                        qtyInput.value = "1";
+                    } else if (currentQty > availableQty) {
+                        qtyInput.value = String(availableQty);
+                    }
+                }
+
+                if (sizeSelect) {
+                    sizeSelect.addEventListener("change", syncMaxQuantity);
+                    syncMaxQuantity();
+                }
+
+                if (addToCartForm) {
+                    addToCartForm.addEventListener("submit", function (event) {
+                        syncMaxQuantity();
+
+                        var maxQty = parseInt(qtyInput.getAttribute("max") || "1", 10);
+                        var enteredQty = parseInt(qtyInput.value || "1", 10);
+
+                        if (enteredQty > maxQty) {
+                            event.preventDefault();
+                            qtyInput.value = String(maxQty);
+                            alert("Quantity exceeds stock. Maximum available quantity is " + maxQty + ".");
+                        }
+                    });
                 }
             })();
         </script>

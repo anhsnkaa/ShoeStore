@@ -22,6 +22,25 @@ public class ProductSizeDAO {
         return ps;
     }
 
+    public ProductSize getByProductAndSize(int productId, int size) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            List<ProductSize> list = em.createQuery(
+                    "SELECT ps FROM ProductSize ps "
+                    + "WHERE ps.product.id = :pid AND ps.size = :size",
+                    ProductSize.class
+            )
+                    .setParameter("pid", productId)
+                    .setParameter("size", size)
+                    .setMaxResults(1)
+                    .getResultList();
+
+            return list.isEmpty() ? null : list.get(0);
+        } finally {
+            em.close();
+        }
+    }
+
     public List<ProductSize> getSizesByProduct(int productId) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();

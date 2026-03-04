@@ -114,6 +114,65 @@ public class OrderDAO {
         }
     }
 
+    public boolean confirmOrderAndDeductStock(int orderId) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            List<Order> result = em.createQuery(
+                    "SELECT DISTINCT o FROM Order o "
+                    + "LEFT JOIN FETCH o.orderDetails od "
+                    + "LEFT JOIN FETCH od.product p "
+                    + "WHERE o.id = :orderId",
+                    Order.class
+            )
+                    .setParameter("orderId", orderId)
+                    .getResultList();
+
+            if (result.isEmpty()) {
+                em.getTransaction().rollback();
+                return false;
+            }
+
+            Order order = result.get(0);
+            if (!"PENDING".equals(order.getStatus())) {
+                em.getTransaction().rollback();
+                return false;
+            }
+
+            for (OrderDetail detail : order.getOrderDetails()) {
+                int updated = em.createQuery(
+                        "UPDATE ProductSize ps "
+                        + "SET ps.quantity = ps.quantity - :qty "
+                        + "WHERE ps.product.id = :pid "
+                        + "AND ps.size = :size "
+                        + "AND ps.quantity >= :qty"
+                )
+                        .setParameter("qty", detail.getQuantity())
+                        .setParameter("pid", detail.getProduct().getId())
+                        .setParameter("size", detail.getSize())
+                        .executeUpdate();
+
+                if (updated == 0) {
+                    em.getTransaction().rollback();
+                    return false;
+                }
+            }
+
+            order.setStatus("CONFIRMED");
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
     public boolean updateOrderStatus(int orderId, String status) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
         try {

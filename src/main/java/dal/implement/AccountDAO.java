@@ -74,6 +74,26 @@ public class AccountDAO {
         }
     }
 
+    public Account findActiveByUsernameAndEmail(String username, String email) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT a FROM Account a "
+                    + "WHERE a.username = :user "
+                    + "AND a.email = :email "
+                    + "AND a.status = true",
+                    Account.class)
+                    .setParameter("user", username)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
     public void addAccount(Account acc) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();

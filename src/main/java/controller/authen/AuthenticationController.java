@@ -36,6 +36,9 @@ public class AuthenticationController extends HttpServlet {
             case "login":
                 url = "view/authen/login.jsp";
                 break;
+            case "forgot-password":
+                url = "view/authen/forgot-password.jsp";
+                break;
             case "logout":
                 url = logOut(request, response);
                 break;
@@ -74,6 +77,9 @@ public class AuthenticationController extends HttpServlet {
             case "sign-up":
                 url = signUpDoPost(request, response);
                 break;
+            case "forgot-password":
+                url = forgotPasswordDoPost(request);
+                break;
             case "change-password":
                 changePasswordDoPost(request, response);
                 return;
@@ -106,6 +112,10 @@ public class AuthenticationController extends HttpServlet {
         Account accountFindByUsernamePass = accountDAO.findByUsernameAndPass(username, password);
         //true => trang home
         if (accountFindByUsernamePass != null) {
+            if (accountFindByUsernamePass.getRole() == null) {
+                request.setAttribute("error", "Account role is missing. Please initialize Roles data.");
+                return "view/authen/login.jsp";
+            }
             HttpSession session = request.getSession();
             session.setAttribute("account", accountFindByUsernamePass);
             url = "home";
@@ -140,7 +150,18 @@ public class AuthenticationController extends HttpServlet {
             return "view/authen/sign-up.jsp";
         } else {
             //false => quay tro lai trang home (ghi tai khoan vao trong db)
-            Role userRole = roleDAO.findById(2); // giả sử 2 là USER
+            Role userRole = roleDAO.findByName("USER");
+            if (userRole == null) {
+                userRole = roleDAO.findById(2); // fallback du lieu cu
+            }
+            if (userRole == null) {
+                userRole = roleDAO.getOrCreateRole("USER");
+            }
+
+            if (userRole == null) {
+                request.setAttribute("error", "Role USER is missing. Please initialize Roles table.");
+                return "view/authen/sign-up.jsp";
+            }
 
             Account acc = new Account();
             acc.setFullName(fullName);
@@ -155,10 +176,48 @@ public class AuthenticationController extends HttpServlet {
             accountDAO.addAccount(acc);
             //tự động login sau khi đăng kí
             HttpSession session = request.getSession();
-            session.setAttribute("account", acc);
+            Account freshAccount = accountDAO.findByUsernameAndPass(username, password);
+            session.setAttribute("account", freshAccount != null ? freshAccount : acc);
 
             return "home";
         }
+    }
+
+    private String forgotPasswordDoPost(HttpServletRequest request) {
+        String username = request.getParameter("username") == null ? "" : request.getParameter("username").trim();
+        String email = request.getParameter("email") == null ? "" : request.getParameter("email").trim();
+        String newPassword = request.getParameter("newPassword") == null ? "" : request.getParameter("newPassword").trim();
+        String confirmPassword = request.getParameter("confirmPassword") == null ? "" : request.getParameter("confirmPassword").trim();
+
+        if (username.isEmpty() || email.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+            request.setAttribute("error", "Please fill all fields.");
+            return "view/authen/forgot-password.jsp";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            request.setAttribute("error", "Confirm password does not match.");
+            return "view/authen/forgot-password.jsp";
+        }
+
+        if (newPassword.length() < 6) {
+            request.setAttribute("error", "New password must be at least 6 characters.");
+            return "view/authen/forgot-password.jsp";
+        }
+
+        Account account = accountDAO.findActiveByUsernameAndEmail(username, email);
+        if (account == null) {
+            request.setAttribute("error", "Username or email is incorrect.");
+            return "view/authen/forgot-password.jsp";
+        }
+
+        boolean ok = accountDAO.updatePassword(account.getId(), newPassword);
+        if (!ok) {
+            request.setAttribute("error", "Reset password failed. Please try again.");
+            return "view/authen/forgot-password.jsp";
+        }
+
+        request.setAttribute("message", "Password reset successfully. Please login again.");
+        return "view/authen/login.jsp";
     }
 
     private void changePasswordDoPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -178,7 +237,7 @@ public class AuthenticationController extends HttpServlet {
         } else if ("user".equals(target)) {
             redirectUrl = request.getContextPath() + "/dashboard";
         } else {
-            redirectUrl = (account.getRole() != null && account.getRole().getId() == 1)
+            redirectUrl = isAdmin(account)
                     ? request.getContextPath() + "/admin/dashboard"
                     : request.getContextPath() + "/dashboard";
         }
@@ -238,7 +297,7 @@ public class AuthenticationController extends HttpServlet {
         } else if ("user".equals(target)) {
             redirectUrl = request.getContextPath() + "/dashboard";
         } else {
-            redirectUrl = (account.getRole() != null && account.getRole().getId() == 1)
+            redirectUrl = isAdmin(account)
                     ? request.getContextPath() + "/admin/dashboard"
                     : request.getContextPath() + "/dashboard";
         }
@@ -272,5 +331,19 @@ public class AuthenticationController extends HttpServlet {
         session.setAttribute("authType", "success");
         session.setAttribute("authMessage", "Profile updated successfully.");
         response.sendRedirect(redirectUrl);
+    }
+
+    private boolean isAdmin(Account account) {
+        if (account == null || account.getRole() == null) {
+            return false;
+        }
+
+        Role role = account.getRole();
+        String roleName = role.getName();
+        if (roleName != null && !roleName.isBlank()) {
+            return "ADMIN".equalsIgnoreCase(roleName);
+        }
+
+        return role.getId() == 1;
     }
 }

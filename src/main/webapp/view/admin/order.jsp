@@ -40,6 +40,16 @@
             </a>
         </div>
         <div class="card-body">
+            <c:if test="${not empty orderMessage}">
+                <c:choose>
+                    <c:when test="${orderType == 'success'}">
+                        <div class="alert alert-success" role="alert">${orderMessage}</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="alert alert-danger" role="alert">${orderMessage}</div>
+                    </c:otherwise>
+                </c:choose>
+            </c:if>
             <div class="table-responsive">
                 <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>

@@ -60,27 +60,27 @@
                         <div class="col-lg-12">
                             <div class="login-title text-center mb-30">
                                 <h2>Login</h2>
-                                <p>doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo<br>inventore veritatis et quasi architecto beat</p>
                             </div>
                         </div>
                         <div class="offset-lg-3 col-lg-6 col-md-12 col-12">
                             <div class="login-form">
-                                <form action="authen?action=login" method="POST">
-                                    <div class="single-login">
-                                        <label>Username or email<span>*</span></label>
-                                        <input type="text" name="username"/>
-                                    </div>
-                                    <div class="single-login">
-                                        <label>Passwords <span>*</span></label>
-                                        <input type="password" name="password"/>
-                                    </div>
-                                    <div class="single-login single-login-2">
-                                        <input type="submit" value="Login"></input>
-                                        <input id="rememberme" type="checkbox" name="rememberme" value="forever">
-                                        <span>Remember me</span>
-                                    </div>
-                                    <span style="color:red">${error}</span>
-                                <a href="#">Lost your password?</a>
+                                <form action="${pageContext.request.contextPath}/authen?action=login" method="POST">
+                                <div class="single-login">
+                                    <label>Username or email<span>*</span></label>
+                                    <input type="text" name="username"/>
+                                </div>
+                                <div class="single-login">
+                                    <label>Passwords <span>*</span></label>
+                                    <input type="password" name="password"/>
+                                </div>
+                                <div class="single-login single-login-2">
+                                    <input type="submit" value="Login"></input>
+                                    <input id="rememberme" type="checkbox" name="rememberme" value="forever">
+                                    <span>Remember me</span>
+                                </div>
+                                <span style="color:red">${error}</span><br>
+                                <span style="color:green">${message}</span><br>
+                                <a href="${pageContext.request.contextPath}/authen?action=forgot-password">Lost your password?</a>
                             </form>
                         </div>
                     </div>

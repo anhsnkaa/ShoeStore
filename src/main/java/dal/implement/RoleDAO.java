@@ -36,4 +36,46 @@ public class RoleDAO {
         em.close();
         return role;
     }
+
+    public Role findByName(String roleName) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            List<Role> list = em.createQuery(
+                    "SELECT r FROM Role r WHERE UPPER(r.name) = UPPER(:name)",
+                    Role.class
+            )
+                    .setParameter("name", roleName)
+                    .setMaxResults(1)
+                    .getResultList();
+
+            return list.isEmpty() ? null : list.get(0);
+        } finally {
+            em.close();
+        }
+    }
+
+    public Role getOrCreateRole(String roleName) {
+        Role existed = findByName(roleName);
+        if (existed != null) {
+            return existed;
+        }
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Role role = new Role();
+            role.setName(roleName.toUpperCase());
+            em.persist(role);
+            em.getTransaction().commit();
+            return role;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            return findByName(roleName);
+        } finally {
+            em.close();
+        }
+    }
 }

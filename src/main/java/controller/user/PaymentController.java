@@ -84,44 +84,75 @@ public class PaymentController extends HttpServlet {
         //get ve session
         HttpSession session = request.getSession();
         //get ve product id va size id
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        int sizeId = Integer.parseInt(request.getParameter("sizeId"));
+        int productId = parseIntOrDefault(request.getParameter("productId"), -1);
+        int sizeId = parseIntOrDefault(request.getParameter("sizeId"), -1);
         //get ve quantity
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
+        int quantity = Math.max(1, parseIntOrDefault(request.getParameter("quantity"), 1));
+
+        if (productId <= 0 || sizeId <= 0) {
+            setCartMessage(session, "error", "Invalid product information.");
+            return;
+        }
+
         //lay ve cart o tren session
         Order cart = (Order) session.getAttribute("cart");
         if (cart == null) {
             cart = new Order();
         }
-        OrderDetail od = new OrderDetail();
+
         Product product = productDAO.getProductById(productId);
         ProductSize productSize = productSizeDAO.getSizeById(sizeId);
-        od.setProduct(product);
-        od.setPrice(product.getFinalPrice());
-        od.setSize(productSize.getSize());
-        od.setQuantity(quantity);
 
-        //them order details vao trong cart
-        addOrderDetailsToOrder(od, cart);
+        if (product == null || productSize == null || productSize.getProduct() == null
+                || productSize.getProduct().getId() != productId) {
+            setCartMessage(session, "error", "Product size is invalid.");
+            return;
+        }
 
-        //them orderdetails vao trong cart
-        session.setAttribute("cart", cart);
-    }
+        int availableQuantity = Math.max(0, productSize.getQuantity());
+        if (availableQuantity <= 0) {
+            setCartMessage(session, "error", "Selected size is out of stock.");
+            return;
+        }
 
-    private void addOrderDetailsToOrder(OrderDetail od, Order cart) {
-        boolean isAdd = false;
+        boolean limitedByStock = false;
+        boolean existsInCart = false;
+
         for (OrderDetail obj : cart.getOrderDetails()) {
-
-            if (obj.getProduct().getId() == od.getProduct().getId()
-                    && obj.getSize() == od.getSize()) {
-
-                obj.setQuantity(obj.getQuantity() + od.getQuantity());
-                isAdd = true;
+            if (obj.getProduct().getId() == productId && obj.getSize() == productSize.getSize()) {
+                int newQuantity = obj.getQuantity() + quantity;
+                if (newQuantity > availableQuantity) {
+                    obj.setQuantity(availableQuantity);
+                    limitedByStock = true;
+                } else {
+                    obj.setQuantity(newQuantity);
+                }
+                existsInCart = true;
                 break;
             }
         }
-        if (!isAdd) {
+
+        if (!existsInCart) {
+            OrderDetail od = new OrderDetail();
+            od.setProduct(product);
+            od.setPrice(product.getFinalPrice());
+            od.setSize(productSize.getSize());
+            if (quantity > availableQuantity) {
+                od.setQuantity(availableQuantity);
+                limitedByStock = true;
+            } else {
+                od.setQuantity(quantity);
+            }
+
+            //them order details vao trong cart
             cart.getOrderDetails().add(od);
+        }
+
+        //them orderdetails vao trong cart
+        session.setAttribute("cart", cart);
+
+        if (limitedByStock) {
+            setCartMessage(session, "error", "Quantity was adjusted to available stock.");
         }
     }
 
@@ -140,8 +171,9 @@ public class PaymentController extends HttpServlet {
         try {
             //get ve product id
             int id = Integer.parseInt(request.getParameter("id"));
+            int size = parseIntOrDefault(request.getParameter("size"), Integer.MIN_VALUE);
             //get ve quantity
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int quantity = Math.max(1, Integer.parseInt(request.getParameter("quantity")));
             //lay ve cart
             Order cart = (Order) session.getAttribute("cart");
 
@@ -150,11 +182,31 @@ public class PaymentController extends HttpServlet {
                 return;
             }
 
-            //thay doi quantity
+            OrderDetail target = null;
             for (OrderDetail obj : cart.getOrderDetails()) {
-                if (obj.getProduct().getId() == id) {
-                    obj.setQuantity(quantity);
+                if (obj.getProduct().getId() == id
+                        && (size == Integer.MIN_VALUE || obj.getSize() == size)) {
+                    target = obj;
+                    break;
                 }
+            }
+
+            if (target == null) {
+                return;
+            }
+
+            int availableQuantity = getAvailableQuantity(target.getProduct().getId(), target.getSize());
+            if (availableQuantity <= 0) {
+                cart.getOrderDetails().remove(target);
+                setCartMessage(session, "error", "Product is out of stock and was removed from cart.");
+                return;
+            }
+
+            if (quantity > availableQuantity) {
+                target.setQuantity(availableQuantity);
+                setCartMessage(session, "error", "Quantity exceeds stock. Updated to maximum available quantity.");
+            } else {
+                target.setQuantity(quantity);
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -164,6 +216,7 @@ public class PaymentController extends HttpServlet {
     private void deleteProduct(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         int id = Integer.parseInt(request.getParameter("id"));
+        int size = parseIntOrDefault(request.getParameter("size"), Integer.MIN_VALUE);
         Order cart = (Order) session.getAttribute("cart");
 
         // Neu cart null thi khong can xu ly tiep.
@@ -173,8 +226,10 @@ public class PaymentController extends HttpServlet {
 
         OrderDetail od = null;
         for (OrderDetail obj : cart.getOrderDetails()) {
-            if (obj.getProduct().getId() == id) {
+            if (obj.getProduct().getId() == id
+                    && (size == Integer.MIN_VALUE || obj.getSize() == size)) {
                 od = obj;
+                break;
             }
         }
         cart.getOrderDetails().remove(od);
@@ -201,6 +256,30 @@ public class PaymentController extends HttpServlet {
             session.setAttribute("checkoutType", "error");
             session.setAttribute("checkoutMessage", "Please login before checkout.");
             response.sendRedirect(request.getContextPath() + "/authen?action=login");
+            return;
+        }
+
+        boolean adjustedByStock = false;
+        for (OrderDetail od : cart.getOrderDetails()) {
+            int availableQuantity = getAvailableQuantity(od.getProduct().getId(), od.getSize());
+
+            if (availableQuantity <= 0) {
+                session.setAttribute("checkoutType", "error");
+                session.setAttribute("checkoutMessage", "Some products are out of stock. Please update your cart.");
+                response.sendRedirect("payment");
+                return;
+            }
+
+            if (od.getQuantity() > availableQuantity) {
+                od.setQuantity(availableQuantity);
+                adjustedByStock = true;
+            }
+        }
+
+        if (adjustedByStock) {
+            session.setAttribute("checkoutType", "error");
+            session.setAttribute("checkoutMessage", "Some quantities were adjusted to available stock. Please review cart and checkout again.");
+            response.sendRedirect("payment");
             return;
         }
 
@@ -242,6 +321,24 @@ public class PaymentController extends HttpServlet {
 
         // Tra tong tien ve cho ham goi.
         return total;
+    }
+
+    private int getAvailableQuantity(int productId, int size) {
+        ProductSize ps = productSizeDAO.getByProductAndSize(productId, size);
+        return ps == null ? 0 : Math.max(0, ps.getQuantity());
+    }
+
+    private int parseIntOrDefault(String raw, int defaultValue) {
+        try {
+            return Integer.parseInt(raw);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private void setCartMessage(HttpSession session, String type, String message) {
+        session.setAttribute("checkoutType", type);
+        session.setAttribute("checkoutMessage", message);
     }
 
 }

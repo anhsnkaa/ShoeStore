@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import model.Account;
+import model.Role;
 
 /**
  *
@@ -112,7 +113,7 @@ public class AdminFilter implements Filter {
         } else {
             //da dang nhap roi
             //kiem tra xem quyen cua account
-            if (account.getRole().getId() != 1) {
+            if (!isAdminRole(account.getRole())) {
                 resp.sendRedirect(req.getContextPath() + "/authen?action=login");
                 return;
             }
@@ -239,6 +240,19 @@ public class AdminFilter implements Filter {
 
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);
+    }
+
+    private boolean isAdminRole(Role role) {
+        if (role == null) {
+            return false;
+        }
+
+        String roleName = role.getName();
+        if (roleName != null && !roleName.isBlank()) {
+            return "ADMIN".equalsIgnoreCase(roleName);
+        }
+
+        return role.getId() == 1;
     }
 
 }

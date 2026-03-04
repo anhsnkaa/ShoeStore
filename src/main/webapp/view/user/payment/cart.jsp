@@ -130,6 +130,7 @@
                                             <td class="product-quantity">
                                                 <form action="${pageContext.request.contextPath}/payment?action=change-quantity" method="POST">
                                                     <input type="hidden" name="id" value="${od.product.id}"/>
+                                                    <input type="hidden" name="size" value="${od.size}"/>
                                                     <input type="number"
                                                            class="qty-input"
                                                            data-price="${od.price}"
@@ -150,6 +151,7 @@
                                             <td class="product-remove">
                                                 <form action="${pageContext.request.contextPath}/payment?action=delete-product" method="POST">
                                                     <input type="hidden" name="id" value="${od.product.id}"/>
+                                                    <input type="hidden" name="size" value="${od.size}"/>
                                                     <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
                                                         <i class="fa fa-times"></i>
                                                     </button>

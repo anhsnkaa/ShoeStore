@@ -142,8 +142,15 @@ public class QnaController extends HttpServlet {
     }
 
     private boolean isAdmin(Account account) {
-        return account != null
-                && account.getRole() != null
-                && account.getRole().getId() == 1;
+        if (account == null || account.getRole() == null) {
+            return false;
+        }
+
+        String roleName = account.getRole().getName();
+        if (roleName != null && !roleName.isBlank()) {
+            return "ADMIN".equalsIgnoreCase(roleName);
+        }
+
+        return account.getRole().getId() == 1;
     }
 }
