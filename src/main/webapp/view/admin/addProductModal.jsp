@@ -61,6 +61,28 @@
                             <option value="WINTER">Winter</option>
                         </select>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="discount">Discount (%)</label>
+                            <input type="number" class="form-control" id="discount" name="discount" min="0" max="100" step="0.1" value="0">
+                        </div>
+                        <div class="form-group col-md-6 d-flex align-items-end">
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" id="featured" name="featured" value="true">
+                                <label class="form-check-label" for="featured">Hot product</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="saleStartAt">Sale start</label>
+                            <input type="datetime-local" class="form-control" id="saleStartAt" name="saleStartAt">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="saleEndAt">Sale end</label>
+                            <input type="datetime-local" class="form-control" id="saleEndAt" name="saleEndAt">
+                        </div>
+                    </div>
                     <!--Image-->
                     <div class="form-group">
                         <label for="image">Image: </label>

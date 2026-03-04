@@ -6,6 +6,7 @@ package dal.implement;
 
 import dal.JPAUtil;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import model.CollectionSeason;
 import model.Gender;
@@ -167,6 +168,82 @@ public class ProductDAO {
         return list;
     }
 
+    public List<Product> getHotProducts(int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.featured = true"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public List<Product> getHotProductsByGender(String gender, int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.featured = true "
+                + "AND p.gender = :gender"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("gender", Gender.valueOf(gender))
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public List<Product> getSaleProducts(int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        LocalDateTime now = LocalDateTime.now();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.discount > 0 "
+                + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
+                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now)"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("now", now)
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public List<Product> getSaleProductsByGender(String gender, int page, String sort) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        LocalDateTime now = LocalDateTime.now();
+
+        String jpql = "SELECT p FROM Product p "
+                + "WHERE p.discount > 0 "
+                + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
+                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now) "
+                + "AND p.gender = :gender"
+                + buildOrderByClause(sort);
+
+        List<Product> list = em.createQuery(jpql, Product.class)
+                .setParameter("now", now)
+                .setParameter("gender", Gender.valueOf(gender))
+                .setFirstResult((page - 1) * PAGE_SIZE)
+                .setMaxResults(PAGE_SIZE)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
     // Overload de giu tuong thich voi code cu.
     public List<Product> getProductByCategory(int categoryId, int page) {
         return getProductByCategory(categoryId, page, null);
@@ -291,6 +368,69 @@ public class ProductDAO {
                 + "AND p.gender = :gender",
                 Long.class)
                 .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setParameter("gender", Gender.valueOf(gender))
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalHotProducts() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p WHERE p.featured = true",
+                Long.class)
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalHotProductsByGender(String gender) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.featured = true "
+                + "AND p.gender = :gender",
+                Long.class)
+                .setParameter("gender", Gender.valueOf(gender))
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalSaleProducts() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        LocalDateTime now = LocalDateTime.now();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.discount > 0 "
+                + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
+                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now)",
+                Long.class)
+                .setParameter("now", now)
+                .getSingleResult();
+
+        em.close();
+        return total.intValue();
+    }
+
+    public int getTotalSaleProductsByGender(String gender) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        LocalDateTime now = LocalDateTime.now();
+
+        Long total = em.createQuery(
+                "SELECT COUNT(p) FROM Product p "
+                + "WHERE p.discount > 0 "
+                + "AND (p.saleStartAt IS NULL OR p.saleStartAt <= :now) "
+                + "AND (p.saleEndAt IS NULL OR p.saleEndAt >= :now) "
+                + "AND p.gender = :gender",
+                Long.class)
+                .setParameter("now", now)
                 .setParameter("gender", Gender.valueOf(gender))
                 .getSingleResult();
 

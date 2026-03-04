@@ -18,6 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +36,8 @@ import model.ProductSize;
  */
 @MultipartConfig
 public class ProductAdminServerlet extends HttpServlet {
+
+    private static final DateTimeFormatter DATE_TIME_LOCAL_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     ProductImageDAO productImageDAO = new ProductImageDAO();
     ProductSizeDAO productSizeDAO = new ProductSizeDAO();
@@ -59,12 +63,16 @@ public class ProductAdminServerlet extends HttpServlet {
 
             out.print("{");
             out.print("\"id\":" + p.getId() + ",");
-            out.print("\"name\":\"" + p.getName() + "\",");
+            out.print("\"name\":\"" + escapeJson(p.getName()) + "\",");
             out.print("\"price\":" + p.getPrice() + ",");
-            out.print("\"description\":\"" + p.getDescription() + "\",");
+            out.print("\"description\":\"" + escapeJson(p.getDescription()) + "\",");
             out.print("\"categoryId\":" + p.getCategory().getId() + ",");
             out.print("\"gender\":\"" + (p.getGender() == null ? "" : p.getGender().name()) + "\",");
             out.print("\"collection\":\"" + (p.getCollectionSeason() == null ? "" : p.getCollectionSeason().name()) + "\",");
+            out.print("\"featured\":" + Boolean.TRUE.equals(p.getFeatured()) + ",");
+            out.print("\"discount\":" + (p.getDiscount() == null ? 0 : p.getDiscount()) + ",");
+            out.print("\"saleStartAt\":\"" + formatDateTimeLocal(p.getSaleStartAt()) + "\",");
+            out.print("\"saleEndAt\":\"" + formatDateTimeLocal(p.getSaleEndAt()) + "\",");
             out.print("\"sizes\":[");
 
             for (int i = 0; i < sizes.size(); i++) {
@@ -145,6 +153,20 @@ public class ProductAdminServerlet extends HttpServlet {
             int categoryId = Integer.parseInt(request.getParameter("category"));
             Gender gender = parseGender(request.getParameter("gender"));
             CollectionSeason collection = parseCollection(request.getParameter("collection"));
+            double discount = clampDiscount(parseDoubleOrDefault(request.getParameter("discount"), 0));
+            boolean featured = request.getParameter("featured") != null;
+            LocalDateTime saleStartAt = parseDateTimeLocal(request.getParameter("saleStartAt"));
+            LocalDateTime saleEndAt = parseDateTimeLocal(request.getParameter("saleEndAt"));
+
+            if (saleStartAt != null && saleEndAt != null && saleEndAt.isBefore(saleStartAt)) {
+                saleEndAt = saleStartAt;
+            }
+
+            if (discount <= 0) {
+                saleStartAt = null;
+                saleEndAt = null;
+            }
+
             if (gender == null) {
                 gender = Gender.MEN;
             }
@@ -161,6 +183,10 @@ public class ProductAdminServerlet extends HttpServlet {
             product.setCategory(category);
             product.setGender(gender);
             product.setCollectionSeason(collection);
+            product.setDiscount(discount);
+            product.setFeatured(featured);
+            product.setSaleStartAt(saleStartAt);
+            product.setSaleEndAt(saleEndAt);
 
             // ===== UPLOAD MULTIPLE IMAGES =====
             for (Part part : request.getParts()) {
@@ -234,6 +260,19 @@ public class ProductAdminServerlet extends HttpServlet {
             int categoryId = Integer.parseInt(request.getParameter("category"));
             Gender gender = parseGender(request.getParameter("gender"));
             CollectionSeason collection = parseCollection(request.getParameter("collection"));
+            double discount = clampDiscount(parseDoubleOrDefault(request.getParameter("discount"), 0));
+            boolean featured = request.getParameter("featured") != null;
+            LocalDateTime saleStartAt = parseDateTimeLocal(request.getParameter("saleStartAt"));
+            LocalDateTime saleEndAt = parseDateTimeLocal(request.getParameter("saleEndAt"));
+
+            if (saleStartAt != null && saleEndAt != null && saleEndAt.isBefore(saleStartAt)) {
+                saleEndAt = saleStartAt;
+            }
+
+            if (discount <= 0) {
+                saleStartAt = null;
+                saleEndAt = null;
+            }
 
             Category category = categoryDAO.findById(categoryId);
 
@@ -250,6 +289,10 @@ public class ProductAdminServerlet extends HttpServlet {
             if (collection != null) {
                 product.setCollectionSeason(collection);
             }
+            product.setDiscount(discount);
+            product.setFeatured(featured);
+            product.setSaleStartAt(saleStartAt);
+            product.setSaleEndAt(saleEndAt);
 
             // ===== XỬ LÝ IMAGE =====
             for (Part part : request.getParts()) {
@@ -333,6 +376,58 @@ public class ProductAdminServerlet extends HttpServlet {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    private double parseDoubleOrDefault(String raw, double defaultValue) {
+        try {
+            return Double.parseDouble(raw);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private double clampDiscount(double discount) {
+        if (discount < 0) {
+            return 0;
+        }
+
+        if (discount > 100) {
+            return 100;
+        }
+
+        return discount;
+    }
+
+    private LocalDateTime parseDateTimeLocal(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+
+        try {
+            return LocalDateTime.parse(raw, DATE_TIME_LOCAL_FORMAT);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String formatDateTimeLocal(LocalDateTime value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.format(DATE_TIME_LOCAL_FORMAT);
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
     }
 
 }

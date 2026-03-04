@@ -150,6 +150,40 @@
                                 </ul>
                             </div>
                             <div class="left-title mb-20">
+                                <h4>Hot</h4>
+                            </div>
+                            <div class="left-menu mb-30">
+                                <ul>
+                                    <c:url var="hotProductsUrl" value="home">
+                                        <c:param name="search" value="hot"/>
+                                        <c:if test="${not empty param.gender}">
+                                            <c:param name="gender" value="${param.gender}"/>
+                                        </c:if>
+                                        <c:if test="${not empty param.sort}">
+                                            <c:param name="sort" value="${param.sort}"/>
+                                        </c:if>
+                                    </c:url>
+                                    <li><a href="${hotProductsUrl}">Hot Products</a></li>
+                                </ul>
+                            </div>
+                            <div class="left-title mb-20">
+                                <h4>Sale</h4>
+                            </div>
+                            <div class="left-menu mb-30">
+                                <ul>
+                                    <c:url var="saleProductsUrl" value="home">
+                                        <c:param name="search" value="sale"/>
+                                        <c:if test="${not empty param.gender}">
+                                            <c:param name="gender" value="${param.gender}"/>
+                                        </c:if>
+                                        <c:if test="${not empty param.sort}">
+                                            <c:param name="sort" value="${param.sort}"/>
+                                        </c:if>
+                                    </c:url>
+                                    <li><a href="${saleProductsUrl}">Sale Products</a></li>
+                                </ul>
+                            </div>
+                            <div class="left-title mb-20">
                                 <h4>Price</h4>
                             </div>
                             <div class="left-menu mb-30">
@@ -393,6 +427,18 @@
                                                 <a href="product-details?id=${p.id}">
                                                     <img src="${pageContext.request.contextPath}/${p.mainImage}" />
                                                 </a>
+                                                <c:if test="${p.hot || p.saleActive}">
+                                                    <div class="product-flag">
+                                                        <ul>
+                                                            <c:if test="${p.hot}">
+                                                                <li><span class="sale">hot</span></li>
+                                                            </c:if>
+                                                            <c:if test="${p.saleActive}">
+                                                                <li><span class="discount-percentage">-${p.discountPercent}%</span></li>
+                                                            </c:if>
+                                                        </ul>
+                                                    </div>
+                                                </c:if>
                                                 <div class="quick-view">
                                                     <a class="action-view" href="#" data-bs-target="#productModal" data-bs-toggle="modal" title="Quick View">
                                                         <i class="fa fa-search-plus"></i>
@@ -405,7 +451,10 @@
                                                 <div class="product-price">
                                                     <ul>
                                                         <a href="product-details?id=${p.id}">
-                                                            <li>$${p.price}</li>
+                                                            <li>$${p.finalPrice}</li>
+                                                            <c:if test="${p.saleActive}">
+                                                                <li class="old-price">$${p.price}</li>
+                                                            </c:if>
                                                         </a>
                                                     </ul>
                                                 </div>

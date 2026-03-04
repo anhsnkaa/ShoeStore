@@ -29,6 +29,12 @@ public class Product {
     @Column(name = "collection")
     private CollectionSeason collectionSeason;
 
+    @Column(name = "saleStartAt")
+    private LocalDateTime saleStartAt;
+
+    @Column(name = "saleEndAt")
+    private LocalDateTime saleEndAt;
+
     // 🔥 Giảm giá (%)
     private Double discount;
 
@@ -65,8 +71,45 @@ public class Product {
 
     // ===== BUSINESS METHOD =====
     public double getFinalPrice() {
+        if (!isSaleActive()) {
+            return price;
+        }
+
         double safeDiscount = (discount == null) ? 0.0 : discount;
+        safeDiscount = Math.max(0.0, Math.min(100.0, safeDiscount));
         return price * (1 - safeDiscount / 100);
+    }
+
+    @Transient
+    public boolean isHot() {
+        return Boolean.TRUE.equals(featured);
+    }
+
+    @Transient
+    public boolean isSaleActive() {
+        if (discount == null || discount <= 0) {
+            return false;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (saleStartAt != null && now.isBefore(saleStartAt)) {
+            return false;
+        }
+
+        if (saleEndAt != null && now.isAfter(saleEndAt)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Transient
+    public int getDiscountPercent() {
+        if (discount == null || discount <= 0) {
+            return 0;
+        }
+
+        return (int) Math.round(discount);
     }
 
     public String getMainImage() {
@@ -144,6 +187,22 @@ public class Product {
 
     public void setDiscount(Double discount) {
         this.discount = discount;
+    }
+
+    public LocalDateTime getSaleStartAt() {
+        return saleStartAt;
+    }
+
+    public void setSaleStartAt(LocalDateTime saleStartAt) {
+        this.saleStartAt = saleStartAt;
+    }
+
+    public LocalDateTime getSaleEndAt() {
+        return saleEndAt;
+    }
+
+    public void setSaleEndAt(LocalDateTime saleEndAt) {
+        this.saleEndAt = saleEndAt;
     }
 
     public Boolean getFeatured() {

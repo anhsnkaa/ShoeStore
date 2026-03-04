@@ -161,6 +161,30 @@ public class HomeController extends HttpServlet {
                     pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + collection + "&gender=" + genderInCollection + sortQuery + "&");
                 }
                 break;
+            case "hot":
+                String genderInHot = normalizeGender(request.getParameter("gender"));
+                if (genderInHot == null) {
+                    totalRecord = productDAO.getTotalHotProducts();
+                    product = productDAO.getHotProducts(page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=hot" + sortQuery + "&");
+                } else {
+                    totalRecord = productDAO.getTotalHotProductsByGender(genderInHot);
+                    product = productDAO.getHotProductsByGender(genderInHot, page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=hot&gender=" + genderInHot + sortQuery + "&");
+                }
+                break;
+            case "sale":
+                String genderInSale = normalizeGender(request.getParameter("gender"));
+                if (genderInSale == null) {
+                    totalRecord = productDAO.getTotalSaleProducts();
+                    product = productDAO.getSaleProducts(page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=sale" + sortQuery + "&");
+                } else {
+                    totalRecord = productDAO.getTotalSaleProductsByGender(genderInSale);
+                    product = productDAO.getSaleProductsByGender(genderInSale, page, sort);
+                    pageControl.setUrlPattern(requestURL + "?search=sale&gender=" + genderInSale + sortQuery + "&");
+                }
+                break;
             case "price":
                 double min = parseDoubleOrDefault(request.getParameter("min"), 0);
                 Double max = parseNullableDouble(request.getParameter("max"));

@@ -94,9 +94,29 @@
                                         </div>
                                         <div class="product-info-price">
                                             <div class="price-final">
-                                                <span>$${product.price}</span>
+                                                <c:choose>
+                                                    <c:when test="${product.saleActive}">
+                                                        <span>$${product.finalPrice}</span>
+                                                        <span class="old-price" style="margin-left:8px; text-decoration:line-through; color:#999;">$${product.price}</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span>$${product.price}</span>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </div>
                                         </div>
+                                        <c:if test="${product.hot || product.saleActive}">
+                                            <div class="product-flag mb-2">
+                                                <ul>
+                                                    <c:if test="${product.hot}">
+                                                        <li><span class="sale">hot</span></li>
+                                                    </c:if>
+                                                    <c:if test="${product.saleActive}">
+                                                        <li><span class="discount-percentage">-${product.discountPercent}%</span></li>
+                                                    </c:if>
+                                                </ul>
+                                            </div>
+                                        </c:if>
                                         <div class="product-add-form">
                                             <form action="${pageContext.request.contextPath}/payment?action=add-product" method="POST" id="addToCartForm">
 

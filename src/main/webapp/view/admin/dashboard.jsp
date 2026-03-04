@@ -106,7 +106,12 @@
                                         <c:forEach items="${listProduct}" var="p">
                                             <tr>
                                                 <td>${p.id}</td>
-                                                <td>${p.name}</td>
+                                                <td>
+                                                    ${p.name}
+                                                    <c:if test="${p.hot}">
+                                                        <span class="badge badge-danger ml-1">HOT</span>
+                                                    </c:if>
+                                                </td>
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty p.images}">
@@ -289,6 +294,10 @@
                             $("#editCategory").val(data.categoryId);
                             $("#editGender").val(data.gender || "MEN");
                             $("#editCollection").val(data.collection || "SPRING");
+                            $("#editFeatured").prop("checked", !!data.featured);
+                            $("#editDiscount").val(data.discount || 0);
+                            $("#editSaleStartAt").val(data.saleStartAt || "");
+                            $("#editSaleEndAt").val(data.saleEndAt || "");
 
                             let html = "";
 
