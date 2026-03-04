@@ -54,12 +54,7 @@
                     </div>
                     <div class="form-group">
                         <label for="collection">Collection: </label>
-                        <select class="custom-select" id="collection" name="collection" required>
-                            <option value="SPRING">Spring</option>
-                            <option value="SUMMER">Summer</option>
-                            <option value="AUTUMN">Autumn</option>
-                            <option value="WINTER">Winter</option>
-                        </select>
+                        <input type="text" class="form-control" id="collection" name="collection" placeholder="Ex: Winter 2026, Limited Drop" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">

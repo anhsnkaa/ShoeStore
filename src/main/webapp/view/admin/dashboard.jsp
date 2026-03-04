@@ -293,7 +293,7 @@
                             $("#editDescription").val(data.description);
                             $("#editCategory").val(data.categoryId);
                             $("#editGender").val(data.gender || "MEN");
-                            $("#editCollection").val(data.collection || "SPRING");
+                            $("#editCollection").val(data.collection || "");
                             $("#editFeatured").prop("checked", !!data.featured);
                             $("#editDiscount").val(data.discount || 0);
                             $("#editSaleStartAt").val(data.saleStartAt || "");

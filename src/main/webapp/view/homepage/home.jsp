@@ -103,50 +103,19 @@
                             </div>
                             <div class="left-menu mb-30">
                                 <ul>
-                                    <c:url var="springCollectionUrl" value="home">
-                                        <c:param name="search" value="collection"/>
-                                        <c:param name="collection" value="SPRING"/>
-                                        <c:if test="${not empty param.gender}">
-                                            <c:param name="gender" value="${param.gender}"/>
-                                        </c:if>
-                                        <c:if test="${not empty param.sort}">
-                                            <c:param name="sort" value="${param.sort}"/>
-                                        </c:if>
-                                    </c:url>
-                                    <c:url var="summerCollectionUrl" value="home">
-                                        <c:param name="search" value="collection"/>
-                                        <c:param name="collection" value="SUMMER"/>
-                                        <c:if test="${not empty param.gender}">
-                                            <c:param name="gender" value="${param.gender}"/>
-                                        </c:if>
-                                        <c:if test="${not empty param.sort}">
-                                            <c:param name="sort" value="${param.sort}"/>
-                                        </c:if>
-                                    </c:url>
-                                    <c:url var="autumnCollectionUrl" value="home">
-                                        <c:param name="search" value="collection"/>
-                                        <c:param name="collection" value="AUTUMN"/>
-                                        <c:if test="${not empty param.gender}">
-                                            <c:param name="gender" value="${param.gender}"/>
-                                        </c:if>
-                                        <c:if test="${not empty param.sort}">
-                                            <c:param name="sort" value="${param.sort}"/>
-                                        </c:if>
-                                    </c:url>
-                                    <c:url var="winterCollectionUrl" value="home">
-                                        <c:param name="search" value="collection"/>
-                                        <c:param name="collection" value="WINTER"/>
-                                        <c:if test="${not empty param.gender}">
-                                            <c:param name="gender" value="${param.gender}"/>
-                                        </c:if>
-                                        <c:if test="${not empty param.sort}">
-                                            <c:param name="sort" value="${param.sort}"/>
-                                        </c:if>
-                                    </c:url>
-                                    <li><a href="${springCollectionUrl}">Spring Collection</a></li>
-                                    <li><a href="${summerCollectionUrl}">Summer Collection</a></li>
-                                    <li><a href="${autumnCollectionUrl}">Autumn Collection</a></li>
-                                    <li><a href="${winterCollectionUrl}">Winter Collection</a></li>
+                                    <c:forEach items="${listCollection}" var="collectionName">
+                                        <c:url var="collectionUrl" value="home">
+                                            <c:param name="search" value="collection"/>
+                                            <c:param name="collection" value="${collectionName}"/>
+                                            <c:if test="${not empty param.gender}">
+                                                <c:param name="gender" value="${param.gender}"/>
+                                            </c:if>
+                                            <c:if test="${not empty param.sort}">
+                                                <c:param name="sort" value="${param.sort}"/>
+                                            </c:if>
+                                        </c:url>
+                                        <li><a href="${collectionUrl}">${collectionName}</a></li>
+                                    </c:forEach>
                                 </ul>
                             </div>
                             <div class="left-title mb-20">

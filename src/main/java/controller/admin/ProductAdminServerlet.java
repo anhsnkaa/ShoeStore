@@ -26,7 +26,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
-import model.CollectionSeason;
 import model.Gender;
 import model.Product;
 import model.ProductImage;
@@ -70,7 +69,7 @@ public class ProductAdminServerlet extends HttpServlet {
             out.print("\"description\":\"" + escapeJson(p.getDescription()) + "\",");
             out.print("\"categoryId\":" + p.getCategory().getId() + ",");
             out.print("\"gender\":\"" + (p.getGender() == null ? "" : p.getGender().name()) + "\",");
-            out.print("\"collection\":\"" + (p.getCollectionSeason() == null ? "" : p.getCollectionSeason().name()) + "\",");
+            out.print("\"collection\":\"" + escapeJson(p.getCollectionSeason()) + "\",");
             out.print("\"featured\":" + Boolean.TRUE.equals(p.getFeatured()) + ",");
             out.print("\"discount\":" + (p.getDiscount() == null ? 0 : p.getDiscount()) + ",");
             out.print("\"saleStartAt\":\"" + formatDateTimeLocal(p.getSaleStartAt()) + "\",");
@@ -154,7 +153,7 @@ public class ProductAdminServerlet extends HttpServlet {
             //get categoryid
             int categoryId = Integer.parseInt(request.getParameter("category"));
             Gender gender = parseGender(request.getParameter("gender"));
-            CollectionSeason collection = parseCollection(request.getParameter("collection"));
+            String collection = parseCollection(request.getParameter("collection"));
             double discount = clampDiscount(parseDoubleOrDefault(request.getParameter("discount"), 0));
             boolean featured = request.getParameter("featured") != null;
             LocalDateTime saleStartAt = parseDateTimeLocal(request.getParameter("saleStartAt"));
@@ -171,9 +170,6 @@ public class ProductAdminServerlet extends HttpServlet {
 
             if (gender == null) {
                 gender = Gender.MEN;
-            }
-            if (collection == null) {
-                collection = CollectionSeason.SPRING;
             }
             Category category = categoryDAO.findById(categoryId);
             //image
@@ -233,7 +229,7 @@ public class ProductAdminServerlet extends HttpServlet {
             String description = request.getParameter("description");
             int categoryId = Integer.parseInt(request.getParameter("category"));
             Gender gender = parseGender(request.getParameter("gender"));
-            CollectionSeason collection = parseCollection(request.getParameter("collection"));
+            String collection = parseCollection(request.getParameter("collection"));
             double discount = clampDiscount(parseDoubleOrDefault(request.getParameter("discount"), 0));
             boolean featured = request.getParameter("featured") != null;
             LocalDateTime saleStartAt = parseDateTimeLocal(request.getParameter("saleStartAt"));
@@ -260,9 +256,7 @@ public class ProductAdminServerlet extends HttpServlet {
             if (gender != null) {
                 product.setGender(gender);
             }
-            if (collection != null) {
-                product.setCollectionSeason(collection);
-            }
+            product.setCollectionSeason(collection);
             product.setDiscount(discount);
             product.setFeatured(featured);
             product.setSaleStartAt(saleStartAt);
@@ -322,16 +316,12 @@ public class ProductAdminServerlet extends HttpServlet {
         }
     }
 
-    private CollectionSeason parseCollection(String rawCollection) {
+    private String parseCollection(String rawCollection) {
         if (rawCollection == null || rawCollection.isBlank()) {
             return null;
         }
 
-        try {
-            return CollectionSeason.valueOf(rawCollection.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return rawCollection.trim();
     }
 
     private double parseDoubleOrDefault(String raw, double defaultValue) {

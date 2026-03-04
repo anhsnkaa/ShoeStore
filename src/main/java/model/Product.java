@@ -25,9 +25,8 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "collection")
-    private CollectionSeason collectionSeason;
+    @Column(name = "collection", columnDefinition = "NVARCHAR(100)")
+    private String collectionSeason;
 
     @Column(name = "saleStartAt")
     private LocalDateTime saleStartAt;
@@ -66,7 +65,6 @@ public class Product {
         this.createdDate = LocalDateTime.now();
         this.discount = 0.0;
         this.featured = false;
-        this.collectionSeason = CollectionSeason.SPRING;
     }
 
     // ===== BUSINESS METHOD =====
@@ -173,12 +171,17 @@ public class Product {
         this.gender = gender;
     }
 
-    public CollectionSeason getCollectionSeason() {
+    public String getCollectionSeason() {
         return collectionSeason;
     }
 
-    public void setCollectionSeason(CollectionSeason collectionSeason) {
-        this.collectionSeason = collectionSeason;
+    public void setCollectionSeason(String collectionSeason) {
+        if (collectionSeason == null || collectionSeason.isBlank()) {
+            this.collectionSeason = null;
+            return;
+        }
+
+        this.collectionSeason = collectionSeason.trim();
     }
 
     public Double getDiscount() {

@@ -8,7 +8,6 @@ import dal.JPAUtil;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import model.CollectionSeason;
 import model.Gender;
 import model.Product;
 
@@ -134,13 +133,19 @@ public class ProductDAO {
 
     public List<Product> getProductByCollection(String collection, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedCollection = normalizeCollectionValue(collection);
+
+        if (normalizedCollection == null) {
+            em.close();
+            return List.of();
+        }
 
         String jpql = "SELECT p FROM Product p "
-                + "WHERE p.collectionSeason = :collection"
+                + "WHERE UPPER(p.collectionSeason) = :collection"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
-                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setParameter("collection", normalizedCollection)
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
                 .getResultList();
@@ -151,14 +156,20 @@ public class ProductDAO {
 
     public List<Product> getProductByCollectionAndGender(String collection, String gender, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedCollection = normalizeCollectionValue(collection);
+
+        if (normalizedCollection == null) {
+            em.close();
+            return List.of();
+        }
 
         String jpql = "SELECT p FROM Product p "
-                + "WHERE p.collectionSeason = :collection "
+                + "WHERE UPPER(p.collectionSeason) = :collection "
                 + "AND p.gender = :gender"
                 + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
-                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setParameter("collection", normalizedCollection)
                 .setParameter("gender", Gender.valueOf(gender))
                 .setFirstResult((page - 1) * PAGE_SIZE)
                 .setMaxResults(PAGE_SIZE)
@@ -348,11 +359,17 @@ public class ProductDAO {
 
     public int getTotalRecordByCollection(String collection) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedCollection = normalizeCollectionValue(collection);
+
+        if (normalizedCollection == null) {
+            em.close();
+            return 0;
+        }
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p WHERE p.collectionSeason = :collection",
+                "SELECT COUNT(p) FROM Product p WHERE UPPER(p.collectionSeason) = :collection",
                 Long.class)
-                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setParameter("collection", normalizedCollection)
                 .getSingleResult();
 
         em.close();
@@ -361,18 +378,56 @@ public class ProductDAO {
 
     public int getTotalRecordByCollectionAndGender(String collection, String gender) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
+        String normalizedCollection = normalizeCollectionValue(collection);
+
+        if (normalizedCollection == null) {
+            em.close();
+            return 0;
+        }
 
         Long total = em.createQuery(
                 "SELECT COUNT(p) FROM Product p "
-                + "WHERE p.collectionSeason = :collection "
+                + "WHERE UPPER(p.collectionSeason) = :collection "
                 + "AND p.gender = :gender",
                 Long.class)
-                .setParameter("collection", CollectionSeason.valueOf(collection))
+                .setParameter("collection", normalizedCollection)
                 .setParameter("gender", Gender.valueOf(gender))
                 .getSingleResult();
 
         em.close();
         return total.intValue();
+    }
+
+    public List<String> getAllCollections() {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        List<String> list = em.createQuery(
+                "SELECT DISTINCT p.collectionSeason FROM Product p "
+                + "WHERE p.collectionSeason IS NOT NULL "
+                + "AND TRIM(p.collectionSeason) <> '' "
+                + "ORDER BY p.collectionSeason",
+                String.class)
+                .getResultList();
+
+        em.close();
+        return list;
+    }
+
+    public List<String> getCollectionsByGender(String gender) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        List<String> list = em.createQuery(
+                "SELECT DISTINCT p.collectionSeason FROM Product p "
+                + "WHERE p.collectionSeason IS NOT NULL "
+                + "AND TRIM(p.collectionSeason) <> '' "
+                + "AND p.gender = :gender "
+                + "ORDER BY p.collectionSeason",
+                String.class)
+                .setParameter("gender", Gender.valueOf(gender))
+                .getResultList();
+
+        em.close();
+        return list;
     }
 
     public int getTotalHotProducts() {
@@ -560,5 +615,13 @@ public class ProductDAO {
             default:
                 return " ORDER BY p.id DESC";
         }
+    }
+
+    private String normalizeCollectionValue(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+
+        return raw.trim().toUpperCase();
     }
 }

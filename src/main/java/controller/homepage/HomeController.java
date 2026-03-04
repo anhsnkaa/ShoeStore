@@ -7,11 +7,13 @@ package controller.homepage;
 import dal.implement.CategoryDAO;
 import dal.implement.ProductDAO;
 import java.io.IOException;
+import java.net.URLEncoder;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import model.Category;
 import model.PageControl;
@@ -41,11 +43,15 @@ public class HomeController extends HttpServlet {
         List<Category> listCategory = selectedGender == null
                 ? categoryDAO.getAllCategories()
                 : categoryDAO.getCategoriesByGender(selectedGender);
+        List<String> listCollection = selectedGender == null
+                ? productDAO.getAllCollections()
+                : productDAO.getCollectionsByGender(selectedGender);
 
         // Day du lieu vao session de jsp dung truc tiep.
         HttpSession session = request.getSession();
         session.setAttribute("listProduct", listProduct);
         session.setAttribute("listCategory", listCategory);
+        session.setAttribute("listCollection", listCollection);
         session.setAttribute("pageControl", pageControl);
         request.setAttribute("selectedGender", selectedGender);
         // Chuyen huong den trang home.jsp.
@@ -150,15 +156,16 @@ public class HomeController extends HttpServlet {
                     pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
                     break;
                 }
+                String encodedCollection = encodeQueryParam(collection);
 
                 if (genderInCollection == null) {
                     totalRecord = productDAO.getTotalRecordByCollection(collection);
                     product = productDAO.getProductByCollection(collection, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + collection + sortQuery + "&");
+                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + encodedCollection + sortQuery + "&");
                 } else {
                     totalRecord = productDAO.getTotalRecordByCollectionAndGender(collection, genderInCollection);
                     product = productDAO.getProductByCollectionAndGender(collection, genderInCollection, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + collection + "&gender=" + genderInCollection + sortQuery + "&");
+                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + encodedCollection + "&gender=" + genderInCollection + sortQuery + "&");
                 }
                 break;
             case "hot":
@@ -289,15 +296,10 @@ public class HomeController extends HttpServlet {
             return null;
         }
 
-        String normalized = rawCollection.trim().toUpperCase();
-        switch (normalized) {
-            case "SPRING":
-            case "SUMMER":
-            case "AUTUMN":
-            case "WINTER":
-                return normalized;
-            default:
-                return null;
-        }
+        return rawCollection.trim();
+    }
+
+    private String encodeQueryParam(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
