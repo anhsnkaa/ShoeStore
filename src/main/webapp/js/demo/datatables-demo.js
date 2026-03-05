@@ -1,8 +1,6 @@
 // Call the dataTables jQuery plugin
-$(document).ready(function() {
-  $('#dataTable').DataTable();
+$(document).ready(function () {
+    $('#dataTable').DataTable({
+        colReorder: true
+    });
 });
-
-$('#dataTable').DataTable( {
-  colReorder: true
-} );

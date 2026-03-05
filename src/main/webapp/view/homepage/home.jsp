@@ -394,7 +394,7 @@
                                             <!-- single-product-start -->
                                             <div class="product-img">
                                                 <a href="product-details?id=${p.id}">
-                                                    <img src="${pageContext.request.contextPath}/${p.mainImage}" />
+                                                    <img src="${pageContext.request.contextPath}/${p.mainImage}" loading="lazy" decoding="async" alt="${p.name}" />
                                                 </a>
                                                 <c:if test="${p.hot || p.saleActive}">
                                                     <div class="product-flag">
@@ -444,11 +444,46 @@
                         <div class="pagination-area mt-50">
                             <div class="page-number">
                                 <ul>
-                                    <c:forEach begin="1" end="${pageControl.totalPage}" var="pageNumber">
-                                        <!--<li><a href="#" class="active">1</a></li>-->
-                                        <li><a href="${pageControl.urlPattern}page=${pageNumber}" class="active">${pageNumber}</a></li>
-                                        </c:forEach>
-                                    <li><a href="#" class="angle"><i class="fa fa-angle-right"></i></a></li>
+                                    <c:set var="currentPage" value="${pageControl.page lt 1 ? 1 : pageControl.page}"/>
+                                    <c:set var="totalPage" value="${pageControl.totalPage lt 1 ? 1 : pageControl.totalPage}"/>
+                                    <c:set var="startPage" value="${currentPage - 2}"/>
+                                    <c:if test="${startPage lt 1}">
+                                        <c:set var="startPage" value="1"/>
+                                    </c:if>
+
+                                    <c:set var="endPage" value="${startPage + 4}"/>
+                                    <c:if test="${endPage gt totalPage}">
+                                        <c:set var="endPage" value="${totalPage}"/>
+                                    </c:if>
+
+                                    <c:if test="${endPage - startPage lt 4}">
+                                        <c:set var="startPage" value="${endPage - 4}"/>
+                                    </c:if>
+                                    <c:if test="${startPage lt 1}">
+                                        <c:set var="startPage" value="1"/>
+                                    </c:if>
+
+                                    <c:if test="${currentPage gt 1}">
+                                        <li>
+                                            <a href="${pageControl.urlPattern}page=${currentPage - 1}" class="angle">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                        </li>
+                                    </c:if>
+
+                                    <c:forEach begin="${startPage}" end="${endPage}" var="pageNumber">
+                                        <li>
+                                            <a href="${pageControl.urlPattern}page=${pageNumber}" class="${pageNumber == currentPage ? 'active' : ''}">${pageNumber}</a>
+                                        </li>
+                                    </c:forEach>
+
+                                    <c:if test="${currentPage lt totalPage}">
+                                        <li>
+                                            <a href="${pageControl.urlPattern}page=${currentPage + 1}" class="angle">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                        </li>
+                                    </c:if>
                                 </ul>
                             </div>
                         </div>

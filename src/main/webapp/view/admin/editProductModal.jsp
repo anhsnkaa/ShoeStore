@@ -37,10 +37,14 @@
                     </div>
                     <!-- Category -->
                     <div class="form-group">
+                        <label>Gender</label>
+                        <select class="form-control" id="editGender" onchange="filterCategoryByGender('editGender', 'editCategory')"></select>
+                    </div>
+                    <div class="form-group">
                         <label>Category</label>
                         <select class="form-control" name="category" id="editCategory">
                             <c:forEach items="${listCategory}" var="c">
-                                <option value="${c.id}">${c.name} <c:if test="${not empty c.gender and not empty c.gender.name}">(${c.gender.name})</c:if></option>
+                                <option value="${c.id}" data-gender="${c.gender.name}">${c.name}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -70,31 +74,6 @@
                             <input type="datetime-local" class="form-control" name="saleEndAt" id="editSaleEndAt">
                         </div>
                     </div>
-                    <!--Image-->
-                    <div class="form-group">
-                        <label>Images:</label>
-
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Upload</span>
-                            </div>
-                            <div class="custom-file">
-                                <input type="file"
-                                       class="custom-file-input"
-                                       id="editImages"
-                                       name="images"
-                                       multiple
-                                       onchange="previewEditImages(this)">
-                                <label class="custom-file-label">
-                                    Choose files
-                                </label>
-                            </div>
-                        </div>
-                        <small class="form-text text-muted">Upload ảnh mới sẽ thay toàn bộ ảnh cũ của sản phẩm.</small>
-
-                        <!-- Preview nhiều ảnh -->
-                        <div id="editPreviewContainer" class="row mt-2"></div>
-                    </div>
                     <!-- Description -->
                     <div class="form-group">
                         <label>Description</label>
@@ -119,6 +98,16 @@
                         <tbody id="editSizeTable"></tbody>
                     </table>
 
+                    <!-- Images by color -->
+                    <div class="form-group">
+                        <div class="mb-2">
+                            <label class="mb-0">Replace Images by Color</label>
+                        </div>
+                        <small class="form-text text-muted mb-2">After updating variants, upload image(s) for a color to replace that color only. Leave empty to keep existing images of that color.</small>
+                        <div id="editImageByColorContainer"></div>
+                        <div id="editImagePreviewByColor" class="mt-2"></div>
+                    </div>
+
                 </form>
 
             </div>
@@ -133,35 +122,37 @@
         </div>
     </div>
     <script>
-        function previewEditImages(input) {
-
-            let previewContainer = document.getElementById("editPreviewContainer");
-            previewContainer.innerHTML = "";
-
-            if (input.files.length > 0) {
-
-                for (let i = 0; i < input.files.length; i++) {
-
-                    let reader = new FileReader();
-
-                    reader.onload = function (e) {
-
-                        let col = document.createElement("div");
-                        col.className = "col-md-4 mb-2";
-
-                        let img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.className = "img-fluid img-thumbnail";
-                        img.style.height = "150px";
-                        img.style.objectFit = "cover";
-
-                        col.appendChild(img);
-                        previewContainer.appendChild(col);
-                    };
-
-                    reader.readAsDataURL(input.files[i]);
-                }
+        (function initEditGenderCategory() {
+            if (typeof initGenderCategoryFilter === "function") {
+                initGenderCategoryFilter('editGender', 'editCategory');
             }
-        }
+        })();
+
+        (function initEditFormValidation() {
+            let editForm = document.getElementById("editForm");
+            if (!editForm) {
+                return;
+            }
+
+            editForm.addEventListener("submit", function (event) {
+                if (typeof validateVariantRows === "function") {
+                    let variantValidation = validateVariantRows("editSizeTable");
+                    if (!variantValidation.valid) {
+                        event.preventDefault();
+                        alert(variantValidation.message);
+                        return;
+                    }
+
+                    if (typeof validateColorSectionSync === "function") {
+                        let syncValidation = validateColorSectionSync("editImageByColorContainer", variantValidation.colors);
+                        if (!syncValidation.valid) {
+                            event.preventDefault();
+                            alert(syncValidation.message);
+                            return;
+                        }
+                    }
+                }
+            });
+        })();
         </script>
 </div>

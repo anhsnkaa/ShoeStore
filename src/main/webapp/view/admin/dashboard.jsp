@@ -68,6 +68,29 @@
                             <c:remove var="authMessage" scope="session"/>
                         </c:if>
 
+                        <c:if test="${not empty sessionScope.productMessage}">
+                            <c:choose>
+                                <c:when test="${sessionScope.productType == 'success'}">
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        ${sessionScope.productMessage}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        ${sessionScope.productMessage}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:remove var="productType" scope="session"/>
+                            <c:remove var="productMessage" scope="session"/>
+                        </c:if>
+
                           <!-- Icon Cards-->
                       <jsp:include page="../common/admin/iconcard.jsp"></jsp:include>
                         <!-- Area Chart Example-->
@@ -112,12 +135,14 @@
                                                 </td>
                                                 <td>
                                                     <c:choose>
-                                                        <c:when test="${not empty p.images}">
-                                                            <img src="${pageContext.request.contextPath}/${p.images[0].imageUrl}"
-                                                                 width="80"
-                                                                 height="80"
-                                                                 style="object-fit: cover;">
-                                                        </c:when>
+                                                         <c:when test="${not empty p.images}">
+                                                             <img src="${pageContext.request.contextPath}/${p.images[0].imageUrl}"
+                                                                  width="80"
+                                                                  height="80"
+                                                                 loading="lazy"
+                                                                 decoding="async"
+                                                                  style="object-fit: cover;">
+                                                         </c:when>
                                                         <c:otherwise>
                                                             No Image
                                                         </c:otherwise>
@@ -279,6 +304,113 @@
                     document.getElementById("deleteProductName").innerText =
                             "Delete product: " + name + "?";
                 }
+
+                function normalizeGenderValue(rawValue) {
+                    if (!rawValue) {
+                        return "";
+                    }
+
+                    return String(rawValue).trim().toUpperCase();
+                }
+
+                function initGenderCategoryFilter(genderSelectId, categorySelectId, preferredCategoryId) {
+                    var genderSelect = document.getElementById(genderSelectId);
+                    var categorySelect = document.getElementById(categorySelectId);
+
+                    if (!genderSelect || !categorySelect) {
+                        return;
+                    }
+
+                    var previousGender = normalizeGenderValue(genderSelect.value);
+                    var genders = [];
+
+                    for (var i = 0; i < categorySelect.options.length; i++) {
+                        var optionGender = normalizeGenderValue(categorySelect.options[i].getAttribute("data-gender"));
+                        if (!optionGender) {
+                            continue;
+                        }
+
+                        if (genders.indexOf(optionGender) === -1) {
+                            genders.push(optionGender);
+                        }
+                    }
+
+                    genders.sort();
+
+                    genderSelect.innerHTML = "";
+                    for (var j = 0; j < genders.length; j++) {
+                        var option = document.createElement("option");
+                        option.value = genders[j];
+                        option.textContent = genders[j];
+                        genderSelect.appendChild(option);
+                    }
+
+                    if (genders.length === 0) {
+                        return;
+                    }
+
+                    if (preferredCategoryId !== undefined && preferredCategoryId !== null && preferredCategoryId !== "") {
+                        for (var k = 0; k < categorySelect.options.length; k++) {
+                            var categoryOption = categorySelect.options[k];
+                            if (String(categoryOption.value) === String(preferredCategoryId)) {
+                                var matchedGender = normalizeGenderValue(categoryOption.getAttribute("data-gender"));
+                                if (matchedGender) {
+                                    genderSelect.value = matchedGender;
+                                }
+                                break;
+                            }
+                        }
+                    } else if (previousGender && genders.indexOf(previousGender) !== -1) {
+                        genderSelect.value = previousGender;
+                    } else {
+                        genderSelect.value = genders[0];
+                    }
+
+                    filterCategoryByGender(genderSelectId, categorySelectId, preferredCategoryId);
+                }
+
+                function filterCategoryByGender(genderSelectId, categorySelectId, preferredCategoryId) {
+                    var genderSelect = document.getElementById(genderSelectId);
+                    var categorySelect = document.getElementById(categorySelectId);
+
+                    if (!genderSelect || !categorySelect) {
+                        return;
+                    }
+
+                    var selectedGender = normalizeGenderValue(genderSelect.value);
+                    var firstVisible = null;
+                    var preferredVisible = null;
+
+                    for (var i = 0; i < categorySelect.options.length; i++) {
+                        var option = categorySelect.options[i];
+                        var optionGender = normalizeGenderValue(option.getAttribute("data-gender"));
+                        var matched = selectedGender === "" || optionGender === selectedGender;
+
+                        option.hidden = !matched;
+                        option.disabled = !matched;
+
+                        if (matched) {
+                            if (!firstVisible) {
+                                firstVisible = option;
+                            }
+
+                            if (preferredCategoryId !== undefined
+                                    && preferredCategoryId !== null
+                                    && String(option.value) === String(preferredCategoryId)) {
+                                preferredVisible = option;
+                            }
+                        }
+                    }
+
+                    if (preferredVisible) {
+                        categorySelect.value = preferredVisible.value;
+                    } else if (firstVisible) {
+                        categorySelect.value = firstVisible.value;
+                    } else {
+                        categorySelect.selectedIndex = -1;
+                    }
+                }
+
                 function loadEditProduct(button) {
 
                     let id = button.dataset.id;
@@ -299,7 +431,7 @@
                             $("#editName").val(data.name);
                             $("#editPrice").val(data.price);
                             $("#editDescription").val(data.description);
-                            $("#editCategory").val(data.categoryId);
+                            initGenderCategoryFilter("editGender", "editCategory", data.categoryId);
                             $("#editCollection").val(data.collection || "");
                             $("#editFeatured").prop("checked", !!data.featured);
                             $("#editDiscount").val(data.discount || 0);
@@ -315,6 +447,9 @@
                             } else {
                                 addVariantRow("editSizeTable", "", 36, 0);
                             }
+
+                            syncColorImageSections("editSizeTable", "editImageByColorContainer");
+                            renderExistingImagesByColor(data.images || [], "editImagePreviewByColor");
                         }
                     });
                 }
@@ -342,6 +477,7 @@
                             for (var i = 0; i < data.length; i++) {
 
                                 html += "<div class='col-md-3 mb-3'>";
+                                html += "<div class='small text-muted mb-1'>" + (data[i].color || "") + "</div>";
                                 html += "<img src='${pageContext.request.contextPath}/" + data[i].imageUrl +
                                         "' class='img-fluid img-thumbnail'>";
                                 html += "</div>";
@@ -400,8 +536,6 @@
         <!-- Demo scripts for this page-->
         <script src="${pageContext.request.contextPath}/js/demo/datatables-demo.js"></script>
         <script src="${pageContext.request.contextPath}/js/demo/chart-area-demo.js"></script>
-        <script src="${pageContext.request.contextPath}/js/colReorder-dataTables-min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/colReorder-bootstrap4-min.js"></script>
 
 
     </body>

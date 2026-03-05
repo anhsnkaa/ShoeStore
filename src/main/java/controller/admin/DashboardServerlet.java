@@ -8,6 +8,7 @@ import dal.implement.AnswerDAO;
 import dal.implement.CategoryDAO;
 import dal.implement.OrderDAO;
 import dal.implement.ProductDAO;
+import dal.implement.ProductImageDAO;
 import dal.implement.ProductSizeDAO;
 import dal.implement.QuestionDAO;
 import java.io.IOException;
@@ -16,10 +17,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Category;
 import model.Product;
+import model.ProductImage;
 import model.ProductSize;
 
 /**
@@ -30,6 +31,7 @@ public class DashboardServerlet extends HttpServlet {
 
     ProductSizeDAO productSizeDAO = new ProductSizeDAO();
     ProductDAO productDAO = new ProductDAO();
+    ProductImageDAO productImageDAO = new ProductImageDAO();
     CategoryDAO categoryDAO = new CategoryDAO();
     OrderDAO orderDAO = new OrderDAO();
     QuestionDAO questionDAO = new QuestionDAO();
@@ -38,7 +40,6 @@ public class DashboardServerlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
         int pendingQuestionCount = questionDAO.getPendingQuestionCount();
         int pendingAnswerCount = answerDAO.getPendingAnswerCount();
         int notificationCount = pendingQuestionCount + pendingAnswerCount;
@@ -46,8 +47,7 @@ public class DashboardServerlet extends HttpServlet {
         if ("getImages".equals(action)) {
 
             int id = Integer.parseInt(request.getParameter("id"));
-
-            Product product = productDAO.getProductById(id);
+            List<ProductImage> images = productImageDAO.getByProductId(id);
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -55,13 +55,14 @@ public class DashboardServerlet extends HttpServlet {
             PrintWriter out = response.getWriter();
 
             out.print("[");
-            for (int i = 0; i < product.getImages().size(); i++) {
+            for (int i = 0; i < images.size(); i++) {
 
                 out.print("{");
-                out.print("\"imageUrl\":\"" + product.getImages().get(i).getImageUrl() + "\"");
+                out.print("\"color\":\"" + escapeJson(images.get(i).getColor()) + "\",");
+                out.print("\"imageUrl\":\"" + escapeJson(images.get(i).getImageUrl()) + "\"");
                 out.print("}");
 
-                if (i < product.getImages().size() - 1) {
+                if (i < images.size() - 1) {
                     out.print(",");
                 }
             }
@@ -96,7 +97,6 @@ public class DashboardServerlet extends HttpServlet {
                 if (i < sizes.size() - 1) {
                     out.print(",");
                 }
-                System.out.println(ps.toString());
             }
             out.print("]");
 
@@ -108,8 +108,8 @@ public class DashboardServerlet extends HttpServlet {
         List<Product> listProduct = productDAO.getAllProducts();
         //get ve list categoryDAO
         List<Category> listCategory = categoryDAO.getAllCategories();
-        int orderCount = orderDAO.getAllOrders().size();
         long totalOrderCount = orderDAO.getTotalOrderCount();
+        int orderCount = totalOrderCount > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) totalOrderCount;
         double totalRevenue = orderDAO.getTotalRevenue();
         double avgOrderValue = orderDAO.getAverageOrderValue();
         double maxOrderValue = orderDAO.getMaxOrderValue();
@@ -121,8 +121,8 @@ public class DashboardServerlet extends HttpServlet {
         request.setAttribute("maxOrderValue", maxOrderValue);
         request.setAttribute("minOrderValue", minOrderValue);
         request.setAttribute("orderCount", orderCount);
-        session.setAttribute("listProduct", listProduct);
-        session.setAttribute("listCategory", listCategory);
+        request.setAttribute("listProduct", listProduct);
+        request.setAttribute("listCategory", listCategory);
         request.setAttribute("notificationCount", notificationCount);
         request.getRequestDispatcher("../view/admin/dashboard.jsp").forward(request, response);
     }

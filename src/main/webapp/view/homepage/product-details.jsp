@@ -64,18 +64,17 @@
                             <div class="product-main-area">
                                 <div class="row">
                                     <div class="col-lg-5 col-md-6 col-12">
-                                        <div class="flexslider">
-                                            <ul class="slides">
+                                        <div class="product-gallery-main mb-3">
+                                            <img id="mainProductImage" src="${pageContext.request.contextPath}/${product.mainImage}" alt="${product.name}" style="width:100%; max-height:520px; object-fit:cover; border:1px solid #eee; border-radius:6px;">
+                                        </div>
+                                        <div id="productThumbList" class="d-flex flex-wrap">
                                             <c:forEach items="${product.images}" var="img">
-
-                                                <li data-thumb="${pageContext.request.contextPath}/${img.imageUrl}">
-                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}" />
-                                                </li>
-
+                                                <button type="button" class="btn p-0 mr-2 mb-2 border product-thumb-btn" data-color="${img.color}" data-src="${pageContext.request.contextPath}/${img.imageUrl}" style="width:72px; height:72px; overflow:hidden; border-radius:4px;">
+                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+                                                </button>
                                             </c:forEach>
-                                        </ul>
+                                        </div>
                                     </div>
-                                </div>
                                 <div class="col-lg-7 col-md-6 col-12">
                                     <div class="product-info-main">
                                         <div class="page-title">
@@ -121,43 +120,27 @@
                                             <form action="${pageContext.request.contextPath}/payment?action=add-product" method="POST" id="addToCartForm">
 
                                                 <input type="hidden" name="productId" value="${product.id}">
+                                                <input type="hidden" name="color" id="selectedColorInput">
+                                                <input type="hidden" name="sizeId" id="selectedSizeIdInput">
 
                                                 <!-- COLOR -->
                                                 <div class="choose-color mb-3">
                                                     <p>Color</p>
-                                                    <select id="colorSelect" name="color" class="form-control" required>
-                                                        <c:choose>
-                                                            <c:when test="${empty listColor}">
-                                                                <option value="" disabled selected>No color available</option>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:forEach items="${listColor}" var="colorName">
-                                                                    <option value="${colorName}">${colorName}</option>
-                                                                </c:forEach>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </select>
+                                                    <div id="colorButtonGroup" class="d-flex flex-wrap">
+                                                        <c:forEach items="${listColor}" var="colorName">
+                                                            <button type="button" class="btn btn-outline-dark btn-sm mr-2 mb-2 color-option-btn" data-color="${colorName}">${colorName}</button>
+                                                        </c:forEach>
+                                                    </div>
+                                                    <c:if test="${empty listColor}">
+                                                        <small class="form-text text-danger">No color available.</small>
+                                                    </c:if>
                                                 </div>
 
                                                 <!-- SIZE -->
                                                 <div class="choose-size mb-3">
                                                     <p>Size</p>
-                                                    <select id="sizeSelect" name="sizeId" class="form-control" required>
-                                                        <c:forEach items="${listProductSize}" var="s">
-                                                            <c:choose>
-                                                                <c:when test="${s.quantity > 0}">
-                                                                    <option value="${s.id}" data-color="${s.color}" data-qty="${s.quantity}">
-                                                                        ${s.size} - Available ${s.quantity}
-                                                                    </option>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <option disabled>
-                                                                        ${s.size} - Out of stock
-                                                                    </option>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </c:forEach>
-                                                    </select>
+                                                    <select id="sizeSelect" class="form-control"></select>
+                                                    <small id="stockHintText" class="form-text text-muted"></small>
                                                 </div>
 
 
@@ -165,10 +148,15 @@
                                                     <input id="qtyInput" class="qty" type="number" value="1" name="quantity" min="1" required>
                                                 </div>
 
-                                                <button type="submit" class="btn btn-dark">
+                                                <button type="submit" class="btn btn-dark" id="addToCartButton">
                                                     Add to cart
                                                 </button>
 
+                                                <div id="sizeStockData" class="d-none">
+                                                    <c:forEach items="${listProductSize}" var="s">
+                                                        <span class="size-stock-item" data-color="${s.color}" data-size="${s.size}" data-size-id="${s.id}" data-qty="${s.quantity}"></span>
+                                                    </c:forEach>
+                                                </div>
 
                                             </form>
                                         </div>
@@ -791,104 +779,293 @@
                     }
                 }
 
-                var sizeSelect = document.getElementById("sizeSelect");
-                var colorSelect = document.getElementById("colorSelect");
-                var qtyInput = document.getElementById("qtyInput");
                 var addToCartForm = document.getElementById("addToCartForm");
-                var submitButton = addToCartForm ? addToCartForm.querySelector("button[type='submit']") : null;
+                var mainImage = document.getElementById("mainProductImage");
+                var qtyInput = document.getElementById("qtyInput");
+                var addToCartButton = document.getElementById("addToCartButton");
+                var selectedColorInput = document.getElementById("selectedColorInput");
+                var selectedSizeIdInput = document.getElementById("selectedSizeIdInput");
+                var stockHintText = document.getElementById("stockHintText");
+                var sizeSelect = document.getElementById("sizeSelect");
+                var colorButtons = document.querySelectorAll(".color-option-btn");
+                var thumbButtons = document.querySelectorAll(".product-thumb-btn");
+                var sizeStockItems = document.querySelectorAll("#sizeStockData .size-stock-item");
 
-                function syncMaxQuantity() {
-                    if (!sizeSelect || !qtyInput || sizeSelect.selectedIndex < 0) {
-                        if (submitButton) {
-                            submitButton.disabled = true;
+                var selectedColor = "";
+                var stockByColor = {};
+
+                function normalizeColor(value) {
+                    if (!value) {
+                        return "";
+                    }
+
+                    return String(value).trim().toUpperCase();
+                }
+
+                for (var i = 0; i < sizeStockItems.length; i++) {
+                    var stockItem = sizeStockItems[i];
+                    var color = normalizeColor(stockItem.getAttribute("data-color"));
+                    var size = parseInt(stockItem.getAttribute("data-size") || "0", 10);
+                    var sizeId = parseInt(stockItem.getAttribute("data-size-id") || "0", 10);
+                    var qty = parseInt(stockItem.getAttribute("data-qty") || "0", 10);
+
+                    if (!color || isNaN(size) || size <= 0 || isNaN(sizeId) || sizeId <= 0 || isNaN(qty) || qty < 0) {
+                        continue;
+                    }
+
+                    if (!stockByColor[color]) {
+                        stockByColor[color] = {};
+                    }
+
+                    stockByColor[color][size] = {
+                        sizeId: sizeId,
+                        qty: qty
+                    };
+                }
+
+                function setMainImage(src) {
+                    if (mainImage && src) {
+                        mainImage.src = src;
+                    }
+                }
+
+                function setActiveThumb(activeButton) {
+                    for (var i = 0; i < thumbButtons.length; i++) {
+                        thumbButtons[i].classList.remove("border-dark");
+                    }
+
+                    if (activeButton) {
+                        activeButton.classList.add("border-dark");
+                    }
+                }
+
+                function filterImagesByColor(color) {
+                    var firstMatchedThumb = null;
+
+                    for (var i = 0; i < thumbButtons.length; i++) {
+                        var thumbButton = thumbButtons[i];
+                        var thumbColor = normalizeColor(thumbButton.getAttribute("data-color"));
+                        var matched = !color || !thumbColor || thumbColor === color;
+
+                        thumbButton.style.display = matched ? "" : "none";
+
+                        if (matched && !firstMatchedThumb) {
+                            firstMatchedThumb = thumbButton;
                         }
+                    }
+
+                    if (!firstMatchedThumb && thumbButtons.length > 0) {
+                        firstMatchedThumb = thumbButtons[0];
+                    }
+
+                    if (firstMatchedThumb) {
+                        setMainImage(firstMatchedThumb.getAttribute("data-src"));
+                        setActiveThumb(firstMatchedThumb);
+                    }
+                }
+
+                function setActiveColorButton(color) {
+                    for (var i = 0; i < colorButtons.length; i++) {
+                        var button = colorButtons[i];
+                        var buttonColor = normalizeColor(button.getAttribute("data-color"));
+
+                        if (buttonColor === color) {
+                            button.classList.remove("btn-outline-dark");
+                            button.classList.add("btn-dark", "active");
+                        } else {
+                            button.classList.remove("btn-dark", "active");
+                            button.classList.add("btn-outline-dark");
+                        }
+                    }
+                }
+
+                function clampQuantityByMax() {
+                    if (!qtyInput) {
                         return;
                     }
 
-                    var selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
-                    if (!selectedOption || selectedOption.disabled) {
-                        qtyInput.setAttribute("max", "1");
-                        if (submitButton) {
-                            submitButton.disabled = true;
-                        }
-                        return;
-                    }
-
-                    var availableQty = parseInt(selectedOption.getAttribute("data-qty") || "1", 10);
-                    if (isNaN(availableQty) || availableQty < 1) {
-                        availableQty = 1;
-                    }
-
-                    qtyInput.setAttribute("max", String(availableQty));
-                    if (submitButton) {
-                        submitButton.disabled = false;
+                    var maxQty = parseInt(qtyInput.getAttribute("max") || "1", 10);
+                    if (isNaN(maxQty) || maxQty < 1) {
+                        maxQty = 1;
                     }
 
                     var currentQty = parseInt(qtyInput.value || "1", 10);
                     if (isNaN(currentQty) || currentQty < 1) {
                         qtyInput.value = "1";
-                    } else if (currentQty > availableQty) {
-                        qtyInput.value = String(availableQty);
+                    } else if (currentQty > maxQty) {
+                        qtyInput.value = String(maxQty);
                     }
                 }
 
-                function syncSizesByColor() {
-                    if (!colorSelect || !sizeSelect) {
-                        syncMaxQuantity();
+                function setSizeSelection(option) {
+                    if (!option || option.disabled) {
+                        if (qtyInput) {
+                            qtyInput.value = "1";
+                            qtyInput.setAttribute("max", "1");
+                            qtyInput.disabled = true;
+                        }
+
+                        if (selectedSizeIdInput) {
+                            selectedSizeIdInput.value = "";
+                        }
+
+                        if (addToCartButton) {
+                            addToCartButton.disabled = true;
+                        }
+
+                        if (stockHintText) {
+                            stockHintText.textContent = "Size đã chọn đang hết hàng.";
+                        }
+
                         return;
                     }
 
-                    var selectedColor = (colorSelect.value || "").trim().toUpperCase();
-                    var firstMatched = -1;
-
-                    for (var i = 0; i < sizeSelect.options.length; i++) {
-                        var option = sizeSelect.options[i];
-                        var optionColor = (option.getAttribute("data-color") || "").trim().toUpperCase();
-                        var matched = selectedColor === "" || optionColor === selectedColor;
-
-                        option.disabled = !matched;
-                        option.hidden = !matched;
-
-                        if (matched && firstMatched === -1) {
-                            firstMatched = i;
-                        }
+                    var availableQty = parseInt(option.getAttribute("data-qty") || "0", 10);
+                    if (isNaN(availableQty) || availableQty < 1) {
+                        availableQty = 1;
                     }
 
-                    if (firstMatched >= 0) {
-                        sizeSelect.selectedIndex = firstMatched;
+                    if (selectedSizeIdInput) {
+                        selectedSizeIdInput.value = option.getAttribute("data-size-id") || option.value || "";
+                    }
+
+                    if (qtyInput) {
                         qtyInput.disabled = false;
-                    } else {
-                        qtyInput.disabled = true;
-                        if (submitButton) {
-                            submitButton.disabled = true;
-                        }
+                        qtyInput.setAttribute("max", String(availableQty));
+                        clampQuantityByMax();
                     }
 
-                    syncMaxQuantity();
+                    if (addToCartButton) {
+                        addToCartButton.disabled = false;
+                    }
+
+                    if (stockHintText) {
+                        stockHintText.textContent = "Size " + option.getAttribute("data-size") + " còn " + availableQty + " sản phẩm.";
+                    }
+                }
+
+                function renderSizesByColor(color) {
+                    if (!sizeSelect) {
+                        return;
+                    }
+
+                    sizeSelect.innerHTML = "";
+
+                    var stockMap = stockByColor[color] || {};
+                    var firstAvailableOption = null;
+
+                    for (var size = 35; size <= 45; size++) {
+                        var stock = stockMap[size];
+                        var option = document.createElement("option");
+                        option.setAttribute("data-size", String(size));
+
+                        if (stock && stock.sizeId > 0 && stock.qty > 0) {
+                            option.value = String(stock.sizeId);
+                            option.setAttribute("data-size-id", String(stock.sizeId));
+                            option.setAttribute("data-qty", String(stock.qty));
+                            option.textContent = "Size " + size + " (Còn " + stock.qty + ")";
+                            if (!firstAvailableOption) {
+                                firstAvailableOption = option;
+                            }
+                        } else {
+                            option.value = "";
+                            option.disabled = true;
+                            option.setAttribute("data-size-id", "");
+                            option.setAttribute("data-qty", "0");
+                            option.textContent = "Size " + size + " (Hết hàng)";
+                        }
+
+                        sizeSelect.appendChild(option);
+                    }
+
+                    if (firstAvailableOption) {
+                        firstAvailableOption.selected = true;
+                        setSizeSelection(firstAvailableOption);
+                    } else {
+                        setSizeSelection(null);
+                    }
+                }
+
+                function selectColor(color) {
+                    selectedColor = normalizeColor(color);
+
+                    if (selectedColorInput) {
+                        selectedColorInput.value = selectedColor;
+                    }
+
+                    setActiveColorButton(selectedColor);
+                    filterImagesByColor(selectedColor);
+                    renderSizesByColor(selectedColor);
+                }
+
+                for (var i = 0; i < colorButtons.length; i++) {
+                    colorButtons[i].addEventListener("click", function () {
+                        selectColor(this.getAttribute("data-color"));
+                    });
+                }
+
+                for (var j = 0; j < thumbButtons.length; j++) {
+                    thumbButtons[j].addEventListener("click", function () {
+                        if (this.style.display === "none") {
+                            return;
+                        }
+
+                        setMainImage(this.getAttribute("data-src"));
+                        setActiveThumb(this);
+                    });
                 }
 
                 if (sizeSelect) {
-                    sizeSelect.addEventListener("change", syncMaxQuantity);
+                    sizeSelect.addEventListener("change", function () {
+                        var option = sizeSelect.options[sizeSelect.selectedIndex];
+                        setSizeSelection(option || null);
+                    });
                 }
 
-                if (colorSelect) {
-                    colorSelect.addEventListener("change", syncSizesByColor);
+                if (qtyInput) {
+                    qtyInput.addEventListener("input", clampQuantityByMax);
                 }
 
-                syncSizesByColor();
+                if (colorButtons.length > 0) {
+                    selectColor(colorButtons[0].getAttribute("data-color"));
+                } else {
+                    if (qtyInput) {
+                        qtyInput.disabled = true;
+                        qtyInput.setAttribute("max", "1");
+                    }
+
+                    if (addToCartButton) {
+                        addToCartButton.disabled = true;
+                    }
+
+                    if (stockHintText) {
+                        stockHintText.textContent = "Sản phẩm chưa có màu hoặc size khả dụng.";
+                    }
+                }
 
                 if (addToCartForm) {
                     addToCartForm.addEventListener("submit", function (event) {
-                        syncSizesByColor();
-
-                        if (!sizeSelect || sizeSelect.selectedIndex < 0 || sizeSelect.options[sizeSelect.selectedIndex].disabled) {
+                        if (!selectedColorInput || !selectedColorInput.value) {
                             event.preventDefault();
-                            alert("Please choose an available color and size.");
+                            alert("Please choose a color.");
+                            return;
+                        }
+
+                        if (!selectedSizeIdInput || !selectedSizeIdInput.value) {
+                            event.preventDefault();
+                            alert("Please choose an available size.");
                             return;
                         }
 
                         var maxQty = parseInt(qtyInput.getAttribute("max") || "1", 10);
                         var enteredQty = parseInt(qtyInput.value || "1", 10);
+
+                        if (isNaN(enteredQty) || enteredQty < 1) {
+                            event.preventDefault();
+                            qtyInput.value = "1";
+                            alert("Quantity must be at least 1.");
+                            return;
+                        }
 
                         if (enteredQty > maxQty) {
                             event.preventDefault();

@@ -108,7 +108,6 @@ public class ProductSizeDAO {
             return em.createQuery(
                     "SELECT DISTINCT ps.color FROM ProductSize ps "
                     + "WHERE ps.product.id = :pid "
-                    + "AND ps.quantity > 0 "
                     + "AND ps.color IS NOT NULL "
                     + "AND TRIM(ps.color) <> '' "
                     + "ORDER BY ps.color",

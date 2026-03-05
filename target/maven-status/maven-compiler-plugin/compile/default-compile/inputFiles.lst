@@ -1,4 +1,5 @@
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\OrderDetailDAO.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\ReportAdminServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\QuestionDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Category.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\homepage\QnaController.java
@@ -19,6 +20,7 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\BlogD
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\ProductImage.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\com\mycompany\shoestore\JakartaRestConfiguration.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\OrderAdminServerlet.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\QnaAdminServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Role.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\OrderDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\RoleDAO.java

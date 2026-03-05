@@ -9,6 +9,8 @@ import java.util.List;
 @Table(name = "Products")
 public class Product {
 
+    private static final String DEFAULT_IMAGE_PATH = "img/1.png";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -107,12 +109,27 @@ public class Product {
     }
 
     public String getMainImage() {
+        if (images == null || images.isEmpty()) {
+            return DEFAULT_IMAGE_PATH;
+        }
+
         for (ProductImage img : images) {
-            if (Boolean.TRUE.equals(img.isIsMain())) {
+            if (img != null && Boolean.TRUE.equals(img.isIsMain()) && hasImagePath(img.getImageUrl())) {
                 return img.getImageUrl();
             }
         }
-        return null;
+
+        for (ProductImage img : images) {
+            if (img != null && hasImagePath(img.getImageUrl())) {
+                return img.getImageUrl();
+            }
+        }
+
+        return DEFAULT_IMAGE_PATH;
+    }
+
+    private boolean hasImagePath(String imagePath) {
+        return imagePath != null && !imagePath.isBlank();
     }
 
     public void addSize(ProductSize size) {

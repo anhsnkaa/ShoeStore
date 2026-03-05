@@ -33,7 +33,9 @@ public class ProductImageDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         try {
-            String jpql = "SELECT pi FROM ProductImage pi WHERE pi.product.id = :pid";
+            String jpql = "SELECT pi FROM ProductImage pi "
+                    + "WHERE pi.product.id = :pid "
+                    + "ORDER BY pi.color, pi.isMain DESC, pi.id";
             TypedQuery<ProductImage> query = em.createQuery(jpql, ProductImage.class);
             query.setParameter("pid", productId);
 
@@ -115,6 +117,66 @@ public class ProductImageDAO {
             trans.commit();
         } catch (Exception e) {
             trans.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void deleteByProductAndColor(int productId, String color) {
+        if (color == null || color.isBlank()) {
+            return;
+        }
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
+
+        try {
+            trans.begin();
+            em.createQuery(
+                    "DELETE FROM ProductImage pi "
+                    + "WHERE pi.product.id = :pid "
+                    + "AND UPPER(pi.color) = :color")
+                    .setParameter("pid", productId)
+                    .setParameter("color", color.trim().toUpperCase())
+                    .executeUpdate();
+            trans.commit();
+        } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void deleteByProductExcludingColors(int productId, List<String> colors) {
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
+
+        try {
+            trans.begin();
+
+            if (colors == null || colors.isEmpty()) {
+                em.createQuery("DELETE FROM ProductImage pi WHERE pi.product.id = :pid")
+                        .setParameter("pid", productId)
+                        .executeUpdate();
+            } else {
+                em.createQuery(
+                        "DELETE FROM ProductImage pi "
+                        + "WHERE pi.product.id = :pid "
+                        + "AND UPPER(pi.color) NOT IN :colors")
+                        .setParameter("pid", productId)
+                        .setParameter("colors", colors)
+                        .executeUpdate();
+            }
+
+            trans.commit();
+        } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             e.printStackTrace();
         } finally {
             em.close();

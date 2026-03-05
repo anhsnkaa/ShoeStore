@@ -37,11 +37,7 @@ public class ProductDAO {
     public List<Product> getAllProductsPaging(int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
-        String jpql = "SELECT p FROM Product p "
-                + "WHERE p.id IN ("
-                + "SELECT MIN(p2.id) FROM Product p2 GROUP BY UPPER(p2.name)"
-                + ")"
-                + buildOrderByClause(sort);
+        String jpql = "SELECT p FROM Product p" + buildOrderByClause(sort);
 
         List<Product> list = em.createQuery(jpql, Product.class)
                 .setFirstResult((page - 1) * PAGE_SIZE)
@@ -60,26 +56,46 @@ public class ProductDAO {
     // Them moi san pham vao database.
     public void addProduct(Product p) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
-        em.getTransaction().begin();
-        em.persist(p);
-        em.getTransaction().commit();
-        em.close();
+        EntityTransaction transaction = em.getTransaction();
+
+        try {
+            transaction.begin();
+            em.persist(p);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 
     // Xoa san pham theo id.
     public void deleteProduct(int id) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();
-        em.getTransaction().begin();
+        EntityTransaction transaction = em.getTransaction();
 
-        Product p = em.find(Product.class, id);
+        try {
+            transaction.begin();
 
-        if (p != null) {
-            em.remove(p);
+            Product p = em.find(Product.class, id);
+
+            if (p != null) {
+                em.remove(p);
+            }
+
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
         }
-
-        em.getTransaction().commit();
-        em.close();
     }
 
     // Lay thong tin 1 san pham theo id.
@@ -701,10 +717,7 @@ public class ProductDAO {
         EntityManager em = JPAUtil.getEMF().createEntityManager();
 
         Long total = em.createQuery(
-                "SELECT COUNT(p) FROM Product p "
-                + "WHERE p.id IN ("
-                + "SELECT MIN(p2.id) FROM Product p2 GROUP BY UPPER(p2.name)"
-                + ")",
+                "SELECT COUNT(p) FROM Product p",
                 Long.class)
                 .getSingleResult();
 
@@ -717,26 +730,46 @@ public class ProductDAO {
     public void deleteByProduct(int productId) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();
-        em.getTransaction().begin();
+        EntityTransaction transaction = em.getTransaction();
 
-        em.createQuery("DELETE FROM ProductSize ps WHERE ps.product.id = :id")
-                .setParameter("id", productId)
-                .executeUpdate();
+        try {
+            transaction.begin();
 
-        em.getTransaction().commit();
-        em.close();
+            em.createQuery("DELETE FROM ProductSize ps WHERE ps.product.id = :id")
+                    .setParameter("id", productId)
+                    .executeUpdate();
+
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 
     // Cap nhat thong tin san pham.
     public void updateProduct(Product p) {
 
         EntityManager em = JPAUtil.getEMF().createEntityManager();
-        em.getTransaction().begin();
+        EntityTransaction transaction = em.getTransaction();
 
-        em.merge(p);
+        try {
+            transaction.begin();
 
-        em.getTransaction().commit();
-        em.close();
+            em.merge(p);
+
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 
     // Loc san pham theo gioi tinh co phan trang va sort.

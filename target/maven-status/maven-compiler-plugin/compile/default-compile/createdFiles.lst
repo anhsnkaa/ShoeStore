@@ -24,8 +24,10 @@ controller\admin\DashboardServerlet.class
 dal\implement\AnswerDAO.class
 model\ProductImage.class
 dal\implement\ProductImageDAO.class
+controller\admin\QnaAdminServerlet.class
 dal\implement\AccountDAO.class
 model\PageControl.class
+controller\admin\ReportAdminServerlet.class
 dal\implement\OrderDAO.class
 model\Order.class
 controller\admin\OrderAdminServerlet.class

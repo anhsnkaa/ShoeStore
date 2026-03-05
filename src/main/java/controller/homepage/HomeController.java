@@ -12,7 +12,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import model.Category;
@@ -47,12 +46,11 @@ public class HomeController extends HttpServlet {
                 ? productDAO.getAllCollections()
                 : productDAO.getCollectionsByGender(selectedGender);
 
-        // Day du lieu vao session de jsp dung truc tiep.
-        HttpSession session = request.getSession();
-        session.setAttribute("listProduct", listProduct);
-        session.setAttribute("listCategory", listCategory);
-        session.setAttribute("listCollection", listCollection);
-        session.setAttribute("pageControl", pageControl);
+        // Day du lieu vao request de giam memory/session pressure.
+        request.setAttribute("listProduct", listProduct);
+        request.setAttribute("listCategory", listCategory);
+        request.setAttribute("listCollection", listCollection);
+        request.setAttribute("pageControl", pageControl);
         request.setAttribute("selectedGender", selectedGender);
         // Chuyen huong den trang home.jsp.
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
@@ -228,12 +226,25 @@ public class HomeController extends HttpServlet {
                 break;
             default:
                 product = productDAO.getAllProductsPaging(page, sort);
-                totalRecord = productDAO.getTotalProducts();
+                // Tranh query COUNT nặng khi home mặc định.
+                int currentPageSize = product == null ? 0 : product.size();
+                if (currentPageSize < pageSize) {
+                    totalRecord = ((page - 1) * pageSize) + currentPageSize;
+                } else {
+                    totalRecord = (page * pageSize) + 1;
+                }
                 pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
         }
 
         // Tinh tong page.
         int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
+        if (totalPage <= 0) {
+            totalPage = 1;
+        }
+
+        if (page > totalPage) {
+            page = totalPage;
+        }
 
         // Set thong tin phan trang cho view.
         pageControl.setPage(page);

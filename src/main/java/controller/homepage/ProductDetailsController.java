@@ -9,19 +9,18 @@ import dal.implement.ProductDAO;
 import dal.implement.ProductSizeDAO;
 import dal.implement.QuestionDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import model.Answer;
-import model.Order;
-import model.OrderDetail;
 import model.Product;
+import model.ProductImage;
 import model.ProductSize;
 import model.Question;
 
@@ -49,8 +48,8 @@ public class ProductDetailsController extends HttpServlet {
         List<Question> qnaQuestions = questionDAO.getApprovedByProductId(id);
 
         //get ve list productSizeDAO
-        List<ProductSize> listProductSize = productSizeDAO.getSizesByProduct(id);
-        List<String> listColor = productSizeDAO.getColorsByProduct(id);
+        List<ProductSize> listProductSize = productSizeDAO.getQuantityOfSizes(id);
+        List<String> listColor = mergeColors(productSizeDAO.getColorsByProduct(id), productFindById);
         Map<Integer, List<Answer>> answersByQuestion = new HashMap<>();
         for (Question q : qnaQuestions) {
             List<Answer> answers = answerDAO.getApprovedByQuestionId(q.getId());
@@ -63,6 +62,42 @@ public class ProductDetailsController extends HttpServlet {
         request.setAttribute("listColor", listColor);
         request.setAttribute("listProductSize", listProductSize);
         request.getRequestDispatcher("view/homepage/product-details.jsp").forward(request, response);
+    }
+
+    private List<String> mergeColors(List<String> colorsFromSize, Product product) {
+        Map<String, String> colorMap = new LinkedHashMap<>();
+
+        if (colorsFromSize != null) {
+            for (String color : colorsFromSize) {
+                String normalizedColor = normalizeColor(color);
+                if (normalizedColor != null) {
+                    colorMap.putIfAbsent(normalizedColor, normalizedColor);
+                }
+            }
+        }
+
+        if (product != null && product.getImages() != null) {
+            for (ProductImage image : product.getImages()) {
+                if (image == null) {
+                    continue;
+                }
+
+                String normalizedColor = normalizeColor(image.getColor());
+                if (normalizedColor != null) {
+                    colorMap.putIfAbsent(normalizedColor, normalizedColor);
+                }
+            }
+        }
+
+        return new ArrayList<>(colorMap.values());
+    }
+
+    private String normalizeColor(String rawColor) {
+        if (rawColor == null || rawColor.isBlank()) {
+            return null;
+        }
+
+        return rawColor.trim().toUpperCase();
     }
 
     @Override

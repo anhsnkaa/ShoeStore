@@ -19,6 +19,9 @@ public class ProductImage {
 
     private String imageUrl;
 
+    @Column(name = "color", columnDefinition = "NVARCHAR(100)")
+    private String color;
+
     private boolean isMain;
 
     @ManyToOne
@@ -27,6 +30,13 @@ public class ProductImage {
 
     public ProductImage(String imageUrl, boolean isMain, Product product) {
         this.imageUrl = imageUrl;
+        this.isMain = isMain;
+        this.product = product;
+    }
+
+    public ProductImage(String imageUrl, String color, boolean isMain, Product product) {
+        this.imageUrl = imageUrl;
+        setColor(color);
         this.isMain = isMain;
         this.product = product;
     }
@@ -49,6 +59,19 @@ public class ProductImage {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        if (color == null || color.isBlank()) {
+            this.color = null;
+            return;
+        }
+
+        this.color = color.trim().toUpperCase();
     }
 
     public boolean isIsMain() {
