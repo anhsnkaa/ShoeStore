@@ -259,14 +259,6 @@
                                         </span>
                                     </div>
                                 </li>
-                                <li><a href="#">blog<i class="fa fa-angle-down"></i></a>
-                                    <div class="sub-menu sub-menu-2">
-                                        <ul>
-                                            <li><a href="blog.html">blog</a></li>
-                                            <li><a href="blog-details.html">blog-details</a></li>
-                                        </ul>
-                                    </div>
-                                </li>
                                 <li><a href="#">pages<i class="fa fa-angle-down"></i></a>
                                     <div class="sub-menu sub-menu-2">
                                         <ul>
@@ -274,8 +266,6 @@
                                             <li><a href="shop-list.html">shop list view</a></li>
                                             <li><a href="product-details.html">product-details</a></li>
                                             <li><a href="product-details-affiliate.html">product-affiliate</a></li>
-                                            <li><a href="blog.html">blog</a></li>
-                                            <li><a href="blog-details.html">blog-details</a></li>
                                             <li><a href="contact.html">contact</a></li>
                                             <li><a href="about.html">about</a></li>
                                             <li><a href="login.html">login</a></li>
@@ -379,20 +369,12 @@
                                         <li><a href="shop.html">Ankle boots</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="#">blog</a>
-                                    <ul>
-                                        <li><a href="blog.html">Blog</a></li>
-                                        <li><a href="blog-details.html">blog-details</a></li>
-                                    </ul>
-                                </li>
                                 <li><a href="product-details.html">Page</a>
                                     <ul>
                                         <li><a href="shop.html">shop</a></li>
                                         <li><a href="shop-list.html">shop list view</a></li>
                                         <li><a href="product-details.html">product-details</a></li>
                                         <li><a href="product-details-affiliate.html">product-affiliate</a></li>
-                                        <li><a href="blog.html">blog</a></li>
-                                        <li><a href="blog-details.html">blog-details</a></li>
                                         <li><a href="contact.html">contact</a></li>
                                         <li><a href="about.html">about</a></li>
                                         <li><a href="login.html">login</a></li>

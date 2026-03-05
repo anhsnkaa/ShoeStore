@@ -18,7 +18,6 @@
                                         <li><a href="#">Enable Cookies</a></li>
                                         <li><a href="#">Privacy and Cookie Policy</a></li>
                                         <li><a href="#">contact us</a></li>
-                                        <li><a href="#">blog</a></li>
                                     </ul>
                                 </nav>
                             </div>

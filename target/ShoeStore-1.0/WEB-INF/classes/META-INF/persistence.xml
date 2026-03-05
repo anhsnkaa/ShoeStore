@@ -13,7 +13,6 @@
         <class>model.Account</class>
         <class>model.Role</class>
         <class>model.ProductImage</class>
-        <class>model.Blog</class>
         <class>model.Order</class>
         <class>model.OrderDetail</class>
         <class>model.Question</class>
