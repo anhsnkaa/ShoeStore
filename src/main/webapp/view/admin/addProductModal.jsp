@@ -262,6 +262,54 @@
         }
     }
 
+    function addVariantFromColorInput(tableId, colorInputId) {
+        let colorInput = document.getElementById(colorInputId);
+        let color = normalizeColorValue(colorInput ? colorInput.value : "");
+
+        if (!color) {
+            alert("Please enter a color name before adding variant.");
+            return;
+        }
+
+        let nextSize = getNextSizeForColor(tableId, color);
+        if (nextSize === null) {
+            alert("All sizes 35-45 already exist for color " + color + ".");
+            return;
+        }
+
+        addVariantRow(tableId, color, nextSize, 0, true);
+    }
+
+    function getNextSizeForColor(tableId, color) {
+        let tbody = document.getElementById(tableId);
+        if (!tbody) {
+            return 35;
+        }
+
+        let rows = tbody.querySelectorAll("tr");
+        let usedSizes = {};
+
+        for (let i = 0; i < rows.length; i++) {
+            let colorInput = rows[i].querySelector("input[name='variantColor']");
+            let sizeInput = rows[i].querySelector("input[name='variantSize']");
+
+            let rowColor = normalizeColorValue(colorInput ? colorInput.value : "");
+            let rowSize = parseInt(sizeInput ? sizeInput.value : "", 10);
+
+            if (rowColor === color && !isNaN(rowSize) && rowSize > 0) {
+                usedSizes[rowSize] = true;
+            }
+        }
+
+        for (let size = 35; size <= 45; size++) {
+            if (!usedSizes[size]) {
+                return size;
+            }
+        }
+
+        return null;
+    }
+
     (function initVariantRows() {
         syncColorImageSections('addVariantTable', 'addImageByColorContainer');
     })();

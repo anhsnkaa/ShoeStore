@@ -64,8 +64,17 @@
                             <div class="product-main-area">
                                 <div class="row">
                                     <div class="col-lg-5 col-md-6 col-12">
-                                        <div class="product-gallery-main mb-3">
+                                        <div class="product-gallery-main mb-3 position-relative">
                                             <img id="mainProductImage" src="${pageContext.request.contextPath}/${product.mainImage}" alt="${product.name}" style="width:100%; max-height:520px; object-fit:cover; border:1px solid #eee; border-radius:6px;">
+                                            <button type="button" id="galleryPrevBtn" class="btn btn-light border" aria-label="Previous image" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); z-index:2; width:38px; height:38px; border-radius:50%;">
+                                                <i class="fa fa-angle-left"></i>
+                                            </button>
+                                            <button type="button" id="galleryNextBtn" class="btn btn-light border" aria-label="Next image" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); z-index:2; width:38px; height:38px; border-radius:50%;">
+                                                <i class="fa fa-angle-right"></i>
+                                            </button>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small id="galleryCounter" class="text-muted"></small>
                                         </div>
                                         <div id="productThumbList" class="d-flex flex-wrap">
                                             <c:forEach items="${product.images}" var="img">
@@ -781,6 +790,9 @@
 
                 var addToCartForm = document.getElementById("addToCartForm");
                 var mainImage = document.getElementById("mainProductImage");
+                var galleryPrevBtn = document.getElementById("galleryPrevBtn");
+                var galleryNextBtn = document.getElementById("galleryNextBtn");
+                var galleryCounter = document.getElementById("galleryCounter");
                 var qtyInput = document.getElementById("qtyInput");
                 var addToCartButton = document.getElementById("addToCartButton");
                 var selectedColorInput = document.getElementById("selectedColorInput");
@@ -793,6 +805,8 @@
 
                 var selectedColor = "";
                 var stockByColor = {};
+                var currentVisibleThumbs = [];
+                var currentThumbIndex = -1;
 
                 function normalizeColor(value) {
                     if (!value) {
@@ -829,6 +843,46 @@
                     }
                 }
 
+                function refreshVisibleThumbs() {
+                    currentVisibleThumbs = [];
+
+                    for (var i = 0; i < thumbButtons.length; i++) {
+                        if (thumbButtons[i].style.display !== "none") {
+                            currentVisibleThumbs.push(thumbButtons[i]);
+                        }
+                    }
+                }
+
+                function findVisibleThumbIndex(targetThumb) {
+                    for (var i = 0; i < currentVisibleThumbs.length; i++) {
+                        if (currentVisibleThumbs[i] === targetThumb) {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+                }
+
+                function updateGalleryControls() {
+                    var totalVisible = currentVisibleThumbs.length;
+
+                    if (galleryCounter) {
+                        if (totalVisible === 0) {
+                            galleryCounter.textContent = "No image available";
+                        } else {
+                            galleryCounter.textContent = "Image " + (currentThumbIndex + 1) + " / " + totalVisible;
+                        }
+                    }
+
+                    var disableNavigation = totalVisible <= 1;
+                    if (galleryPrevBtn) {
+                        galleryPrevBtn.disabled = disableNavigation;
+                    }
+                    if (galleryNextBtn) {
+                        galleryNextBtn.disabled = disableNavigation;
+                    }
+                }
+
                 function setActiveThumb(activeButton) {
                     for (var i = 0; i < thumbButtons.length; i++) {
                         thumbButtons[i].classList.remove("border-dark");
@@ -836,11 +890,44 @@
 
                     if (activeButton) {
                         activeButton.classList.add("border-dark");
+                        setMainImage(activeButton.getAttribute("data-src"));
                     }
+
+                    refreshVisibleThumbs();
+                    currentThumbIndex = findVisibleThumbIndex(activeButton);
+                    if (currentThumbIndex < 0 && currentVisibleThumbs.length > 0) {
+                        currentThumbIndex = 0;
+                    }
+
+                    updateGalleryControls();
+                }
+
+                function navigateGallery(step) {
+                    refreshVisibleThumbs();
+                    if (currentVisibleThumbs.length <= 1) {
+                        updateGalleryControls();
+                        return;
+                    }
+
+                    if (currentThumbIndex < 0) {
+                        currentThumbIndex = 0;
+                    }
+
+                    var nextIndex = currentThumbIndex + step;
+                    if (nextIndex < 0) {
+                        nextIndex = currentVisibleThumbs.length - 1;
+                    }
+
+                    if (nextIndex >= currentVisibleThumbs.length) {
+                        nextIndex = 0;
+                    }
+
+                    setActiveThumb(currentVisibleThumbs[nextIndex]);
                 }
 
                 function filterImagesByColor(color) {
                     var firstMatchedThumb = null;
+                    var matchedCount = 0;
 
                     for (var i = 0; i < thumbButtons.length; i++) {
                         var thumbButton = thumbButtons[i];
@@ -852,6 +939,20 @@
                         if (matched && !firstMatchedThumb) {
                             firstMatchedThumb = thumbButton;
                         }
+
+                        if (matched) {
+                            matchedCount++;
+                        }
+                    }
+
+                    if (matchedCount === 0) {
+                        for (var j = 0; j < thumbButtons.length; j++) {
+                            thumbButtons[j].style.display = "";
+                        }
+
+                        if (thumbButtons.length > 0) {
+                            firstMatchedThumb = thumbButtons[0];
+                        }
                     }
 
                     if (!firstMatchedThumb && thumbButtons.length > 0) {
@@ -859,8 +960,11 @@
                     }
 
                     if (firstMatchedThumb) {
-                        setMainImage(firstMatchedThumb.getAttribute("data-src"));
                         setActiveThumb(firstMatchedThumb);
+                    } else {
+                        refreshVisibleThumbs();
+                        currentThumbIndex = -1;
+                        updateGalleryControls();
                     }
                 }
 
@@ -1010,8 +1114,19 @@
                             return;
                         }
 
-                        setMainImage(this.getAttribute("data-src"));
                         setActiveThumb(this);
+                    });
+                }
+
+                if (galleryPrevBtn) {
+                    galleryPrevBtn.addEventListener("click", function () {
+                        navigateGallery(-1);
+                    });
+                }
+
+                if (galleryNextBtn) {
+                    galleryNextBtn.addEventListener("click", function () {
+                        navigateGallery(1);
                     });
                 }
 
@@ -1029,6 +1144,8 @@
                 if (colorButtons.length > 0) {
                     selectColor(colorButtons[0].getAttribute("data-color"));
                 } else {
+                    filterImagesByColor("");
+
                     if (qtyInput) {
                         qtyInput.disabled = true;
                         qtyInput.setAttribute("max", "1");

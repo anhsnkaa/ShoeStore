@@ -437,6 +437,7 @@
                             $("#editDiscount").val(data.discount || 0);
                             $("#editSaleStartAt").val(data.saleStartAt || "");
                             $("#editSaleEndAt").val(data.saleEndAt || "");
+                            $("#editVariantColorInput").val("");
 
                             $("#editSizeTable").html("");
 

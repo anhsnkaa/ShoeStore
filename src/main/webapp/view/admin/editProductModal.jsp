@@ -83,8 +83,18 @@
                     </div>
                     <!-- Variant table -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="mb-0">Color / Size / Quantity</label>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addVariantRow('editSizeTable')">Add variant</button>
+                        <label class="mb-0">Color / Size (35-45) / Quantity</label>
+                    </div>
+                    <div class="form-row align-items-end mb-2">
+                        <div class="col-md-6">
+                            <input type="text" id="editVariantColorInput" class="form-control" placeholder="Enter color (EX: BLACK, WHITE)">
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-block" onclick="addColorWithDefaultSizes('editSizeTable', 'editVariantColorInput')">Add color (35-45)</button>
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-block" onclick="addVariantFromColorInput('editSizeTable', 'editVariantColorInput')">Add variant</button>
+                        </div>
                     </div>
                     <table class="table table-bordered">
                         <thead>
