@@ -13,8 +13,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import model.Category;
+import model.HomeVariantItem;
 import model.PageControl;
 import model.Product;
 
@@ -35,23 +39,31 @@ public class HomeController extends HttpServlet {
         // Khoi tao thong tin phan trang cho lan tai hien tai.
         PageControl pageControl = new PageControl();
         String selectedGender = normalizeGender(request.getParameter("gender"));
+        String viewMode = normalizeViewMode(request.getParameter("viewMode"));
+        String sort = normalizeSort(request.getParameter("sort"));
 
         // Lay danh sach san pham theo bo loc + sort.
-        List<Product> listProduct = findProductDoGet(request, pageControl);
+        List<Product> listProduct = "variant".equals(viewMode) ? List.of() : findProductDoGet(request, pageControl, sort, viewMode);
+        List<HomeVariantItem> listVariantItems = "variant".equals(viewMode) ? findVariantItems(request, pageControl, sort, viewMode) : List.of();
         // Lay danh sach category de hien thi o sidebar.
         List<Category> listCategory = selectedGender == null
                 ? categoryDAO.getDistinctCategoriesByName()
                 : categoryDAO.getCategoriesByGender(selectedGender);
+        Map<Integer, Integer> categoryProductCountMap = buildCategoryProductCountMap(listCategory, selectedGender);
         List<String> listCollection = selectedGender == null
                 ? productDAO.getAllCollections()
                 : productDAO.getCollectionsByGender(selectedGender);
 
         // Day du lieu vao request de giam memory/session pressure.
         request.setAttribute("listProduct", listProduct);
+        request.setAttribute("listVariantItems", listVariantItems);
         request.setAttribute("listCategory", listCategory);
+        request.setAttribute("categoryProductCountMap", categoryProductCountMap);
         request.setAttribute("listCollection", listCollection);
         request.setAttribute("pageControl", pageControl);
         request.setAttribute("selectedGender", selectedGender);
+        request.setAttribute("viewMode", viewMode);
+        request.setAttribute("isHomePage", true);
         // Chuyen huong den trang home.jsp.
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
     }
@@ -82,162 +94,39 @@ public class HomeController extends HttpServlet {
     }// </editor-fold>
 
     // Xu ly tat ca bo loc/search/sort va tinh toan thong tin phan trang.
-    private List<Product> findProductDoGet(HttpServletRequest request, PageControl pageControl) {
-        // Lay page tu request.
-        String pageRaw = request.getParameter("page");
-
-        // Validate page.
-        int page;
+    private List<Product> findProductDoGet(HttpServletRequest request, PageControl pageControl, String sort, String viewMode) {
+        int page = parsePage(request.getParameter("page"));
         int pageSize = 12;
-        try {
-            page = Integer.parseInt(pageRaw);
-            if (page <= 0) {
-                page = 1;
-            }
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
+        String actionSearch = resolveActionSearch(request);
+        List<Product> product = fetchProductsByAction(request, actionSearch, sort, page);
+        int totalRecord = resolveTotalRecord(request, actionSearch);
 
-        // Lay action search hien tai.
-        String actionSearch = request.getParameter("search") == null
-                ? "default" : request.getParameter("search");
-
-        // Chuan hoa gia tri sort de dung cho query.
-        String sort = normalizeSort(request.getParameter("sort"));
-
-        // Bien chua ket qua san pham.
-        List<Product> product;
-
-        // URL hien tai de tao pattern cho pagination.
-        String requestURL = request.getRequestURL().toString();
-        int totalRecord = 0;
-        String sortQuery = buildSortQuery(sort);
-
-        switch (actionSearch) {
-            case "category":
-                int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-                String selectedGender = normalizeGender(request.getParameter("gender"));
-                if (selectedGender == null) {
-                    Category category = categoryDAO.findById(categoryId);
-                    if (category == null || category.getName() == null || category.getName().isBlank()) {
-                        product = List.of();
-                        totalRecord = 0;
-                        pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
-                        break;
-                    }
-
-                    totalRecord = productDAO.getTotalRecordByCategoryName(category.getName());
-                    product = productDAO.getProductByCategoryName(category.getName(), page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + sortQuery + "&");
-                } else {
-                    totalRecord = productDAO.getTotalRecordByCategoryAndGender(categoryId, selectedGender);
-                    product = productDAO.getProductByCategoryAndGender(categoryId, selectedGender, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=category&categoryId=" + categoryId + "&gender=" + selectedGender + sortQuery + "&");
-                }
-                break;
-            case "searchByKeyword":
-                String keyword = request.getParameter("keyword");
-                totalRecord = productDAO.getTotalRecordByKeyword(keyword);
-                product = productDAO.getProductByKeyword(keyword, page, sort);
-                pageControl.setUrlPattern(requestURL + "?search=searchByKeyword&keyword=" + keyword + sortQuery + "&");
-                break;
-            case "gender":
-                String gender = normalizeGender(request.getParameter("gender"));
-                if (gender == null) {
-                    product = productDAO.getAllProductsPaging(page, sort);
-                    totalRecord = productDAO.getTotalProducts();
-                    pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
-                    break;
-                }
-                totalRecord = productDAO.getTotalRecordByGender(gender);
-                product = productDAO.getProductByGender(gender, page, sort);
-                pageControl.setUrlPattern(requestURL + "?search=gender&gender=" + gender + sortQuery + "&");
-                break;
-            case "collection":
-                String collection = normalizeCollection(request.getParameter("collection"));
-                String genderInCollection = normalizeGender(request.getParameter("gender"));
-                if (collection == null) {
-                    product = productDAO.getAllProductsPaging(page, sort);
-                    totalRecord = productDAO.getTotalProducts();
-                    pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
-                    break;
-                }
-                String encodedCollection = encodeQueryParam(collection);
-
-                if (genderInCollection == null) {
-                    totalRecord = productDAO.getTotalRecordByCollection(collection);
-                    product = productDAO.getProductByCollection(collection, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + encodedCollection + sortQuery + "&");
-                } else {
-                    totalRecord = productDAO.getTotalRecordByCollectionAndGender(collection, genderInCollection);
-                    product = productDAO.getProductByCollectionAndGender(collection, genderInCollection, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=collection&collection=" + encodedCollection + "&gender=" + genderInCollection + sortQuery + "&");
-                }
-                break;
-            case "hot":
-                String genderInHot = normalizeGender(request.getParameter("gender"));
-                if (genderInHot == null) {
-                    totalRecord = productDAO.getTotalHotProducts();
-                    product = productDAO.getHotProducts(page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=hot" + sortQuery + "&");
-                } else {
-                    totalRecord = productDAO.getTotalHotProductsByGender(genderInHot);
-                    product = productDAO.getHotProductsByGender(genderInHot, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=hot&gender=" + genderInHot + sortQuery + "&");
-                }
-                break;
-            case "sale":
-                String genderInSale = normalizeGender(request.getParameter("gender"));
-                if (genderInSale == null) {
-                    totalRecord = productDAO.getTotalSaleProducts();
-                    product = productDAO.getSaleProducts(page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=sale" + sortQuery + "&");
-                } else {
-                    totalRecord = productDAO.getTotalSaleProductsByGender(genderInSale);
-                    product = productDAO.getSaleProductsByGender(genderInSale, page, sort);
-                    pageControl.setUrlPattern(requestURL + "?search=sale&gender=" + genderInSale + sortQuery + "&");
-                }
-                break;
-            case "price":
-                double min = parseDoubleOrDefault(request.getParameter("min"), 0);
-                Double max = parseNullableDouble(request.getParameter("max"));
-
-                if (max != null && max < min) {
-                    double temp = min;
-                    min = max;
-                    max = temp;
-                }
-
-                totalRecord = productDAO.getTotalRecordByPriceRange(min, max);
-                product = productDAO.getProductByPriceRange(min, max, page, sort);
-
-                StringBuilder pattern = new StringBuilder(requestURL)
-                        .append("?search=price&min=")
-                        .append(min);
-
-                if (max != null) {
-                    pattern.append("&max=").append(max);
-                }
-
-                pattern.append(sortQuery);
-
-                pattern.append("&");
-                pageControl.setUrlPattern(pattern.toString());
-                break;
-            default:
-                product = productDAO.getAllProductsPaging(page, sort);
-                // Tranh query COUNT nặng khi home mặc định.
-                int currentPageSize = product == null ? 0 : product.size();
-                if (currentPageSize < pageSize) {
-                    totalRecord = ((page - 1) * pageSize) + currentPageSize;
-                } else {
-                    totalRecord = (page * pageSize) + 1;
-                }
-                pageControl.setUrlPattern(requestURL + "?" + (sort == null ? "" : "sort=" + sort + "&"));
-        }
-
-        // Tinh tong page.
         int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
+        if (totalPage <= 0) {
+            totalPage = 1;
+        }
+
+        if (page > totalPage) {
+            page = totalPage;
+            product = fetchProductsByAction(request, actionSearch, sort, page);
+        }
+
+        pageControl.setPage(page);
+        pageControl.setTotalPage(totalPage);
+        pageControl.setTotalRecord(totalRecord);
+        pageControl.setUrlPattern(buildPageUrlPattern(request, viewMode, sort));
+        return product;
+    }
+
+    private List<HomeVariantItem> findVariantItems(HttpServletRequest request, PageControl pageControl, String sort, String viewMode) {
+        int page = parsePage(request.getParameter("page"));
+        int pageSize = 12;
+        String actionSearch = resolveActionSearch(request);
+        List<Product> allProducts = fetchAllProductsByAction(request, actionSearch, sort);
+        List<HomeVariantItem> allVariantItems = buildVariantItems(allProducts);
+        int totalRecord = allVariantItems.size();
+        int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
+
         if (totalPage <= 0) {
             totalPage = 1;
         }
@@ -246,11 +135,245 @@ public class HomeController extends HttpServlet {
             page = totalPage;
         }
 
-        // Set thong tin phan trang cho view.
+        int fromIndex = Math.max(0, (page - 1) * pageSize);
+        int toIndex = Math.min(allVariantItems.size(), fromIndex + pageSize);
+        List<HomeVariantItem> pagedItems = fromIndex >= toIndex ? List.of() : allVariantItems.subList(fromIndex, toIndex);
+
         pageControl.setPage(page);
         pageControl.setTotalPage(totalPage);
         pageControl.setTotalRecord(totalRecord);
-        return product;
+        pageControl.setUrlPattern(buildPageUrlPattern(request, viewMode, sort));
+        return pagedItems;
+    }
+
+    private List<HomeVariantItem> buildVariantItems(List<Product> products) {
+        List<HomeVariantItem> items = new ArrayList<>();
+
+        if (products == null || products.isEmpty()) {
+            return items;
+        }
+
+        for (Product product : products) {
+            if (product == null) {
+                continue;
+            }
+
+            List<String> colors = product.getAvailableColors();
+            if (colors == null || colors.isEmpty()) {
+                items.add(new HomeVariantItem(product, null, product.getMainImage()));
+                continue;
+            }
+
+            for (String color : colors) {
+                items.add(new HomeVariantItem(product, color, product.getImageByColor(color)));
+            }
+        }
+
+        return items;
+    }
+
+    private List<Product> fetchAllProductsByAction(HttpServletRequest request, String actionSearch, String sort) {
+        List<Product> products = new ArrayList<>();
+
+        for (int page = 1; page <= 500; page++) {
+            List<Product> batch = fetchProductsByAction(request, actionSearch, sort, page);
+            if (batch == null || batch.isEmpty()) {
+                break;
+            }
+
+            products.addAll(batch);
+
+            if (batch.size() < 12) {
+                break;
+            }
+        }
+
+        return products;
+    }
+
+    private List<Product> fetchProductsByAction(HttpServletRequest request, String actionSearch, String sort, int page) {
+        switch (actionSearch) {
+            case "category":
+                Integer categoryId = parseNullableInt(request.getParameter("categoryId"));
+                String selectedGender = normalizeGender(request.getParameter("gender"));
+                if (categoryId == null) {
+                    return List.of();
+                }
+
+                if (selectedGender == null) {
+                    Category category = categoryDAO.findById(categoryId);
+                    if (category == null || category.getName() == null || category.getName().isBlank()) {
+                        return List.of();
+                    }
+                    return productDAO.getProductByCategoryName(category.getName(), page, sort);
+                }
+
+                return productDAO.getProductByCategoryAndGender(categoryId, selectedGender, page, sort);
+            case "searchByKeyword":
+                return productDAO.getProductByKeyword(request.getParameter("keyword"), page, sort);
+            case "gender":
+                String gender = normalizeGender(request.getParameter("gender"));
+                return gender == null ? productDAO.getAllProductsPaging(page, sort) : productDAO.getProductByGender(gender, page, sort);
+            case "collection":
+                String collection = normalizeCollection(request.getParameter("collection"));
+                String genderInCollection = normalizeGender(request.getParameter("gender"));
+                if (collection == null) {
+                    return productDAO.getAllProductsPaging(page, sort);
+                }
+
+                return genderInCollection == null
+                        ? productDAO.getProductByCollection(collection, page, sort)
+                        : productDAO.getProductByCollectionAndGender(collection, genderInCollection, page, sort);
+            case "hot":
+                String genderInHot = normalizeGender(request.getParameter("gender"));
+                return genderInHot == null
+                        ? productDAO.getHotProducts(page, sort)
+                        : productDAO.getHotProductsByGender(genderInHot, page, sort);
+            case "sale":
+                String genderInSale = normalizeGender(request.getParameter("gender"));
+                return genderInSale == null
+                        ? productDAO.getSaleProducts(page, sort)
+                        : productDAO.getSaleProductsByGender(genderInSale, page, sort);
+            case "price":
+                double min = parseDoubleOrDefault(request.getParameter("min"), 0);
+                Double max = parseNullableDouble(request.getParameter("max"));
+                if (max != null && max < min) {
+                    double temp = min;
+                    min = max;
+                    max = temp;
+                }
+                return productDAO.getProductByPriceRange(min, max, page, sort);
+            default:
+                return productDAO.getAllProductsPaging(page, sort);
+        }
+    }
+
+    private int resolveTotalRecord(HttpServletRequest request, String actionSearch) {
+        switch (actionSearch) {
+            case "category":
+                Integer categoryId = parseNullableInt(request.getParameter("categoryId"));
+                String selectedGender = normalizeGender(request.getParameter("gender"));
+                if (categoryId == null) {
+                    return 0;
+                }
+
+                if (selectedGender == null) {
+                    Category category = categoryDAO.findById(categoryId);
+                    if (category == null || category.getName() == null || category.getName().isBlank()) {
+                        return 0;
+                    }
+                    return productDAO.getTotalRecordByCategoryName(category.getName());
+                }
+
+                return productDAO.getTotalRecordByCategoryAndGender(categoryId, selectedGender);
+            case "searchByKeyword":
+                return productDAO.getTotalRecordByKeyword(request.getParameter("keyword"));
+            case "gender":
+                String gender = normalizeGender(request.getParameter("gender"));
+                return gender == null ? productDAO.getTotalProducts() : productDAO.getTotalRecordByGender(gender);
+            case "collection":
+                String collection = normalizeCollection(request.getParameter("collection"));
+                String genderInCollection = normalizeGender(request.getParameter("gender"));
+                if (collection == null) {
+                    return productDAO.getTotalProducts();
+                }
+                return genderInCollection == null
+                        ? productDAO.getTotalRecordByCollection(collection)
+                        : productDAO.getTotalRecordByCollectionAndGender(collection, genderInCollection);
+            case "hot":
+                String genderInHot = normalizeGender(request.getParameter("gender"));
+                return genderInHot == null
+                        ? productDAO.getTotalHotProducts()
+                        : productDAO.getTotalHotProductsByGender(genderInHot);
+            case "sale":
+                String genderInSale = normalizeGender(request.getParameter("gender"));
+                return genderInSale == null
+                        ? productDAO.getTotalSaleProducts()
+                        : productDAO.getTotalSaleProductsByGender(genderInSale);
+            case "price":
+                double min = parseDoubleOrDefault(request.getParameter("min"), 0);
+                Double max = parseNullableDouble(request.getParameter("max"));
+                if (max != null && max < min) {
+                    double temp = min;
+                    min = max;
+                    max = temp;
+                }
+                return productDAO.getTotalRecordByPriceRange(min, max);
+            default:
+                return productDAO.getTotalProducts();
+        }
+    }
+
+    private String resolveActionSearch(HttpServletRequest request) {
+        String actionSearch = request.getParameter("search");
+        return actionSearch == null || actionSearch.isBlank() ? "default" : actionSearch;
+    }
+
+    private String buildPageUrlPattern(HttpServletRequest request, String viewMode, String sort) {
+        StringBuilder pattern = new StringBuilder(request.getRequestURL().toString()).append("?");
+        appendQueryParam(pattern, "viewMode", viewMode);
+        appendQueryParam(pattern, "search", request.getParameter("search"));
+        appendQueryParam(pattern, "categoryId", request.getParameter("categoryId"));
+        appendQueryParam(pattern, "keyword", request.getParameter("keyword"));
+        appendQueryParam(pattern, "gender", request.getParameter("gender"));
+        appendQueryParam(pattern, "collection", request.getParameter("collection"));
+        appendQueryParam(pattern, "min", request.getParameter("min"));
+        appendQueryParam(pattern, "max", request.getParameter("max"));
+        appendQueryParam(pattern, "sort", sort);
+        return pattern.toString();
+    }
+
+    private void appendQueryParam(StringBuilder builder, String key, String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+
+        builder.append(key)
+                .append("=")
+                .append(encodeQueryParam(value))
+                .append("&");
+    }
+
+    private int parsePage(String pageRaw) {
+        try {
+            int page = Integer.parseInt(pageRaw);
+            return page <= 0 ? 1 : page;
+        } catch (Exception e) {
+            return 1;
+        }
+    }
+
+    private Integer parseNullableInt(String raw) {
+        try {
+            return raw == null || raw.isBlank() ? null : Integer.parseInt(raw);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Map<Integer, Integer> buildCategoryProductCountMap(List<Category> categories, String selectedGender) {
+        Map<Integer, Integer> countMap = new LinkedHashMap<>();
+
+        if (categories == null || categories.isEmpty()) {
+            return countMap;
+        }
+
+        for (Category category : categories) {
+            if (category == null) {
+                continue;
+            }
+
+            int count;
+            if (selectedGender == null) {
+                count = productDAO.getTotalRecordByCategoryName(category.getName());
+            } else {
+                count = productDAO.getTotalRecordByCategoryAndGender(category.getId(), selectedGender);
+            }
+
+            countMap.put(category.getId(), Math.max(0, count));
+        }
+
+        return countMap;
     }
 
     // Parse double va tra gia tri mac dinh neu loi.
@@ -316,6 +439,10 @@ public class HomeController extends HttpServlet {
         }
 
         return rawCollection.trim();
+    }
+
+    private String normalizeViewMode(String rawViewMode) {
+        return "variant".equalsIgnoreCase(rawViewMode) ? "variant" : "product";
     }
 
     private String encodeQueryParam(String value) {

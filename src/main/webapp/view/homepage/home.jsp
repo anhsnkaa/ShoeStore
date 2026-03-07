@@ -74,6 +74,7 @@
                                     <ul>
                                     <c:forEach items="${listCategory}" var="c">
                                         <c:url var="categoryUrl" value="home">
+                                            <c:param name="viewMode" value="${viewMode}"/>
                                             <c:param name="search" value="category"/>
                                             <c:param name="categoryId" value="${c.id}"/>
                                             <c:if test="${not empty param.gender}">
@@ -83,7 +84,7 @@
                                                 <c:param name="sort" value="${param.sort}"/>
                                             </c:if>
                                         </c:url>
-                                        <li><a href="${categoryUrl}">${c.name}<span>(15)</span></a></li>
+                                        <li><a href="${categoryUrl}">${c.name}<span>(${categoryProductCountMap[c.id] != null ? categoryProductCountMap[c.id] : 0})</span></a></li>
                                         </c:forEach>
                                 </ul>
                             </div>
@@ -105,6 +106,7 @@
                                 <ul>
                                     <c:forEach items="${listCollection}" var="collectionName">
                                         <c:url var="collectionUrl" value="home">
+                                            <c:param name="viewMode" value="${viewMode}"/>
                                             <c:param name="search" value="collection"/>
                                             <c:param name="collection" value="${collectionName}"/>
                                             <c:if test="${not empty param.gender}">
@@ -124,6 +126,7 @@
                             <div class="left-menu mb-30">
                                 <ul>
                                     <c:url var="hotProductsUrl" value="home">
+                                        <c:param name="viewMode" value="${viewMode}"/>
                                         <c:param name="search" value="hot"/>
                                         <c:if test="${not empty param.gender}">
                                             <c:param name="gender" value="${param.gender}"/>
@@ -141,6 +144,7 @@
                             <div class="left-menu mb-30">
                                 <ul>
                                     <c:url var="saleProductsUrl" value="home">
+                                        <c:param name="viewMode" value="${viewMode}"/>
                                         <c:param name="search" value="sale"/>
                                         <c:if test="${not empty param.gender}">
                                             <c:param name="gender" value="${param.gender}"/>
@@ -157,11 +161,16 @@
                             </div>
                             <div class="left-menu mb-30">
                                 <ul>
-                                    <li><a href="home?search=price&min=0&max=9.99">$0.00-$9.99</a></li>
-                                    <li><a href="home?search=price&min=30&max=39.99">$30.00-$39.99</a></li>
-                                    <li><a href="home?search=price&min=40&max=49.99">$40.00-$49.99</a></li>
-                                    <li><a href="home?search=price&min=50&max=59.99">$50.00-$59.99</a></li>
-                                    <li><a href="home?search=price&min=70">$70.00-and above</a></li>
+                                    <c:url var="priceRange1Url" value="home"><c:param name="viewMode" value="${viewMode}"/><c:param name="search" value="price"/><c:param name="min" value="0"/><c:param name="max" value="9.99"/></c:url>
+                                    <c:url var="priceRange2Url" value="home"><c:param name="viewMode" value="${viewMode}"/><c:param name="search" value="price"/><c:param name="min" value="30"/><c:param name="max" value="39.99"/></c:url>
+                                    <c:url var="priceRange3Url" value="home"><c:param name="viewMode" value="${viewMode}"/><c:param name="search" value="price"/><c:param name="min" value="40"/><c:param name="max" value="49.99"/></c:url>
+                                    <c:url var="priceRange4Url" value="home"><c:param name="viewMode" value="${viewMode}"/><c:param name="search" value="price"/><c:param name="min" value="50"/><c:param name="max" value="59.99"/></c:url>
+                                    <c:url var="priceRange5Url" value="home"><c:param name="viewMode" value="${viewMode}"/><c:param name="search" value="price"/><c:param name="min" value="70"/></c:url>
+                                    <li><a href="${priceRange1Url}">$0.00-$9.99</a></li>
+                                    <li><a href="${priceRange2Url}">$30.00-$39.99</a></li>
+                                    <li><a href="${priceRange3Url}">$40.00-$49.99</a></li>
+                                    <li><a href="${priceRange4Url}">$50.00-$59.99</a></li>
+                                    <li><a href="${priceRange5Url}">$70.00-and above</a></li>
                                 </ul>
                             </div>
                             <div class="left-title mb-20">
@@ -331,7 +340,7 @@
                             <a href="#"><img src="${pageContext.request.contextPath}/img/banner/32.jpg" alt="banner" /></a>
                         </div>
                         <div class="section-title-5 mb-30">
-                            <h2>Book</h2>
+                            <h2>${viewMode == 'variant' ? 'Product Variants' : 'Products'}</h2>
                         </div>
                         <div class="toolbar mb-30">
                             <div class="shop-tab">
@@ -353,6 +362,7 @@
                                 <span>Sort By</span>
                                 <!-- Form sort de submit GET va giu lai bo loc hien tai -->
                                 <form action="home" method="get" class="d-inline">
+                                    <input type="hidden" name="viewMode" value="${viewMode}"/>
                                     <c:if test="${not empty param.search}">
                                         <input type="hidden" name="search" value="${param.search}"/>
                                     </c:if>
@@ -389,53 +399,108 @@
                         <div class="tab-content">
                             <div class="tab-pane fade show active" id="th">
                                 <div class="row">
-                                    <c:forEach items="${listProduct}" var="p">
-                                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                                            <!-- single-product-start -->
-                                            <div class="product-img">
-                                                <a href="product-details?id=${p.id}">
-                                                    <img src="${pageContext.request.contextPath}/${p.mainImage}" loading="lazy" decoding="async" alt="${p.name}" />
-                                                </a>
-                                                <c:if test="${p.hot || p.saleActive}">
-                                                    <div class="product-flag">
+                                    <c:choose>
+                                        <c:when test="${viewMode == 'variant'}">
+                                            <c:forEach items="${listVariantItems}" var="item">
+                                                <c:url var="variantDetailUrl" value="product-details">
+                                                    <c:param name="id" value="${item.product.id}"/>
+                                                    <c:if test="${not empty item.color}">
+                                                        <c:param name="color" value="${item.color}"/>
+                                                    </c:if>
+                                                </c:url>
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                                                    <div class="product-img">
+                                                        <a href="${variantDetailUrl}">
+                                                            <img src="${pageContext.request.contextPath}/${item.imageUrl}" loading="lazy" decoding="async" alt="${item.displayName}" />
+                                                        </a>
+                                                        <c:if test="${item.product.hot || item.product.saleActive}">
+                                                            <div class="product-flag">
+                                                                <ul>
+                                                                    <c:if test="${item.product.hot}">
+                                                                        <li><span class="sale">hot</span></li>
+                                                                    </c:if>
+                                                                    <c:if test="${item.product.saleActive}">
+                                                                        <li><span class="discount-percentage">-${item.product.discountPercent}%</span></li>
+                                                                    </c:if>
+                                                                </ul>
+                                                            </div>
+                                                        </c:if>
+                                                    </div>
+                                                    <div class="product-details text-center">
+                                                        <h4><a href="${variantDetailUrl}">${item.displayName}</a></h4>
+                                                        <div class="product-price">
+                                                            <ul>
+                                                                <a href="${variantDetailUrl}">
+                                                                    <li>$${item.product.finalPrice}</li>
+                                                                    <c:if test="${item.product.saleActive}">
+                                                                        <li class="old-price">$${item.product.price}</li>
+                                                                    </c:if>
+                                                                </a>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-link">
                                                         <ul>
-                                                            <c:if test="${p.hot}">
-                                                                <li><span class="sale">hot</span></li>
-                                                            </c:if>
-                                                            <c:if test="${p.saleActive}">
-                                                                <li><span class="discount-percentage">-${p.discountPercent}%</span></li>
-                                                            </c:if>
+                                                            <li><a href="${variantDetailUrl}" title="Details"></a></li>
                                                         </ul>
                                                     </div>
-                                                </c:if>
-                                                <div class="quick-view">
-                                                    <a class="action-view" href="#" data-bs-target="#productModal" data-bs-toggle="modal" title="Quick View">
-                                                        <i class="fa fa-search-plus"></i>
-                                                    </a>
                                                 </div>
-                                            </div>
-                                            <div class="product-details text-center">
-
-                                                <h4><a href="product-details?id=${p.id}">${p.name}</a></h4>
-                                                <div class="product-price">
-                                                    <ul>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach items="${listProduct}" var="p">
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                                                    <div class="product-img">
                                                         <a href="product-details?id=${p.id}">
-                                                            <li>$${p.finalPrice}</li>
-                                                            <c:if test="${p.saleActive}">
-                                                                <li class="old-price">$${p.price}</li>
-                                                            </c:if>
+                                                            <img src="${pageContext.request.contextPath}/${p.mainImage}" loading="lazy" decoding="async" alt="${p.name}" />
                                                         </a>
-                                                    </ul>
+                                                        <c:if test="${p.hot || p.saleActive}">
+                                                            <div class="product-flag">
+                                                                <ul>
+                                                                    <c:if test="${p.hot}">
+                                                                        <li><span class="sale">hot</span></li>
+                                                                    </c:if>
+                                                                    <c:if test="${p.saleActive}">
+                                                                        <li><span class="discount-percentage">-${p.discountPercent}%</span></li>
+                                                                    </c:if>
+                                                                </ul>
+                                                            </div>
+                                                        </c:if>
+                                                        <div class="quick-view">
+                                                            <a class="action-view" href="#" data-bs-target="#productModal" data-bs-toggle="modal" title="Quick View">
+                                                                <i class="fa fa-search-plus"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-details text-center">
+                                                        <h4><a href="product-details?id=${p.id}">${p.name}</a></h4>
+                                                        <c:if test="${not empty p.availableColors}">
+                                                            <div style="margin-bottom:8px;">
+                                                                <c:forEach items="${p.availableColors}" var="colorName">
+                                                                    <span style="display:inline-block; font-size:11px; padding:3px 7px; margin:0 4px 4px 0; border:1px solid #ddd; border-radius:12px; color:#555;">${colorName}</span>
+                                                                </c:forEach>
+                                                            </div>
+                                                        </c:if>
+                                                        <div class="product-price">
+                                                            <ul>
+                                                                <a href="product-details?id=${p.id}">
+                                                                    <li>$${p.finalPrice}</li>
+                                                                    <c:if test="${p.saleActive}">
+                                                                        <li class="old-price">$${p.price}</li>
+                                                                    </c:if>
+                                                                </a>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-link">
+                                                        <ul>
+                                                            <li><a href="product-details?id=${p.id}" title="Details"></a></li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="product-link">
-                                                <ul>
-                                                    <li><a href="product-details.html" title="Details"></a></li>
-                                                </ul>
-                                            </div>
-                                            <!-- single-product-end -->
-                                        </div>
-                                    </c:forEach>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </div>
                         </div>

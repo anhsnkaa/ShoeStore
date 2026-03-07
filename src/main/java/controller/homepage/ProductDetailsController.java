@@ -61,6 +61,7 @@ public class ProductDetailsController extends HttpServlet {
         request.setAttribute("product", productFindById);
         request.setAttribute("listColor", listColor);
         request.setAttribute("listProductSize", listProductSize);
+        request.setAttribute("selectedColor", normalizeColor(request.getParameter("color")));
         request.getRequestDispatcher("view/homepage/product-details.jsp").forward(request, response);
     }
 

@@ -3,7 +3,9 @@ package model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Products")
@@ -128,8 +130,58 @@ public class Product {
         return DEFAULT_IMAGE_PATH;
     }
 
+    @Transient
+    public List<String> getAvailableColors() {
+        Set<String> colors = new LinkedHashSet<>();
+
+        if (images != null) {
+            for (ProductImage image : images) {
+                if (image != null && image.getColor() != null && !image.getColor().isBlank()) {
+                    colors.add(image.getColor().trim().toUpperCase());
+                }
+            }
+        }
+
+        return new ArrayList<>(colors);
+    }
+
+    @Transient
+    public String getImageByColor(String color) {
+        if (color == null || color.isBlank()) {
+            return getMainImage();
+        }
+
+        String normalizedColor = color.trim().toUpperCase();
+
+        if (images != null) {
+            for (ProductImage image : images) {
+                if (image != null && normalizedColor.equals(normalizeColor(image.getColor()))
+                        && Boolean.TRUE.equals(image.isIsMain()) && hasImagePath(image.getImageUrl())) {
+                    return image.getImageUrl();
+                }
+            }
+
+            for (ProductImage image : images) {
+                if (image != null && normalizedColor.equals(normalizeColor(image.getColor()))
+                        && hasImagePath(image.getImageUrl())) {
+                    return image.getImageUrl();
+                }
+            }
+        }
+
+        return getMainImage();
+    }
+
     private boolean hasImagePath(String imagePath) {
         return imagePath != null && !imagePath.isBlank();
+    }
+
+    private String normalizeColor(String color) {
+        if (color == null || color.isBlank()) {
+            return null;
+        }
+
+        return color.trim().toUpperCase();
     }
 
     public void addSize(ProductSize size) {

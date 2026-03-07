@@ -802,6 +802,7 @@
                 var colorButtons = document.querySelectorAll(".color-option-btn");
                 var thumbButtons = document.querySelectorAll(".product-thumb-btn");
                 var sizeStockItems = document.querySelectorAll("#sizeStockData .size-stock-item");
+                var requestedColor = normalizeColor("${selectedColor}");
 
                 var selectedColor = "";
                 var stockByColor = {};
@@ -1142,7 +1143,18 @@
                 }
 
                 if (colorButtons.length > 0) {
-                    selectColor(colorButtons[0].getAttribute("data-color"));
+                    var initialColor = colorButtons[0].getAttribute("data-color");
+
+                    if (requestedColor) {
+                        for (var k = 0; k < colorButtons.length; k++) {
+                            if (normalizeColor(colorButtons[k].getAttribute("data-color")) === requestedColor) {
+                                initialColor = colorButtons[k].getAttribute("data-color");
+                                break;
+                            }
+                        }
+                    }
+
+                    selectColor(initialColor);
                 } else {
                     filterImagesByColor("");
 
