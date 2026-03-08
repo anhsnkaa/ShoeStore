@@ -79,7 +79,40 @@ public class OrderAdminServerlet extends HttpServlet {
         }
 
         List<Order> orders = orderDAO.getAllOrders();
+        int pendingCount = 0;
+        int confirmedCount = 0;
+        int shippingCount = 0;
+        int doneCount = 0;
+
+        for (Order order : orders) {
+            if (order == null || order.getStatus() == null) {
+                continue;
+            }
+
+            switch (order.getStatus()) {
+                case "PENDING":
+                    pendingCount++;
+                    break;
+                case "CONFIRMED":
+                    confirmedCount++;
+                    break;
+                case "SHIPPING":
+                    shippingCount++;
+                    break;
+                case "DONE":
+                    doneCount++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         request.setAttribute("orders", orders);
+        request.setAttribute("totalOrders", orders.size());
+        request.setAttribute("pendingOrders", pendingCount);
+        request.setAttribute("confirmedOrders", confirmedCount);
+        request.setAttribute("shippingOrders", shippingCount);
+        request.setAttribute("doneOrders", doneCount);
         request.getRequestDispatcher("/view/admin/order.jsp").forward(request, response);
     }
 
