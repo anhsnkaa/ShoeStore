@@ -40,10 +40,10 @@
                         <div class="col-xl-3 col-sm-6 mb-3">
                             <div class="card text-white bg-success o-hidden h-100">
                                 <div class="card-body">
-                                    <div class="card-body-icon"><i class="fas fa-dollar-sign"></i></div>
+                                    <div class="card-body-icon"><i class="fas fa-money-bill-wave"></i></div>
                                     <div class="mr-5">SUM Revenue</div>
                                     <h5 class="mb-0">
-                                        $<fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2"/>
+                                        <fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
                                     <div class="card-body-icon"><i class="fas fa-calculator"></i></div>
                                     <div class="mr-5">AVG Order Value</div>
                                     <h5 class="mb-0">
-                                        $<fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/>
+                                        <fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                                     <div class="card-body-icon"><i class="fas fa-arrow-up"></i></div>
                                     <div class="mr-5">MAX Order Value</div>
                                     <h5 class="mb-0">
-                                        $<fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/>
+                                        <fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                                     <div class="card-body-icon"><i class="fas fa-arrow-down"></i></div>
                                     <div class="mr-5">MIN Order Value</div>
                                     <h5 class="mb-0">
-                                        $<fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/>
+                                        <fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -106,22 +106,22 @@
                                         </tr>
                                         <tr>
                                             <td>SUM</td>
-                                            <td>$<fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2"/></td>
+                                            <td><fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
                                     <td>Total revenue (CONFIRMED/SHIPPING/DONE)</td>
                                     </tr>
                                     <tr>
                                         <td>AVG</td>
-                                        <td>$<fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/></td>
+                                        <td><fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
                                     <td>Average order value</td>
                                     </tr>
                                     <tr>
                                         <td>MAX</td>
-                                        <td>$<fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/></td>
+                                        <td><fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
                                     <td>Highest order value</td>
                                     </tr>
                                     <tr>
                                         <td>MIN</td>
-                                        <td>$<fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/></td>
+                                        <td><fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
                                     <td>Lowest order value</td>
                                     </tr>
                                     </tbody>

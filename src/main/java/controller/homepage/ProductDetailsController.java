@@ -4,6 +4,7 @@
  */
 package controller.homepage;
 
+import controller.common.HeaderDataSupport;
 import dal.implement.AnswerDAO;
 import dal.implement.ProductDAO;
 import dal.implement.ProductSizeDAO;
@@ -62,6 +63,7 @@ public class ProductDetailsController extends HttpServlet {
         request.setAttribute("listColor", listColor);
         request.setAttribute("listProductSize", listProductSize);
         request.setAttribute("selectedColor", normalizeColor(request.getParameter("color")));
+        HeaderDataSupport.populate(request);
         request.getRequestDispatcher("view/homepage/product-details.jsp").forward(request, response);
     }
 

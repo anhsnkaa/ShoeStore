@@ -125,7 +125,7 @@
 
                                             <!-- PRICE -->
                                             <td class="product-price">
-                                                $${od.price}
+                                                ${od.price} &#273;
                                             </td>
 
                                             <!-- QUANTITY -->
@@ -145,9 +145,9 @@
                                             </td>
                                     <!-- TOTAL -->
                                     <td class="product-subtotal">
-                                        $<span class="item-total">
+                                        <span class="item-total">
                                             ${od.price * od.quantity}
-                                        </span>
+                                        </span> &#273;
                                     </td>
 
                                     <!-- REMOVE -->
@@ -186,7 +186,7 @@
                                     <tr class="cart-subtotal">
                                         <th>Subtotal</th>
                                         <td>
-                                            <span class="amount">£215.00</span>
+                                            <span class="amount">${empty cart ? 0 : cart.total} &#273;</span>
                                         </td>
                                     </tr>
                                     <tr class="shipping">
@@ -203,7 +203,7 @@
                                         <th>Total</th>
                                         <td>
                                             <strong>
-                                                <span class="amount">$<span id="cart-total">${cart.total}</span></span>
+                                                <span class="amount"><span id="cart-total">${empty cart ? 0 : cart.total}</span> &#273;</span>
                                             </strong>
                                         </td>
                                     </tr>

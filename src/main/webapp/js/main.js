@@ -7,13 +7,27 @@
     var header = $('#header-sticky');
     var win = $(window);
     
-    win.on('scroll', function() {
-        if ($(this).scrollTop() > 120) {
+    function resolveStickyTrigger() {
+        var defaultTrigger = 120;
+        var productSection = $('.home-product-section');
+
+        if (header.hasClass('home-navbar') && productSection.length) {
+            return Math.max(productSection.offset().top - header.outerHeight() - 20, 0);
+        }
+
+        return defaultTrigger;
+    }
+
+    function toggleStickyHeader() {
+        if (win.scrollTop() > resolveStickyTrigger()) {
             header.addClass("sticky");
         } else {
             header.removeClass("sticky");
         }
-    });
+    }
+
+    win.on('scroll resize', toggleStickyHeader);
+    toggleStickyHeader();
     
     /*----------------------------
      Jquery MeanMenu

@@ -148,7 +148,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
-                                                <td>$${p.price}</td>
+                                                <td>${p.price} &#273;</td>
                                                 <td>
                                                     ${p.category.name}
                                                     <c:if test="${not empty p.category.gender and not empty p.category.gender.name}">

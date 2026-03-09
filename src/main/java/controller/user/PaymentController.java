@@ -4,6 +4,7 @@
  */
 package controller.user;
 
+import controller.common.HeaderDataSupport;
 import dal.implement.OrderDAO;
 import dal.implement.ProductDAO;
 import dal.implement.ProductSizeDAO;
@@ -45,6 +46,7 @@ public class PaymentController extends HttpServlet {
             session.removeAttribute("checkoutType");
         }
 
+        HeaderDataSupport.populate(request);
         request.getRequestDispatcher("view/user/payment/cart.jsp").forward(request, response);
     }
 

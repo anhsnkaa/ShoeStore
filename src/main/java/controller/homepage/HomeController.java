@@ -4,6 +4,7 @@
  */
 package controller.homepage;
 
+import controller.common.HeaderDataSupport;
 import dal.implement.CategoryDAO;
 import dal.implement.ProductDAO;
 import java.io.IOException;
@@ -64,6 +65,9 @@ public class HomeController extends HttpServlet {
         request.setAttribute("selectedGender", selectedGender);
         request.setAttribute("viewMode", viewMode);
         request.setAttribute("isHomePage", true);
+        request.setAttribute("menCategories", categoryDAO.getCategoriesByGender("MEN"));
+        request.setAttribute("womenCategories", categoryDAO.getCategoriesByGender("WOMEN"));
+        HeaderDataSupport.populate(request);
         // Chuyen huong den trang home.jsp.
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
     }

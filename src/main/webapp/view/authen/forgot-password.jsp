@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -20,43 +21,53 @@
         <script src="${pageContext.request.contextPath}/js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
     <body class="login">
+        <%
+            request.setAttribute("minimalHeader", Boolean.TRUE);
+            request.setAttribute("authHeaderLabel", "Sign in");
+            request.setAttribute("authHeaderHref", request.getContextPath() + "/authen?action=login");
+        %>
         <jsp:include page="../common/homePage/header.jsp"></jsp:include>
         <jsp:include page="../common/homePage/breadcrumbs-area.jsp"></jsp:include>
 
-        <div class="user-login-area mb-70">
+        <div class="user-login-area auth-page-section mb-70">
             <div class="container">
-                <div class="row">
+                <div class="row justify-content-center">
                     <div class="col-lg-12">
-                        <div class="login-title text-center mb-30">
+                        <div class="login-title auth-page-title text-center mb-30">
                             <h2>Reset Password</h2>
-                            <p>Enter your account information to set a new password.</p>
+                            <p>Enter your account details below and choose a new password for your ShoeStore account.</p>
                         </div>
                     </div>
                     <div class="offset-lg-3 col-lg-6 col-md-12 col-12">
-                        <div class="login-form">
+                        <div class="login-form auth-card">
                             <form action="${pageContext.request.contextPath}/authen?action=forgot-password" method="POST">
-                                <div class="single-login">
+                                <c:if test="${not empty error}">
+                                    <div class="auth-message error">${error}</div>
+                                </c:if>
+                                <div class="single-login auth-field">
                                     <label>Username <span>*</span></label>
                                     <input type="text" name="username" required />
                                 </div>
-                                <div class="single-login">
+                                <div class="single-login auth-field">
                                     <label>Email <span>*</span></label>
                                     <input type="email" name="email" required />
                                 </div>
-                                <div class="single-login">
+                                <div class="single-login auth-field">
                                     <label>New Password <span>*</span></label>
                                     <input type="password" name="newPassword" required />
                                 </div>
-                                <div class="single-login">
+                                <div class="single-login auth-field">
                                     <label>Confirm Password <span>*</span></label>
                                     <input type="password" name="confirmPassword" required />
                                 </div>
-                                <div class="single-login single-login-2">
+                                <div class="single-login auth-submit-row">
                                     <input type="submit" value="Reset Password" />
                                 </div>
-                                <span style="color:red">${error}</span><br>
-                                <a href="${pageContext.request.contextPath}/authen?action=login">Back to Login</a>
                             </form>
+                            <div class="auth-alt-link">
+                                <span>Remember your password?</span>
+                                <a href="${pageContext.request.contextPath}/authen?action=login">Back to Sign in</a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -4,6 +4,7 @@
  */
 package controller.authen;
 
+import controller.common.HeaderDataSupport;
 import dal.implement.AccountDAO;
 import dal.implement.RoleDAO;
 import java.io.IOException;
@@ -48,6 +49,9 @@ public class AuthenticationController extends HttpServlet {
             default:
                 url = "home";
         }
+        if (url != null && url.startsWith("view/")) {
+            HeaderDataSupport.populate(request);
+        }
         //chuyen trang
         request.getRequestDispatcher(url).forward(request, response);
     }
@@ -88,6 +92,9 @@ public class AuthenticationController extends HttpServlet {
                 return;
             default:
                 url = "home";
+        }
+        if (url != null && url.startsWith("view/")) {
+            HeaderDataSupport.populate(request);
         }
         //chuyen trang
         request.getRequestDispatcher(url).forward(request, response);

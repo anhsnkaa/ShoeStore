@@ -4,6 +4,7 @@
     Author     : FPTShop
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -48,49 +49,67 @@
 
         <!-- Add your site or application content here -->
         <!-- header-area-start -->
+        <%
+            request.setAttribute("minimalHeader", Boolean.TRUE);
+            request.setAttribute("authHeaderLabel", "Sign up");
+            request.setAttribute("authHeaderHref", request.getContextPath() + "/authen?action=sign-up");
+        %>
         <jsp:include page="../common/homePage/header.jsp"></jsp:include>
             <!-- header-area-end -->
             <!-- breadcrumbs-area-start -->
         <jsp:include page="../common/homePage/breadcrumbs-area.jsp"></jsp:include>
             <!-- breadcrumbs-area-end -->
             <!-- user-login-area-start -->
-            <div class="user-login-area mb-70">
+            <div class="user-login-area auth-page-section mb-70">
                 <div class="container">
-                    <div class="row">
+                    <div class="row justify-content-center">
                         <div class="col-lg-12">
-                            <div class="login-title text-center mb-30">
+                            <div class="login-title auth-page-title text-center mb-30">
                                 <h2>Login</h2>
+                                <p>Welcome back. Sign in to continue shopping, check your cart, and manage your orders.</p>
                             </div>
                         </div>
                         <div class="offset-lg-3 col-lg-6 col-md-12 col-12">
-                            <div class="login-form">
+                            <div class="login-form auth-card">
                                 <form action="${pageContext.request.contextPath}/authen?action=login" method="POST">
-                                <div class="single-login">
-                                    <label>Username or email<span>*</span></label>
-                                    <input type="text" name="username"/>
+                                    <c:if test="${not empty error}">
+                                        <div class="auth-message error">${error}</div>
+                                    </c:if>
+                                    <c:if test="${not empty message}">
+                                        <div class="auth-message success">${message}</div>
+                                    </c:if>
+                                    <div class="single-login auth-field">
+                                        <label>Username or email<span>*</span></label>
+                                        <input type="text" name="username"/>
+                                    </div>
+                                    <div class="single-login auth-field">
+                                        <label>Password <span>*</span></label>
+                                        <input type="password" name="password"/>
+                                    </div>
+                                    <div class="single-login auth-meta-row">
+                                        <label class="auth-checkbox">
+                                            <input id="rememberme" type="checkbox" name="rememberme" value="forever">
+                                            <span>Remember me</span>
+                                        </label>
+                                        <a class="auth-text-link" href="${pageContext.request.contextPath}/authen?action=forgot-password">Forgot password?</a>
+                                    </div>
+                                    <div class="single-login auth-submit-row">
+                                        <input type="submit" value="Login"></input>
+                                    </div>
+                                </form>
+                                <div class="auth-alt-link">
+                                    <span>New to ShoeStore?</span>
+                                    <a href="${pageContext.request.contextPath}/authen?action=sign-up">Create an account</a>
                                 </div>
-                                <div class="single-login">
-                                    <label>Passwords <span>*</span></label>
-                                    <input type="password" name="password"/>
-                                </div>
-                                <div class="single-login single-login-2">
-                                    <input type="submit" value="Login"></input>
-                                    <input id="rememberme" type="checkbox" name="rememberme" value="forever">
-                                    <span>Remember me</span>
-                                </div>
-                                <span style="color:red">${error}</span><br>
-                                <span style="color:green">${message}</span><br>
-                                <a href="${pageContext.request.contextPath}/authen?action=forgot-password">Lost your password?</a>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         <!-- user-login-area-end -->
         <!-- footer-area-start -->
         <jsp:include page="../common/homePage/footer.jsp"></jsp:include>
-            <!-- footer-area-end -->
+        <!-- footer-area-end -->
 
 
             <!-- all js here -->

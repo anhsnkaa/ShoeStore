@@ -104,11 +104,11 @@
                                             <div class="price-final">
                                                 <c:choose>
                                                     <c:when test="${product.saleActive}">
-                                                        <span>$${product.finalPrice}</span>
-                                                        <span class="old-price" style="margin-left:8px; text-decoration:line-through; color:#999;">$${product.price}</span>
+                                                        <span>${product.finalPrice} &#273;</span>
+                                                        <span class="old-price" style="margin-left:8px; text-decoration:line-through; color:#999;">${product.price} &#273;</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span>$${product.price}</span>
+                                                        <span>${product.price} &#273;</span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -341,7 +341,7 @@
                                         <h4><a href="#">Joust Duffle Bag</a></h4>
                                         <div class="product-price">
                                             <ul>
-                                                <li>$60.00</li>
+                                                <li>60.00 &#273;</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -387,7 +387,7 @@
                                         <h4><a href="#">Chaz Kangeroo Hoodie</a></h4>
                                         <div class="product-price">
                                             <ul>
-                                                <li>$52.00</li>
+                                                <li>52.00 &#273;</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -433,7 +433,7 @@
                                         <h4><a href="#">Set of Sprite Yoga Straps</a></h4>
                                         <div class="product-price">
                                             <ul>
-                                                <li> <span>Starting at</span>$34.00</li>
+                                                <li><span>Starting at</span> 34.00 &#273;</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -480,8 +480,8 @@
                                         <h4><a href="#">Strive Shoulder Pack</a></h4>
                                         <div class="product-price">
                                             <ul>
-                                                <li>$30.00</li>
-                                                <li class="old-price">$32.00</li>
+                                                <li>30.00 &#273;</li>
+                                                <li class="old-price">32.00 &#273;</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -526,8 +526,8 @@
                                                 <h4><a href="#">Endeavor Daytrip</a></h4>
                                                 <div class="product-price">
                                                     <ul>
-                                                        <li>$30.00</li>
-                                                        <li class="old-price">$33.00</li>
+                                                        <li>30.00 &#273;</li>
+                                                        <li class="old-price">33.00 &#273;</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -549,8 +549,8 @@
                                                 <h4><a href="#">Savvy Shoulder Tote</a></h4>
                                                 <div class="product-price">
                                                     <ul>
-                                                        <li>$30.00</li>
-                                                        <li class="old-price">$35.00</li>
+                                                        <li>30.00 &#273;</li>
+                                                        <li class="old-price">35.00 &#273;</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -572,7 +572,7 @@
                                                 <h4><a href="#">Compete Track Tote</a></h4>
                                                 <div class="product-price">
                                                     <ul>
-                                                        <li>$35.00</li>
+                                                        <li>35.00 &#273;</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -596,8 +596,8 @@
                                                 <h4><a href="#">Voyage Yoga Bag</a></h4>
                                                 <div class="product-price">
                                                     <ul>
-                                                        <li>$30.00</li>
-                                                        <li class="old-price">$33.00</li>
+                                                        <li>30.00 &#273;</li>
+                                                        <li class="old-price">33.00 &#273;</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -619,8 +619,8 @@
                                                 <h4><a href="#">Impulse Duffle</a></h4>
                                                 <div class="product-price">
                                                     <ul>
-                                                        <li>$70.00</li>
-                                                        <li class="old-price">$74.00</li>
+                                                        <li>70.00 &#273;</li>
+                                                        <li class="old-price">74.00 &#273;</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -642,7 +642,7 @@
                                                 <h4><a href="#">Fusion Backpack</a></h4>
                                                 <div class="product-price">
                                                     <ul>
-                                                        <li>$59.00</li>
+                                                        <li>59.00 &#273;</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -709,7 +709,7 @@
                                 <div class="modal-pro-content">
                                     <h3>Chaz Kangeroo Hoodie3</h3>
                                     <div class="price">
-                                        <span>$70.00</span>
+                                        <span>70.00 &#273;</span>
                                     </div>
                                     <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet.</p>	
                                     <div class="quick-view-select">

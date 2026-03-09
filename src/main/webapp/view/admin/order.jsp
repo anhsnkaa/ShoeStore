@@ -144,7 +144,7 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                        $<fmt:formatNumber value="${o.totalAmount}" type="number" minFractionDigits="0" maxFractionDigits="2"/>
+                                                        <fmt:formatNumber value="${o.totalAmount}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
                                                     </td>
                                                     <td>${o.createdDateDisplay}</td>
                                                     <td>
@@ -213,8 +213,8 @@
                                                                                     <td>${od.color}</td>
                                                                                     <td>${od.size}</td>
                                                                                     <td>${od.quantity}</td>
-                                                                                    <td>$<fmt:formatNumber value="${od.price}" type="number" minFractionDigits="0" maxFractionDigits="2"/></td>
-                                                                                    <td>$<fmt:formatNumber value="${od.price * od.quantity}" type="number" minFractionDigits="0" maxFractionDigits="2"/></td>
+                                                                                    <td><fmt:formatNumber value="${od.price}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
+                                                                                    <td><fmt:formatNumber value="${od.price * od.quantity}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
                                                                                 </tr>
                                                                             </c:forEach>
                                                                         </tbody>

@@ -96,7 +96,7 @@
                                                             <td>#${o.id}</td>
                                                             <td>${o.createdDateDisplay}</td>
                                                             <td>${o.status}</td>
-                                                            <td>$${o.totalAmount}</td>
+                                                            <td>${o.totalAmount} &#273;</td>
                                                             <td>
                                                                 <button class="btn btn-info btn-sm"
                                                                         type="button"
@@ -134,8 +134,8 @@
                                                                                     <td>${od.color}</td>
                                                                                     <td>${od.size}</td>
                                                                                     <td>${od.quantity}</td>
-                                                                                    <td>$${od.price}</td>
-                                                                                    <td>$${od.price * od.quantity}</td>
+                                                                                    <td>${od.price} &#273;</td>
+                                                                                    <td>${od.price * od.quantity} &#273;</td>
                                                                                 </tr>
                                                                             </c:forEach>
                                                                         </tbody>

@@ -4,6 +4,7 @@
     Author     : FPTShop
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -50,94 +51,79 @@
 
         <!-- Add your site or application content here -->
         <!-- header-area-start -->
+        <%
+            request.setAttribute("minimalHeader", Boolean.TRUE);
+            request.setAttribute("authHeaderLabel", "Sign in");
+            request.setAttribute("authHeaderHref", request.getContextPath() + "/authen?action=login");
+        %>
         <jsp:include page="../common/homePage/header.jsp"></jsp:include>
             <!-- header-area-end -->
             <!-- breadcrumbs-area-start -->
         <jsp:include page="../common/homePage/breadcrumbs-area.jsp"></jsp:include>
             <!-- breadcrumbs-area-end -->
             <!-- user-login-area-start -->
-            <div class="user-login-area mb-70">
+            <div class="user-login-area auth-page-section mb-70">
                 <div class="container">
-                    <div class="row">
+                    <div class="row justify-content-center">
                         <div class="col-lg-12">
-                            <div class="login-title text-center mb-30">
-                                <h2>Sign Up</h2>
-                                <p>doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo<br>inventore veritatis et quasi architecto beat</p>
+                            <div class="login-title auth-page-title text-center mb-30">
+                                <h2>Create Account</h2>
+                                <p>Create your ShoeStore account to save favorites, manage orders, and checkout faster.</p>
                             </div>
                         </div>
                         <div class="offset-lg-2 col-lg-8 col-md-12 col-12">
-                            <div class="billing-fields">
-
-                                <form action="authen?action=sign-up" method="POST">
-                                    <div class="offset-lg-2 col-lg-8 col-md-12 col-12">
-                                        <div class="billing-fields">
-                                            <!-- Error Message -->
-                                            <div class="text-center mt-2">
-                                                <span style="color:red">${error}</span>
-                                        </div>
-                                        <div class="row">
-
-                                            <!-- Full Name -->
-                                            <div class="col-lg-6 col-md-6 col-12">
-                                                <div class="single-register">
-                                                    <label>Full Name<span>*</span></label>
-                                                    <input type="text" name="fullName" required />
-                                                </div>
+                            <div class="login-form auth-card auth-card-wide">
+                                <form action="${pageContext.request.contextPath}/authen?action=sign-up" method="POST">
+                                    <c:if test="${not empty error}">
+                                        <div class="auth-message error">${error}</div>
+                                    </c:if>
+                                    <div class="row auth-grid-row">
+                                        <div class="col-lg-6 col-md-6 col-12">
+                                            <div class="single-login auth-field">
+                                                <label>Full Name<span>*</span></label>
+                                                <input type="text" name="fullName" required />
                                             </div>
-
-                                            <!-- Username -->
-                                            <div class="col-lg-6 col-md-6 col-12">
-                                                <div class="single-register">
-                                                    <label>Username<span>*</span></label>
-                                                    <input type="text" name="username" required />
-                                                </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-12">
+                                            <div class="single-login auth-field">
+                                                <label>Username<span>*</span></label>
+                                                <input type="text" name="username" required />
                                             </div>
-
                                         </div>
-
-                                        <div class="row">
-
-                                            <!-- Email -->
-                                            <div class="col-lg-6 col-md-6 col-12">
-                                                <div class="single-register">
-                                                    <label>Email<span>*</span></label>
-                                                    <input type="email" name="email" required />
-                                                </div>
+                                        <div class="col-lg-6 col-md-6 col-12">
+                                            <div class="single-login auth-field">
+                                                <label>Email<span>*</span></label>
+                                                <input type="email" name="email" required />
                                             </div>
-
-                                            <!-- Phone -->
-                                            <div class="col-lg-6 col-md-6 col-12">
-                                                <div class="single-register">
-                                                    <label>Phone<span>*</span></label>
-                                                    <input type="text" name="phone" required />
-                                                </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-12">
+                                            <div class="single-login auth-field">
+                                                <label>Phone<span>*</span></label>
+                                                <input type="text" name="phone" required />
                                             </div>
-
                                         </div>
-
-                                        <!-- Address -->
-                                        <div class="single-register">
-                                            <label>Address<span>*</span></label>
-                                            <input type="text" name="address" required />
+                                        <div class="col-12">
+                                            <div class="single-login auth-field">
+                                                <label>Address<span>*</span></label>
+                                                <input type="text" name="address" required />
+                                            </div>
                                         </div>
-
-                                        <!-- Password -->
-                                        <div class="single-register">
-                                            <label>Password<span>*</span></label>
-                                            <input type="password" name="password" required />
+                                        <div class="col-12">
+                                            <div class="single-login auth-field">
+                                                <label>Password<span>*</span></label>
+                                                <input type="password" name="password" required />
+                                            </div>
                                         </div>
-                                        <!-- Submit Button -->
-                                        <div class="single-register text-center">
-                                            <input type="submit" value="Register"
-                                                   class="btn btn-primary">
-                                        </div>
-
-
-
                                     </div>
-
+                                    <div class="single-login auth-submit-row">
+                                        <input type="submit" value="Create account" class="btn btn-primary">
+                                    </div>
+                                </form>
+                                <div class="auth-alt-link">
+                                    <span>Already have an account?</span>
+                                    <a href="${pageContext.request.contextPath}/authen?action=login">Sign in</a>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>

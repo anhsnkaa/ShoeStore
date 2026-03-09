@@ -82,12 +82,6 @@
                                 </li>
                             </ul>
                         </c:when>
-                        <c:otherwise>
-                            <ul>
-                                <li><a href="#">Home</a></li>
-                                <li><a href="#" class="active">shop</a></li>
-                            </ul>
-                        </c:otherwise>
                     </c:choose>
                 </div>
             </div>
