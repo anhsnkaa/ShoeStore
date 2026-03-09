@@ -6513,6 +6513,12 @@ nav.menu .cr-dropdown ul {
     max-width: 620px;
 }
 
+.auth-card-column {
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .login-form.auth-card {
     background: #fff;
     border: 1px solid #ececec;

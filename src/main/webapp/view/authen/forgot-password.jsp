@@ -38,7 +38,7 @@
                             <p>Enter your account details below and choose a new password for your ShoeStore account.</p>
                         </div>
                     </div>
-                    <div class="offset-lg-3 col-lg-6 col-md-12 col-12">
+                    <div class="col-lg-6 col-md-10 col-12 auth-card-column">
                         <div class="login-form auth-card">
                             <form action="${pageContext.request.contextPath}/authen?action=forgot-password" method="POST">
                                 <c:if test="${not empty error}">

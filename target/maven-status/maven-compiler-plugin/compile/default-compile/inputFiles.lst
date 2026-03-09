@@ -13,10 +13,8 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Product.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\com\mycompany\shoestore\resources\JakartaEE10Resource.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\ProductDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\filter\ExtensionFileFilter.java
-D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Blog.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\AccountDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\AnswerDAO.java
-D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\BlogDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\ProductImage.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\com\mycompany\shoestore\JakartaRestConfiguration.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\OrderAdminServerlet.java
@@ -29,6 +27,7 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\PageControl.j
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Answer.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\DashboardServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\filter\UserFilter.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\common\HeaderDataSupport.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Question.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\admin\ProductAdminServerlet.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\ProductSizeDAO.java
@@ -37,5 +36,6 @@ D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\filter\A
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\homepage\HomeController.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\homepage\ProductDetailsController.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\Account.java
+D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\model\HomeVariantItem.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\dal\implement\ProductImageDAO.java
 D:\tailieu\ki 4\prj301\pj\Assignment\ShoeStore\src\main\java\controller\user\DashboardUserServerlet.java

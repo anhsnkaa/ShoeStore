@@ -71,7 +71,7 @@
                                 <p>Create your ShoeStore account to save favorites, manage orders, and checkout faster.</p>
                             </div>
                         </div>
-                        <div class="offset-lg-2 col-lg-8 col-md-12 col-12">
+                        <div class="col-lg-8 col-md-10 col-12 auth-card-column">
                             <div class="login-form auth-card auth-card-wide">
                                 <form action="${pageContext.request.contextPath}/authen?action=sign-up" method="POST">
                                     <c:if test="${not empty error}">
@@ -129,9 +129,6 @@
                 </div>
             </div>
             <!-- user-login-area-end -->
-            <!-- footer-area-start -->
-            <jsp:include page="../common/homePage/footer.jsp"></jsp:include>
-                <!-- footer-area-end -->
 
 
                 <!-- all js here -->

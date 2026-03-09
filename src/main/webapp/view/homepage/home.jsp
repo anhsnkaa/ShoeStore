@@ -180,8 +180,8 @@
                                 <h2>${viewMode == 'variant' ? 'Product Variants' : 'Products'}</h2>
                             </div>
                             <div class="view-mode-switch">
-                                <a href="${productModeUrl}" class="${viewMode == 'variant' ? '' : 'active'}">Product</a>
-                                <a href="${variantModeUrl}" class="${viewMode == 'variant' ? 'active' : ''}">Variant</a>
+                                <a href="${productModeUrl}#products-section" class="${viewMode == 'variant' ? '' : 'active'}">Product</a>
+                                <a href="${variantModeUrl}#products-section" class="${viewMode == 'variant' ? 'active' : ''}">Variant</a>
                             </div>
                         </div>
                         <div class="toolbar">
@@ -191,17 +191,17 @@
                                     <select class="price-filter-options" onchange="if (this.value) {
                                                 window.location.href = this.value;
                                             }">
-                                        <option value="${allPriceUrl}" ${param.search != 'price' ? 'selected="selected"' : ''}>All Prices</option>
-                                        <option value="${priceRange1Url}" ${param.search == 'price' and param.min == '0' and param.max == '9.99' ? 'selected="selected"' : ''}>0.00 &#273; - 9.99 &#273;</option>
-                                        <option value="${priceRange2Url}" ${param.search == 'price' and param.min == '30' and param.max == '39.99' ? 'selected="selected"' : ''}>30.00 &#273; - 39.99 &#273;</option>
-                                        <option value="${priceRange3Url}" ${param.search == 'price' and param.min == '40' and param.max == '49.99' ? 'selected="selected"' : ''}>40.00 &#273; - 49.99 &#273;</option>
-                                        <option value="${priceRange4Url}" ${param.search == 'price' and param.min == '50' and param.max == '59.99' ? 'selected="selected"' : ''}>50.00 &#273; - 59.99 &#273;</option>
-                                        <option value="${priceRange5Url}" ${param.search == 'price' and param.min == '70' and empty param.max ? 'selected="selected"' : ''}>70.00 &#273; and above</option>
+                                        <option value="${allPriceUrl}#products-section" ${param.search != 'price' ? 'selected="selected"' : ''}>All Prices</option>
+                                        <option value="${priceRange1Url}#products-section" ${param.search == 'price' and param.min == '0' and param.max == '9.99' ? 'selected="selected"' : ''}>0.00 &#273; - 9.99 &#273;</option>
+                                        <option value="${priceRange2Url}#products-section" ${param.search == 'price' and param.min == '30' and param.max == '39.99' ? 'selected="selected"' : ''}>30.00 &#273; - 39.99 &#273;</option>
+                                        <option value="${priceRange3Url}#products-section" ${param.search == 'price' and param.min == '40' and param.max == '49.99' ? 'selected="selected"' : ''}>40.00 &#273; - 49.99 &#273;</option>
+                                        <option value="${priceRange4Url}#products-section" ${param.search == 'price' and param.min == '50' and param.max == '59.99' ? 'selected="selected"' : ''}>50.00 &#273; - 59.99 &#273;</option>
+                                        <option value="${priceRange5Url}#products-section" ${param.search == 'price' and param.min == '70' and empty param.max ? 'selected="selected"' : ''}>70.00 &#273; and above</option>
                                     </select>
                                 </div>
                                 <div class="toolbar-sorter">
                                     <span>Sort By</span>
-                                    <form action="home" method="get" class="d-inline">
+                                    <form action="home#products-section" method="get" class="d-inline">
                                         <input type="hidden" name="viewMode" value="${viewMode}"/>
                                         <c:if test="${not empty param.search}">
                                             <input type="hidden" name="search" value="${param.search}"/>
@@ -366,7 +366,7 @@
 
                                 <c:if test="${currentPage gt 1}">
                                     <li>
-                                        <a href="${pageControl.urlPattern}page=${currentPage - 1}" class="angle">
+                                        <a href="${pageControl.urlPattern}page=${currentPage - 1}#products-section" class="angle">
                                             <i class="fa fa-angle-left"></i>
                                         </a>
                                     </li>
@@ -374,13 +374,13 @@
 
                                 <c:forEach begin="${startPage}" end="${endPage}" var="pageNumber">
                                     <li>
-                                        <a href="${pageControl.urlPattern}page=${pageNumber}" class="${pageNumber == currentPage ? 'active' : ''}">${pageNumber}</a>
+                                        <a href="${pageControl.urlPattern}page=${pageNumber}#products-section" class="${pageNumber == currentPage ? 'active' : ''}">${pageNumber}</a>
                                     </li>
                                 </c:forEach>
 
                                 <c:if test="${currentPage lt totalPage}">
                                     <li>
-                                        <a href="${pageControl.urlPattern}page=${currentPage + 1}" class="angle">
+                                        <a href="${pageControl.urlPattern}page=${currentPage + 1}#products-section" class="angle">
                                             <i class="fa fa-angle-right"></i>
                                         </a>
                                     </li>

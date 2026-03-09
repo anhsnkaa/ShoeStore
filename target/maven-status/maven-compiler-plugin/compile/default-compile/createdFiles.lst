@@ -3,6 +3,7 @@ controller\filter\UserFilter.class
 model\OrderDetail.class
 controller\admin\ProductAdminServerlet.class
 dal\JPAUtil.class
+model\HomeVariantItem.class
 dal\implement\OrderDetailDAO.class
 controller\homepage\HomeController.class
 controller\filter\ExtensionFileFilter.class
@@ -23,6 +24,7 @@ com\mycompany\shoestore\resources\JakartaEE10Resource.class
 controller\admin\DashboardServerlet.class
 dal\implement\AnswerDAO.class
 model\ProductImage.class
+controller\common\HeaderDataSupport.class
 dal\implement\ProductImageDAO.class
 controller\admin\QnaAdminServerlet.class
 dal\implement\AccountDAO.class
@@ -32,10 +34,8 @@ dal\implement\OrderDAO.class
 model\Order.class
 controller\admin\OrderAdminServerlet.class
 dal\implement\RoleDAO.class
-model\Blog.class
 controller\user\PaymentController.class
 model\ProductSize.class
 model\Category.class
 model\Question.class
-dal\implement\BlogDAO.class
 model\Gender.class

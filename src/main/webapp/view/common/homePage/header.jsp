@@ -70,7 +70,7 @@
                                         <div class="sub-menu home-sub-menu">
                                             <ul>
                                                 <li class="has-flyout">
-                                                    <a href="${menUrl}">Men<i class="fa fa-angle-right"></i></a>
+                                                    <a href="${menUrl}#products-section">Men<i class="fa fa-angle-right"></i></a>
                                                     <div class="sub-menu-flyout">
                                                         <ul>
                                                             <c:forEach items="${menCategories}" var="category">
@@ -83,13 +83,13 @@
                                                                         <c:param name="sort" value="${param.sort}"/>
                                                                     </c:if>
                                                                 </c:url>
-                                                                <li><a href="${menCategoryUrl}">${category.name}</a></li>
+                                                                <li><a href="${menCategoryUrl}#products-section">${category.name}</a></li>
                                                                 </c:forEach>
                                                         </ul>
                                                     </div>
                                                 </li>
                                                 <li class="has-flyout">
-                                                    <a href="${womenUrl}">Women<i class="fa fa-angle-right"></i></a>
+                                                    <a href="${womenUrl}#products-section">Women<i class="fa fa-angle-right"></i></a>
                                                     <div class="sub-menu-flyout">
                                                         <ul>
                                                             <c:forEach items="${womenCategories}" var="category">
@@ -102,13 +102,13 @@
                                                                         <c:param name="sort" value="${param.sort}"/>
                                                                     </c:if>
                                                                 </c:url>
-                                                                <li><a href="${womenCategoryUrl}">${category.name}</a></li>
+                                                                <li><a href="${womenCategoryUrl}#products-section">${category.name}</a></li>
                                                                 </c:forEach>
                                                         </ul>
                                                     </div>
                                                 </li>
                                                 <li class="has-flyout">
-                                                    <a href="${homeUrl}">Collections<i class="fa fa-angle-right"></i></a>
+                                                    <a href="${homeUrl}#products-section">Collections<i class="fa fa-angle-right"></i></a>
                                                     <div class="sub-menu-flyout collection-flyout">
                                                         <ul>
                                                             <c:forEach items="${listCollection}" var="collectionName">
@@ -123,7 +123,7 @@
                                                                         <c:param name="sort" value="${param.sort}"/>
                                                                     </c:if>
                                                                 </c:url>
-                                                                <li><a href="${collectionUrl}">${collectionName}</a></li>
+                                                                <li><a href="${collectionUrl}#products-section">${collectionName}</a></li>
                                                                 </c:forEach>
                                                         </ul>
                                                     </div>
@@ -138,7 +138,7 @@
                                                         <c:param name="sort" value="${param.sort}"/>
                                                     </c:if>
                                                 </c:url>
-                                                <li><a href="${saleProductsUrl}">Sale Products</a></li>
+                                                <li><a href="${saleProductsUrl}#products-section">Sale Products</a></li>
                                                     <c:url var="hotProductsUrl" value="home">
                                                         <c:param name="viewMode" value="${viewMode}"/>
                                                         <c:param name="search" value="hot"/>
@@ -149,7 +149,7 @@
                                                             <c:param name="sort" value="${param.sort}"/>
                                                         </c:if>
                                                     </c:url>
-                                                <li><a href="${hotProductsUrl}">Hot Products</a></li>
+                                                <li><a href="${hotProductsUrl}#products-section">Hot Products</a></li>
                                             </ul>
                                         </div>
                                     </li>
@@ -158,7 +158,7 @@
                             </div>
                             <div class="header-search-wrap">
                                 <div class="header-search">
-                                    <form action="home">
+                                    <form action="home#products-section">
                                         <input type="hidden" name="search" value="searchByKeyword">
                                         <input type="text" placeholder="Search" name="keyword"/>
                                         <a href="#" onclick="return this.closest('form').submit()"><i class="fa fa-search"></i></a>

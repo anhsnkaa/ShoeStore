@@ -69,7 +69,7 @@
                                 <p>Welcome back. Sign in to continue shopping, check your cart, and manage your orders.</p>
                             </div>
                         </div>
-                        <div class="offset-lg-3 col-lg-6 col-md-12 col-12">
+                        <div class="col-lg-6 col-md-10 col-12 auth-card-column">
                             <div class="login-form auth-card">
                                 <form action="${pageContext.request.contextPath}/authen?action=login" method="POST">
                                     <c:if test="${not empty error}">
@@ -107,9 +107,6 @@
                 </div>
             </div>
         <!-- user-login-area-end -->
-        <!-- footer-area-start -->
-        <jsp:include page="../common/homePage/footer.jsp"></jsp:include>
-        <!-- footer-area-end -->
 
 
             <!-- all js here -->
