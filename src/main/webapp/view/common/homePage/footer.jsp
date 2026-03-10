@@ -1,119 +1,72 @@
-<%-- 
-    Document   : footer
-    Created on : Feb 12, 2026, 4:12:38 PM
-    Author     : FPTShop
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<footer>
-            <!-- footer-top-start -->
-            <div class="footer-top">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="footer-top-menu bb-2">
-                                <nav>
-                                    <ul>
-                                        <li><a href="#">home</a></li>
-                                        <li><a href="#">Enable Cookies</a></li>
-                                        <li><a href="#">Privacy and Cookie Policy</a></li>
-                                        <li><a href="#">contact us</a></li>
-                                    </ul>
-                                </nav>
-                            </div>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<footer class="site-footer">
+    <div class="site-footer-top">
+        <div class="container">
+            <div class="row align-items-start">
+                <div class="col-lg-5 col-md-12 mb-4 mb-lg-0">
+                    <div class="site-footer-brand-block">
+                        <a class="site-footer-brand" href="${pageContext.request.contextPath}/home">ShoeStore</a>
+                        <p class="site-footer-copy">
+                            Curated footwear with a clean everyday aesthetic, built for comfort,
+                            movement, and a wardrobe that feels easy to wear.
+                        </p>
+                        <div class="site-footer-tags">
+                            <span>Minimal</span>
+                            <span>Comfort</span>
+                            <span>Everyday Wear</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-6 mb-4 mb-lg-0">
+                    <div class="site-footer-column">
+                        <h3>Explore</h3>
+                        <ul>
+                            <li><a href="${pageContext.request.contextPath}/home">Home</a></li>
+                            <li><a href="${pageContext.request.contextPath}/home?search=gender&gender=MEN#products-section">Men</a></li>
+                            <li><a href="${pageContext.request.contextPath}/home?search=gender&gender=WOMEN#products-section">Women</a></li>
+                            <li><a href="${pageContext.request.contextPath}/home?search=sale#products-section">Sale</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-6 mb-4 mb-lg-0">
+                    <div class="site-footer-column">
+                        <h3>Support</h3>
+                        <ul>
+                            <li><a href="${pageContext.request.contextPath}/payment">Cart</a></li>
+                            <li><a href="${pageContext.request.contextPath}/authen?action=login">Sign In</a></li>
+                            <li><a href="${pageContext.request.contextPath}/authen?action=sign-up">Create Account</a></li>
+                            <li><a href="${pageContext.request.contextPath}/home?search=hot#products-section">Hot Items</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-12">
+                    <div class="site-footer-contact-card">
+                        <h3>Contact</h3>
+                        <p>FPT University, Hoa Lac, Hanoi</p>
+                        <p><a href="tel:0123456789">0123 456 789</a></p>
+                        <p><a href="mailto:shoestore.team@example.com">shoestore.team@example.com</a></p>
+                        <div class="site-footer-socials">
+                            <a href="#" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                            <a href="#" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
+                            <a href="#" aria-label="Pinterest"><i class="fa fa-pinterest-p"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- footer-top-start -->
-            <!-- footer-mid-start -->
-            <div class="footer-mid ptb-50">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-8 col-md-12">
-                            <div class="row">
-                                <div class="col-lg-4 col-md-4 col-12">
-                                    <div class="single-footer br-2 xs-mb">
-                                        <div class="footer-title mb-20">
-                                            <h3>Products</h3>
-                                        </div>
-                                        <div class="footer-mid-menu">
-                                            <ul>
-                                                <li><a href="about.html">About us</a></li>
-                                                <li><a href="#">Prices drop </a></li>
-                                                <li><a href="#">New products</a></li>
-                                                <li><a href="#">Best sales</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-12">
-                                    <div class="single-footer br-2 xs-mb">
-                                        <div class="footer-title mb-20">
-                                            <h3>Our company</h3>
-                                        </div>
-                                        <div class="footer-mid-menu">
-                                            <ul>
-                                                <li><a href="contact.html">Contact us</a></li>
-                                                <li><a href="#">Sitemap</a></li>
-                                                <li><a href="#">Stores</a></li>
-                                                <li><a href="register.html">My account </a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-12">
-                                    <div class="single-footer br-2 xs-mb">
-                                        <div class="footer-title mb-20">
-                                            <h3>Your account</h3>
-                                        </div>
-                                        <div class="footer-mid-menu">
-                                            <ul>
-                                                <li><a href="contact.html">Addresses</a></li>
-                                                <li><a href="#">Credit slips </a></li>
-                                                <li><a href="#"> Orders</a></li>
-                                                <li><a href="#">Personal info</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-12">
-                            <div class="single-footer mrg-sm">
-                                <div class="footer-title mb-20">
-                                    <h3>STORE INFORMATION</h3>
-                                </div>
-                                <div class="footer-contact">
-                                    <p class="adress">
-                                        <span>My Company</span>
-                                        Your address goes here.
-                                    </p>
-                                    <p><span>Call us now:</span> 0123456789</p>
-                                    <p><span>Email:</span> demo@example.com</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        </div>
+    </div>
+    <div class="site-footer-bottom">
+        <div class="container">
+            <div class="site-footer-bottom-inner">
+                <p>2026 ShoeStore. Clean essentials for daily rotation.</p>
+                <div class="site-footer-payments">
+                    <span>Visa</span>
+                    <span>Mastercard</span>
+                    <span>COD</span>
                 </div>
             </div>
-            <!-- footer-mid-end -->
-            <!-- footer-bottom-start -->
-            <div class="footer-bottom">
-                <div class="container">
-                    <div class="row bt-2">
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <div class="copy-right-area">
-                                <p>&copy; 2022 <strong> Koparion </strong> Mede with ❤️ by <a href="https://hasthemes.com/" target="_blank"><strong>HasThemes</strong></a></p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12">
-                            <div class="payment-img text-end">
-                                <a href="#"><img src="${pageContext.request.contextPath}/img/1.png" alt="payment" /></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- footer-bottom-end -->
-        </footer>
+        </div>
+    </div>
+</footer>

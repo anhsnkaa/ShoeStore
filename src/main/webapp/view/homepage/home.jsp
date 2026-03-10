@@ -260,10 +260,10 @@
                                                             <div class="product-flag">
                                                                 <ul>
                                                                     <c:if test="${item.product.hot}">
-                                                                        <li><span class="sale">hot</span></li>
+                                                                        <li><span class="sale"><i class="fa fa-bolt"></i> Hot</span></li>
                                                                         </c:if>
                                                                         <c:if test="${item.product.saleActive}">
-                                                                        <li><span class="discount-percentage">-${item.product.discountPercent}%</span></li>
+                                                                        <li><span class="discount-percentage"><i class="fa fa-tag"></i> Sale ${item.product.discountPercent}%</span></li>
                                                                         </c:if>
                                                                 </ul>
                                                             </div>
@@ -298,26 +298,21 @@
                                                             <div class="product-flag">
                                                                 <ul>
                                                                     <c:if test="${p.hot}">
-                                                                        <li><span class="sale">hot</span></li>
+                                                                        <li><span class="sale"><i class="fa fa-bolt"></i> Hot</span></li>
                                                                         </c:if>
                                                                         <c:if test="${p.saleActive}">
-                                                                        <li><span class="discount-percentage">-${p.discountPercent}%</span></li>
+                                                                        <li><span class="discount-percentage"><i class="fa fa-tag"></i> Sale ${p.discountPercent}%</span></li>
                                                                         </c:if>
                                                                 </ul>
                                                             </div>
                                                         </c:if>
-                                                        <div class="quick-view">
-                                                            <a class="action-view" href="#" data-bs-target="#productModal" data-bs-toggle="modal" title="Quick View">
-                                                                <i class="fa fa-search-plus"></i>
-                                                            </a>
-                                                        </div>
                                                     </div>
                                                     <div class="product-details text-center">
                                                         <h4><a href="product-details?id=${p.id}">${p.name}</a></h4>
                                                             <c:if test="${not empty p.availableColors}">
-                                                            <div style="margin-bottom:8px;">
+                                                            <div class="product-color-list">
                                                                 <c:forEach items="${p.availableColors}" var="colorName">
-                                                                    <span style="display:inline-block; font-size:11px; padding:3px 7px; margin:0 4px 4px 0; border:1px solid #ddd; border-radius:12px; color:#555;">${colorName}</span>
+                                                                    <span class="product-color-chip">${colorName}</span>
                                                                 </c:forEach>
                                                             </div>
                                                         </c:if>

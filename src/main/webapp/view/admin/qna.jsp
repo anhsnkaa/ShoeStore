@@ -22,8 +22,7 @@
                                 <li class="breadcrumb-item active">Pending Q&amp;A</li>
                             </ol>
                             <div>
-                                <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-sm btn-secondary">Back To Dashboard</a>
-                                <a href="${pageContext.request.contextPath}/home" class="btn btn-sm btn-dark">Back To Home</a>
+                               <a href="${pageContext.request.contextPath}/home" class="btn btn-sm btn-dark">Back To Home</a>
                             </div>
                         </div>
 

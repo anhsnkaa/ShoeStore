@@ -63,20 +63,15 @@
                             <c:remove var="authMessage" scope="session"/>
                         </c:if>
 
+                        <jsp:include page="../../common/user/breadcrumbs.jsp"></jsp:include>
+
                           <c:choose>
                              <c:when test="${not empty orders}">
-                            <!-- Breadcrumbs -->
-                            <jsp:include page="../../common/user/breadcrumbs.jsp"></jsp:include>
-                                <!-- Icon Cards -->
-                            <jsp:include page="../../common/user/iconcard.jsp"></jsp:include>
                                 <!-- Orders Table -->
                                 <div class="card mb-3">
                                     <div class="card-header">
                                         <i class="fas fa-table"></i>
                                         My Orders
-                                        <a href="${pageContext.request.contextPath}/home" class="btn btn-sm btn-primary float-right">
-                                            Back To Home
-                                        </a>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -154,9 +149,6 @@
                             <div class="card mb-3">
                                 <div class="card-body text-center">
                                     <h5 class="mb-0">No orders found</h5>
-                                    <a href="${pageContext.request.contextPath}/home" class="btn btn-primary mt-3">
-                                        Back To Home
-                                    </a>
                                 </div>
                             </div>
                         </c:otherwise>

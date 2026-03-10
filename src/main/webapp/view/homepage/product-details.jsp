@@ -13,7 +13,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Koparion – Book Shop HTML5 Template</title>
+        <title>${product.name} | ShoeStore</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -42,7 +42,7 @@
         <!-- modernizr css -->
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
-    <body class="product-details">
+    <body class="product-details product-details-page">
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -52,60 +52,46 @@
 
         <jsp:include page="../common/homePage/header.jsp"></jsp:include>
             <!-- header-area-end -->
-            <!-- breadcrumbs-area-start -->
-        <jsp:include page="../common/homePage/breadcrumbs-area.jsp"></jsp:include>
-            <!-- breadcrumbs-area-end -->
             <!-- product-main-area-start -->
-            <div class="product-main-area mb-70">
-                <div class="container">
+            <div class="product-main-area mb-70 product-detail-shell">
+                <div class="container-fluid product-detail-container">
                     <div class="row">
                         <div class="col-lg-9 col-md-12 col-12 order-lg-1 order-1">
                             <!-- product-main-area-start -->
-                            <div class="product-main-area">
+                            <div class="product-main-area product-detail-card">
                                 <div class="row">
-                                    <div class="col-lg-5 col-md-6 col-12">
-                                        <div class="product-gallery-main mb-3 position-relative">
-                                            <img id="mainProductImage" src="${pageContext.request.contextPath}/${product.mainImage}" alt="${product.name}" style="width:100%; max-height:520px; object-fit:cover; border:1px solid #eee; border-radius:6px;">
-                                            <button type="button" id="galleryPrevBtn" class="btn btn-light border" aria-label="Previous image" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); z-index:2; width:38px; height:38px; border-radius:50%;">
+                                    <div class="col-lg-5 col-md-6 col-12 product-gallery-column">
+                                        <div class="product-gallery-main detail-gallery-frame mb-3 position-relative">
+                                            <img id="mainProductImage" class="detail-gallery-image" src="${pageContext.request.contextPath}/${product.mainImage}" alt="${product.name}">
+                                            <button type="button" id="galleryPrevBtn" class="btn btn-light border gallery-nav-btn gallery-nav-btn-prev" aria-label="Previous image">
                                                 <i class="fa fa-angle-left"></i>
                                             </button>
-                                            <button type="button" id="galleryNextBtn" class="btn btn-light border" aria-label="Next image" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); z-index:2; width:38px; height:38px; border-radius:50%;">
+                                            <button type="button" id="galleryNextBtn" class="btn btn-light border gallery-nav-btn gallery-nav-btn-next" aria-label="Next image">
                                                 <i class="fa fa-angle-right"></i>
                                             </button>
                                         </div>
-                                        <div class="mb-2">
+                                        <div class="mb-2 detail-gallery-counter-wrap">
                                             <small id="galleryCounter" class="text-muted"></small>
                                         </div>
-                                        <div id="productThumbList" class="d-flex flex-wrap">
+                                        <div id="productThumbList" class="d-flex flex-wrap detail-thumb-list">
                                             <c:forEach items="${product.images}" var="img">
-                                                <button type="button" class="btn p-0 mr-2 mb-2 border product-thumb-btn" data-color="${img.color}" data-src="${pageContext.request.contextPath}/${img.imageUrl}" style="width:72px; height:72px; overflow:hidden; border-radius:4px;">
+                                                <button type="button" class="btn p-0 mr-2 mb-2 border product-thumb-btn detail-thumb-btn" data-color="${img.color}" data-src="${pageContext.request.contextPath}/${img.imageUrl}">
                                                     <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
                                                 </button>
                                             </c:forEach>
                                         </div>
                                     </div>
-                                <div class="col-lg-7 col-md-6 col-12">
-                                    <div class="product-info-main">
+                                <div class="col-lg-7 col-md-6 col-12 product-summary-column">
+                                    <div class="product-info-main product-summary-card">
                                         <div class="page-title">
                                             <h1>${product.name}</h1>
-                                        </div>
-                                        <div class="product-info-stock-sku">
-                                            <span>In stock</span>
-                                            <div class="product-attribute">
-                                                <span>SKU</span>
-                                                <span class="value">24-WB05</span>
-                                            </div>
-                                        </div>
-                                        <div class="product-reviews-summary">
-
-
                                         </div>
                                         <div class="product-info-price">
                                             <div class="price-final">
                                                 <c:choose>
                                                     <c:when test="${product.saleActive}">
                                                         <span>${product.finalPrice} &#273;</span>
-                                                        <span class="old-price" style="margin-left:8px; text-decoration:line-through; color:#999;">${product.price} &#273;</span>
+                                                        <span class="old-price">${product.price} &#273;</span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span>${product.price} &#273;</span>
@@ -117,11 +103,11 @@
                                             <div class="product-flag mb-2">
                                                 <ul>
                                                     <c:if test="${product.hot}">
-                                                        <li><span class="sale">hot</span></li>
-                                                    </c:if>
-                                                    <c:if test="${product.saleActive}">
-                                                        <li><span class="discount-percentage">-${product.discountPercent}%</span></li>
-                                                    </c:if>
+                                                        <li><span class="sale"><i class="fa fa-bolt"></i> Hot</span></li>
+                                                     </c:if>
+                                                     <c:if test="${product.saleActive}">
+                                                        <li><span class="discount-percentage"><i class="fa fa-tag"></i> Sale ${product.discountPercent}%</span></li>
+                                                     </c:if>
                                                 </ul>
                                             </div>
                                         </c:if>
@@ -133,7 +119,7 @@
                                                 <input type="hidden" name="sizeId" id="selectedSizeIdInput">
 
                                                 <!-- COLOR -->
-                                                <div class="choose-color mb-3">
+                                                <div class="choose-color mb-3 detail-option-group">
                                                     <p>Color</p>
                                                     <div id="colorButtonGroup" class="d-flex flex-wrap">
                                                         <c:forEach items="${listColor}" var="colorName">
@@ -146,20 +132,22 @@
                                                 </div>
 
                                                 <!-- SIZE -->
-                                                <div class="choose-size mb-3">
+                                                <div class="choose-size mb-3 detail-option-group">
                                                     <p>Size</p>
-                                                    <select id="sizeSelect" class="form-control"></select>
+                                                    <select id="sizeSelect" class="form-control detail-select"></select>
                                                     <small id="stockHintText" class="form-text text-muted"></small>
                                                 </div>
 
 
-                                                <div class="quality-button">
-                                                    <input id="qtyInput" class="qty" type="number" value="1" name="quantity" min="1" required>
-                                                </div>
+                                                <div class="detail-purchase-row">
+                                                    <div class="quality-button detail-qty-wrap">
+                                                        <input id="qtyInput" class="qty" type="number" value="" name="quantity" min="1" required>
+                                                    </div>
 
-                                                <button type="submit" class="btn btn-dark" id="addToCartButton">
-                                                    Add to cart
-                                                </button>
+                                                    <button type="submit" class="btn btn-dark detail-add-to-cart" id="addToCartButton">
+                                                        Add to Cart
+                                                    </button>
+                                                </div>
 
                                                 <div id="sizeStockData" class="d-none">
                                                     <c:forEach items="${listProductSize}" var="s">
@@ -168,6 +156,12 @@
                                                 </div>
 
                                             </form>
+                                            <div class="product-inline-description">
+                                                <p class="detail-copy-kicker">Description</p>
+                                                <div class="detail-copy-body">
+                                                    ${product.description}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -175,13 +169,13 @@
                         </div>
                         <!-- product-main-area-end -->
                         <!-- product-info-area-start -->
-                        <div class="product-info-area mt-80">
+                        <div class="product-info-area mt-80 detail-tab-section">
                             <!-- Nav tabs -->
                             <ul class="nav" id="product-tabs">
                                 <!-- Tab mo ta san pham -->
-                                <li><a class="active" href="#Details" data-bs-toggle="tab">Details</a></li>
+                                <li><a class="active" href="#Details" data-bs-toggle="tab">Full Details</a></li>
                                 <!-- Tab review cu -->
-                                <li><a href="#Reviews" data-bs-toggle="tab">Reviews 3</a></li>
+                                <li><a href="#Reviews" data-bs-toggle="tab">Reviews</a></li>
                                 <!-- Tab hoi dap moi -->
                                 <li><a href="#Qna" data-bs-toggle="tab">Q&A</a></li>
                             </ul>
@@ -243,7 +237,7 @@
 
                                         <!-- Lap danh sach cau hoi -->
                                         <c:forEach items="${qnaQuestions}" var="q">
-                                            <div class="mb-3" style="border:1px solid #eee; padding:12px; border-radius:6px;">
+                                            <div class="mb-3 qna-thread-card">
                                                 <p>
                                                     <strong>
                                                         ${q.user.fullName}<c:if test="${q.user.role != null && q.user.role.id == 1}"> (Admin)</c:if>:
@@ -264,7 +258,7 @@
 
                                                 <!-- Lap danh sach cau tra loi -->
                                                 <c:forEach items="${ansList}" var="a">
-                                                    <div style="margin-left:20px; background:#f9f9f9; padding:8px; border-radius:4px; margin-bottom:8px;">
+                                                    <div class="qna-answer-card">
                                                         <p>
                                                             <strong>
                                                                 ${a.user.fullName}<c:if test="${a.user.role != null && a.user.role.id == 1}"> (Admin)</c:if>:
@@ -279,23 +273,23 @@
 
                                                 <!-- Form tra loi (chi hien khi da dang nhap) -->
                                                 <c:if test="${sessionScope.account != null}">
-                                                    <form action="${pageContext.request.contextPath}/qna?action=answer" method="post" style="margin-top:10px;">
+                                                    <form action="${pageContext.request.contextPath}/qna?action=answer" method="post" class="qna-reply-form">
                                                         <input type="hidden" name="productId" value="${product.id}">
                                                         <input type="hidden" name="questionId" value="${q.id}">
                                                         <textarea name="content" class="form-control" rows="2" placeholder="Viết câu trả lời..." required></textarea>
-                                                        <button type="submit" class="btn btn-sm btn-primary mt-2">Trả lời</button>
+                                                        <button type="submit" class="btn btn-dark btn-sm mt-2">Trả lời</button>
                                                     </form>
                                                 </c:if>
                                             </div>
                                         </c:forEach>
 
-                                        <hr>
+                                        <hr class="qna-divider">
 
                                         <!-- Form dat cau hoi -->
                                         <c:choose>
                                             <c:when test="${sessionScope.account != null}">
                                                 <h4>Đặt câu hỏi</h4>
-                                                <form action="${pageContext.request.contextPath}/qna?action=ask" method="post">
+                                                <form action="${pageContext.request.contextPath}/qna?action=ask" method="post" class="qna-ask-form">
                                                     <input type="hidden" name="productId" value="${product.id}">
                                                     <textarea name="content" class="form-control" rows="3" placeholder="Nhập câu hỏi..." required></textarea>
                                                     <button type="submit" class="btn btn-dark mt-2">Gửi câu hỏi</button>
@@ -995,6 +989,10 @@
                         return;
                     }
 
+                    if (qtyInput.disabled) {
+                        return;
+                    }
+
                     var maxQty = parseInt(qtyInput.getAttribute("max") || "1", 10);
                     if (isNaN(maxQty) || maxQty < 1) {
                         maxQty = 1;
@@ -1011,8 +1009,9 @@
                 function setSizeSelection(option) {
                     if (!option || option.disabled) {
                         if (qtyInput) {
-                            qtyInput.value = "1";
-                            qtyInput.setAttribute("max", "1");
+                            qtyInput.value = "";
+                            qtyInput.setAttribute("min", "0");
+                            qtyInput.setAttribute("max", "0");
                             qtyInput.disabled = true;
                         }
 
@@ -1042,7 +1041,11 @@
 
                     if (qtyInput) {
                         qtyInput.disabled = false;
+                        qtyInput.setAttribute("min", "1");
                         qtyInput.setAttribute("max", String(availableQty));
+                        if (!qtyInput.value || parseInt(qtyInput.value, 10) < 1) {
+                            qtyInput.value = "1";
+                        }
                         clampQuantityByMax();
                     }
 
@@ -1093,6 +1096,9 @@
                         firstAvailableOption.selected = true;
                         setSizeSelection(firstAvailableOption);
                     } else {
+                        if (sizeSelect.options.length > 0) {
+                            sizeSelect.selectedIndex = 0;
+                        }
                         setSizeSelection(null);
                     }
                 }
@@ -1166,7 +1172,9 @@
 
                     if (qtyInput) {
                         qtyInput.disabled = true;
-                        qtyInput.setAttribute("max", "1");
+                        qtyInput.value = "";
+                        qtyInput.setAttribute("min", "0");
+                        qtyInput.setAttribute("max", "0");
                     }
 
                     if (addToCartButton) {

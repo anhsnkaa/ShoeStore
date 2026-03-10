@@ -91,25 +91,19 @@
                             <c:remove var="productMessage" scope="session"/>
                         </c:if>
 
-                          <!-- Icon Cards-->
-                      <jsp:include page="../common/admin/iconcard.jsp"></jsp:include>
-                        <!-- Area Chart Example-->
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area"></i>
-                                Area Chart Example
-                            </div>
-                            <div class="card-body">
-                                <canvas id="myAreaChart" width="100%" height="30"></canvas>
-                            </div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                        </div>
 
                         <!-- DataTables Example -->
                         <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fas fa-table"></i>
-                                Data Table Example
+                            <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-table mr-1"></i>
+                                    Product Table
+                                </div>
+                                <button class="btn btn-dark btn-sm mt-2 mt-sm-0"
+                                        data-toggle="modal"
+                                        data-target="#addModal">
+                                    <i class="fas fa-plus mr-1"></i>Add Product
+                                </button>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
