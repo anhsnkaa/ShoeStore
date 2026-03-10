@@ -244,11 +244,14 @@
                                         <!-- Lap danh sach cau hoi -->
                                         <c:forEach items="${qnaQuestions}" var="q">
                                             <div class="mb-3" style="border:1px solid #eee; padding:12px; border-radius:6px;">
-                                                <p><strong>Question:</strong> ${q.content}</p>
+                                                <p>
+                                                    <strong>
+                                                        ${q.user.fullName}<c:if test="${q.user.role != null && q.user.role.id == 1}"> (Admin)</c:if>:
+                                                    </strong>
+                                                    ${q.content}
+                                                </p>
                                                 <p style="font-size:12px; color:#777;">
-                                                    by ${q.user.fullName}
-                                                    <c:if test="${q.user.role != null && q.user.role.id == 1}"> (Admin)</c:if>
-                                                    - ${q.createdDateDisplay}
+                                                    ${q.createdDateDisplay}
                                                 </p>
 
                                                 <!-- Lay danh sach cau tra loi cua cau hoi hien tai -->
@@ -262,11 +265,14 @@
                                                 <!-- Lap danh sach cau tra loi -->
                                                 <c:forEach items="${ansList}" var="a">
                                                     <div style="margin-left:20px; background:#f9f9f9; padding:8px; border-radius:4px; margin-bottom:8px;">
-                                                        <p><strong>Answer:</strong> ${a.content}</p>
+                                                        <p>
+                                                            <strong>
+                                                                ${a.user.fullName}<c:if test="${a.user.role != null && a.user.role.id == 1}"> (Admin)</c:if>:
+                                                            </strong>
+                                                            ${a.content}
+                                                        </p>
                                                         <p style="font-size:12px; color:#777;">
-                                                            by ${a.user.fullName}
-                                                            <c:if test="${a.user.role != null && a.user.role.id == 1}"> (Admin)</c:if>
-                                                            - ${a.createdDateDisplay}
+                                                            ${a.createdDateDisplay}
                                                         </p>
                                                     </div>
                                                 </c:forEach>
