@@ -5,6 +5,7 @@
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -90,12 +91,12 @@
                                             <div class="price-final">
                                                 <c:choose>
                                                     <c:when test="${product.saleActive}">
-                                                        <span>${product.finalPrice} &#273;</span>
-                                                        <span class="old-price">${product.price} &#273;</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span>${product.price} &#273;</span>
-                                                    </c:otherwise>
+                                                        <span><fmt:formatNumber value="${product.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</span>
+                                                        <span class="old-price"><fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</span>
+                                                     </c:when>
+                                                     <c:otherwise>
+                                                        <span><fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</span>
+                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
                                         </div>

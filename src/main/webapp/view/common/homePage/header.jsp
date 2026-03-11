@@ -5,6 +5,7 @@
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="dal.implement.CategoryDAO"%>
 <%@page import="dal.implement.ProductDAO"%>
@@ -213,7 +214,7 @@
                                                                         ${od.product.name}
                                                                     </a>
                                                                 </h5>
-                                                                <p>${od.quantity} x ${od.price} &#273; (Size ${od.size})</p>
+                                                                <p>${od.quantity} x <fmt:formatNumber value="${od.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273; (Size ${od.size})</p>
                                                             </div>
                                                         </div>
                                                     </c:forEach>
@@ -221,7 +222,7 @@
                                             </c:choose>
                                         </div>
                                         <div class="cart-totals">
-                                            <h5>Total <span>${empty cart ? 0 : cart.total} &#273;</span></h5>
+                                            <h5>Total <span><fmt:formatNumber value="${empty cart ? 0 : cart.total}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</span></h5>
                                         </div>
                                         <div class="cart-bottom">
                                             <a class="view-cart" href="${pageContext.request.contextPath}/payment">View cart</a>

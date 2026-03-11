@@ -5,6 +5,7 @@
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -274,10 +275,10 @@
                                                         <div class="product-price">
                                                             <ul>
                                                                 <a href="${variantDetailUrl}">
-                                                                    <li>${item.product.finalPrice} &#273;</li>
-                                                                        <c:if test="${item.product.saleActive}">
-                                                                        <li class="old-price">${item.product.price} &#273;</li>
-                                                                        </c:if>
+                                                                    <li><fmt:formatNumber value="${item.product.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                         <c:if test="${item.product.saleActive}">
+                                                                        <li class="old-price"><fmt:formatNumber value="${item.product.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                         </c:if>
                                                                 </a>
                                                             </ul>
                                                         </div>
@@ -319,10 +320,10 @@
                                                         <div class="product-price">
                                                             <ul>
                                                                 <a href="product-details?id=${p.id}">
-                                                                    <li>${p.finalPrice} &#273;</li>
-                                                                        <c:if test="${p.saleActive}">
-                                                                        <li class="old-price">${p.price} &#273;</li>
-                                                                        </c:if>
+                                                                    <li><fmt:formatNumber value="${p.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                         <c:if test="${p.saleActive}">
+                                                                        <li class="old-price"><fmt:formatNumber value="${p.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                         </c:if>
                                                                 </a>
                                                             </ul>
                                                         </div>

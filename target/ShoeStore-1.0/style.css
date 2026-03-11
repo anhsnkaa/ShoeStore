@@ -9470,6 +9470,10 @@ body.shop .products-header .section-title-5 h2 {
     letter-spacing: 0.02em;
 }
 
+body.shop .products-header .section-title-5 h2:before {
+    background: #2f4f47;
+}
+
 body.shop .product-card {
     border-color: #e8e3d9;
     box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
@@ -9477,8 +9481,21 @@ body.shop .product-card {
 
 body.shop .product-card .product-img {
     background: linear-gradient(180deg, #faf9f5 0%, #f1eee7 100%);
+    border-radius: 22px;
     overflow: hidden;
     position: relative;
+}
+
+body.shop .product-card .product-img a {
+    aspect-ratio: 1 / 1;
+    display: block;
+}
+
+body.shop .product-card .product-img a img {
+    height: 100%;
+    object-fit: cover;
+    padding: 0;
+    width: 100%;
 }
 
 body.shop .product-card .product-img::after,
@@ -9494,14 +9511,16 @@ body.shop .product-card .product-details {
 
 body.shop .product-card .product-details h4 {
     margin-bottom: 10px;
-    min-height: 56px;
+    min-height: 60px;
 }
 
 body.shop .product-card .product-details h4 a {
     color: #18211f;
-    font-family: 'Rufina', serif;
-    font-size: 20px;
-    line-height: 1.35;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.45;
 }
 
 body.shop .product-card .product-details h4 a:hover {
@@ -9572,8 +9591,15 @@ body.shop .product-card .product-flag ul li > span {
     color: var(--shop-accent);
     display: inline-flex;
     gap: 6px;
-    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 10px 14px;
     text-transform: uppercase;
+}
+
+body.shop .product-card .product-flag ul li > span i {
+    font-size: 14px;
 }
 
 body.shop .product-card .product-flag ul li > span.sale {
@@ -9914,5 +9940,129 @@ body.product-details-page .detail-thumb-btn img {
 
     body.product-details-page .detail-thumb-list {
         gap: 10px;
+    }
+}
+
+body.shop .view-mode-switch a {
+    border-color: #d7ddd8;
+    color: #33413d;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+}
+
+body.shop .view-mode-switch a.active,
+body.shop .view-mode-switch a:hover {
+    background: #2f4f47;
+    border-color: #2f4f47;
+    color: #ffffff;
+}
+
+body.shop .main-menu-auth .nav-cart > a i,
+body.shop .main-menu-auth .nav-cart > a .cart-link-label {
+    color: inherit;
+}
+
+body.shop .main-menu-auth > ul > li > a:hover,
+body.shop .main-menu-area.home-navbar .main-menu-auth > ul > li > a:hover,
+body.shop .main-menu-area.home-navbar .menu-area ul li > a:hover,
+body.shop .main-menu-area.home-navbar:hover .main-menu-auth > ul > li > a:hover,
+body.shop .main-menu-area.home-navbar.sticky .main-menu-auth > ul > li > a:hover {
+    color: #2f4f47;
+}
+
+body.shop .main-menu-auth .nav-cart .nav-cart-count {
+    background: #2f4f47;
+}
+
+body.shop .main-menu-auth .nav-cart .mini-cart-sub .cart-info h5 a:hover,
+body.shop .main-menu-auth .nav-cart .mini-cart-sub .cart-bottom a:hover,
+body.shop .menu-area ul li .mega-menu span a:hover,
+body.shop .menu-area ul li .sub-menu ul li a:hover,
+body.shop .footer-top-menu ul li a:hover,
+body.shop .footer-mid-menu ul li a:hover,
+body.shop .pagination-area .page-number ul li a.active,
+body.shop .pagination-area .page-number ul li a:hover {
+    color: #2f4f47;
+}
+
+body.shop .main-menu-area.home-navbar:hover .header-search form a:hover,
+body.shop .main-menu-area.home-navbar.sticky .header-search form a:hover {
+    background: #2f4f47;
+    border-color: #2f4f47;
+}
+
+body.product-details-page .main-menu-area,
+body.product-details-page .main-menu-area .menu-area ul li .sub-menu,
+body.product-details-page .main-menu-area .menu-area ul li .sub-menu.home-sub-menu ul li .sub-menu-flyout {
+    z-index: 99999999;
+}
+
+body.product-details-page header,
+body.product-details-page #header-sticky,
+body.product-details-page .main-menu-area,
+body.product-details-page .main-menu-inner,
+body.product-details-page .menu-left-group,
+body.product-details-page .menu-area,
+body.product-details-page .menu-area nav,
+body.product-details-page .menu-area nav > ul,
+body.product-details-page .menu-area nav > ul > li,
+body.product-details-page .main-menu-auth,
+body.product-details-page .main-menu-auth > ul {
+    overflow: visible;
+    position: relative;
+}
+
+body.product-details-page header,
+body.product-details-page #header-sticky,
+body.product-details-page .main-menu-area,
+body.product-details-page .main-menu-inner {
+    isolation: isolate;
+    z-index: 100000000 !important;
+}
+
+body.product-details-page .menu-area ul li .sub-menu,
+body.product-details-page .menu-area ul li .sub-menu.home-sub-menu ul li .sub-menu-flyout {
+    z-index: 100000100 !important;
+}
+
+body.product-details-page .menu-area ul li .sub-menu ul li a:hover,
+body.product-details-page .menu-area ul li .mega-menu span a:hover,
+body.product-details-page .main-menu-auth > ul > li > a:hover {
+    color: #315149;
+}
+
+body.product-details-page .product-detail-shell {
+    padding-top: 120px;
+    position: relative;
+    z-index: 0;
+}
+
+body.product-details-page .product-detail-container,
+body.product-details-page .product-detail-card,
+body.product-details-page .product-gallery-column,
+body.product-details-page .detail-gallery-frame,
+body.product-details-page .detail-gallery-image {
+    position: relative;
+    z-index: 0;
+}
+
+body.product-details-page .product-detail-card {
+    overflow: visible;
+}
+
+body.product-details-page .detail-gallery-frame {
+    overflow: hidden;
+}
+
+@media only screen and (max-width: 991.98px) {
+    body.product-details-page .product-detail-shell {
+        padding-top: 104px;
+    }
+}
+
+@media only screen and (max-width: 767.98px) {
+    body.product-details-page .product-detail-shell {
+        padding-top: 90px;
     }
 }
