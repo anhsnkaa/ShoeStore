@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<fmt:setLocale value="en_US" scope="page"/>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -12,7 +13,6 @@
         <link href="${pageContext.request.contextPath}/css/sb-admin.css" rel="stylesheet">
     </head>
     <body id="page-top">
-        <jsp:include page="../common/admin/navbar.jsp"></jsp:include>
             <div id="wrapper">
             <jsp:include page="../common/admin/sidebar.jsp"></jsp:include>
                 <div id="content-wrapper">
@@ -42,7 +42,7 @@
                                     <div class="card-body-icon"><i class="fas fa-money-bill-wave"></i></div>
                                     <div class="mr-5">SUM Revenue</div>
                                     <h5 class="mb-0">
-                                        <fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
+                                        <fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                                     <div class="card-body-icon"><i class="fas fa-calculator"></i></div>
                                     <div class="mr-5">AVG Order Value</div>
                                     <h5 class="mb-0">
-                                        <fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
+                                        <fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -64,7 +64,7 @@
                                     <div class="card-body-icon"><i class="fas fa-arrow-up"></i></div>
                                     <div class="mr-5">MAX Order Value</div>
                                     <h5 class="mb-0">
-                                        <fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
+                                        <fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -77,7 +77,7 @@
                                     <div class="card-body-icon"><i class="fas fa-arrow-down"></i></div>
                                     <div class="mr-5">MIN Order Value</div>
                                     <h5 class="mb-0">
-                                        <fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
+                                        <fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;
                                     </h5>
                                 </div>
                             </div>
@@ -105,22 +105,22 @@
                                         </tr>
                                         <tr>
                                             <td>SUM</td>
-                                            <td><fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
+                                            <td><fmt:formatNumber value="${empty totalRevenue ? 0 : totalRevenue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                     <td>Total revenue (CONFIRMED/SHIPPING/DONE)</td>
                                     </tr>
                                     <tr>
                                         <td>AVG</td>
-                                        <td><fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
+                                        <td><fmt:formatNumber value="${empty avgOrderValue ? 0 : avgOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                     <td>Average order value</td>
                                     </tr>
                                     <tr>
                                         <td>MAX</td>
-                                        <td><fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
+                                        <td><fmt:formatNumber value="${empty maxOrderValue ? 0 : maxOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                     <td>Highest order value</td>
                                     </tr>
                                     <tr>
                                         <td>MIN</td>
-                                        <td><fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
+                                        <td><fmt:formatNumber value="${empty minOrderValue ? 0 : minOrderValue}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                     <td>Lowest order value</td>
                                     </tr>
                                     </tbody>

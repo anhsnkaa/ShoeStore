@@ -44,6 +44,15 @@ public class ProductDetailsController extends HttpServlet {
 
         //lay product tu database
         Product productFindById = productDAO.getProductById(id);
+        List<Product> relatedProducts = List.of();
+
+        if (productFindById.getCategory() != null) {
+            relatedProducts = productDAO.getRelatedProductsByCategory(
+                    productFindById.getCategory().getId(),
+                    productFindById.getId(),
+                    6
+            );
+        }
 
         //lấy list câu hỏi đã duyệt:
         List<Question> qnaQuestions = questionDAO.getApprovedByProductId(id);
@@ -60,6 +69,7 @@ public class ProductDetailsController extends HttpServlet {
         request.setAttribute("qnaQuestions", qnaQuestions);
         request.setAttribute("answersByQuestion", answersByQuestion);
         request.setAttribute("product", productFindById);
+        request.setAttribute("relatedProducts", relatedProducts);
         request.setAttribute("listColor", listColor);
         request.setAttribute("listProductSize", listProductSize);
         request.setAttribute("selectedColor", normalizeColor(request.getParameter("color")));

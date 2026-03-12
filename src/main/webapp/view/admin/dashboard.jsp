@@ -5,7 +5,9 @@
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<fmt:setLocale value="en_US" scope="page"/>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,7 +35,6 @@
     </head>
 
     <body id="page-top">
-        <jsp:include page="../common/admin/navbar.jsp"></jsp:include>
             <div id="wrapper">
 
                 <!-- Sidebar -->
@@ -142,7 +143,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
-                                                <td>${p.price} &#273;</td>
+                                                <td><fmt:formatNumber value="${p.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="true"/> &#273;</td>
                                                 <td>
                                                     ${p.category.name}
                                                     <c:if test="${not empty p.category.gender and not empty p.category.gender.name}">

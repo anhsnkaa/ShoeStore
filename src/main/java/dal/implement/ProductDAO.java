@@ -116,6 +116,30 @@ public class ProductDAO {
         return product;
     }
 
+    public List<Product> getRelatedProductsByCategory(int categoryId, int currentProductId, int limit) {
+        if (categoryId <= 0 || currentProductId <= 0 || limit <= 0) {
+            return List.of();
+        }
+
+        EntityManager em = JPAUtil.getEMF().createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT p FROM Product p "
+                    + "WHERE p.category.id = :categoryId "
+                    + "AND p.id <> :currentProductId "
+                    + "ORDER BY p.id DESC",
+                    Product.class
+            )
+                    .setParameter("categoryId", categoryId)
+                    .setParameter("currentProductId", currentProductId)
+                    .setMaxResults(limit)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     // Lay san pham theo category co phan trang va sort.
     public List<Product> getProductByCategory(int categoryId, int page, String sort) {
         EntityManager em = JPAUtil.getEMF().createEntityManager();

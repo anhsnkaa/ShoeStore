@@ -6,6 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<fmt:setLocale value="en_US" scope="page"/>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,7 +35,6 @@
     </head>
 
     <body id="page-top">
-        <jsp:include page="../../common/user/navbar.jsp"></jsp:include>
             <div id="wrapper">
 
                 <!-- Sidebar -->
@@ -91,7 +92,7 @@
                                                             <td>#${o.id}</td>
                                                             <td>${o.createdDateDisplay}</td>
                                                             <td>${o.status}</td>
-                                                            <td>${o.totalAmount} &#273;</td>
+                                                            <td><fmt:formatNumber value="${o.totalAmount}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                                             <td>
                                                                 <button class="btn btn-info btn-sm"
                                                                         type="button"
@@ -129,8 +130,8 @@
                                                                                     <td>${od.color}</td>
                                                                                     <td>${od.size}</td>
                                                                                     <td>${od.quantity}</td>
-                                                                                    <td>${od.price} &#273;</td>
-                                                                                    <td>${od.price * od.quantity} &#273;</td>
+                                                                                    <td><fmt:formatNumber value="${od.price}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
+                                                                                    <td><fmt:formatNumber value="${od.price * od.quantity}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                                                                 </tr>
                                                                             </c:forEach>
                                                                         </tbody>

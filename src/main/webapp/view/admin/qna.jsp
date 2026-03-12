@@ -11,7 +11,6 @@
         <link href="${pageContext.request.contextPath}/css/sb-admin.css" rel="stylesheet">
     </head>
     <body id="page-top">
-        <jsp:include page="../common/admin/navbar.jsp"></jsp:include>
             <div id="wrapper">
             <jsp:include page="../common/admin/sidebar.jsp"></jsp:include>
                 <div id="content-wrapper">

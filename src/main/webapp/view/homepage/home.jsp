@@ -7,6 +7,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<fmt:setLocale value="en_US" scope="page"/>
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -275,9 +276,9 @@
                                                         <div class="product-price">
                                                             <ul>
                                                                 <a href="${variantDetailUrl}">
-                                                                    <li><fmt:formatNumber value="${item.product.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                    <li><fmt:formatNumber value="${item.product.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="true"/> &#273;</li>
                                                                          <c:if test="${item.product.saleActive}">
-                                                                        <li class="old-price"><fmt:formatNumber value="${item.product.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                        <li class="old-price"><fmt:formatNumber value="${item.product.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="true"/> &#273;</li>
                                                                          </c:if>
                                                                 </a>
                                                             </ul>
@@ -320,9 +321,9 @@
                                                         <div class="product-price">
                                                             <ul>
                                                                 <a href="product-details?id=${p.id}">
-                                                                    <li><fmt:formatNumber value="${p.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                    <li><fmt:formatNumber value="${p.finalPrice}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="true"/> &#273;</li>
                                                                          <c:if test="${p.saleActive}">
-                                                                        <li class="old-price"><fmt:formatNumber value="${p.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="false"/> &#273;</li>
+                                                                        <li class="old-price"><fmt:formatNumber value="${p.price}" type="number" minFractionDigits="0" maxFractionDigits="0" groupingUsed="true"/> &#273;</li>
                                                                          </c:if>
                                                                 </a>
                                                             </ul>

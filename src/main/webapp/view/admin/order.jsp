@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<fmt:setLocale value="en_US" scope="page"/>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -12,7 +13,6 @@
         <link href="${pageContext.request.contextPath}/css/sb-admin.css" rel="stylesheet">
     </head>
     <body id="page-top">
-        <jsp:include page="../common/admin/navbar.jsp"></jsp:include>
             <div id="wrapper">
             <jsp:include page="../common/admin/sidebar.jsp"></jsp:include>
                 <div id="content-wrapper">
@@ -143,7 +143,7 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                        <fmt:formatNumber value="${o.totalAmount}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;
+                                                        <fmt:formatNumber value="${o.totalAmount}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;
                                                     </td>
                                                     <td>${o.createdDateDisplay}</td>
                                                     <td>
@@ -212,8 +212,8 @@
                                                                                     <td>${od.color}</td>
                                                                                     <td>${od.size}</td>
                                                                                     <td>${od.quantity}</td>
-                                                                                    <td><fmt:formatNumber value="${od.price}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
-                                                                                    <td><fmt:formatNumber value="${od.price * od.quantity}" type="number" minFractionDigits="0" maxFractionDigits="2"/> &#273;</td>
+                                                                                    <td><fmt:formatNumber value="${od.price}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
+                                                                                    <td><fmt:formatNumber value="${od.price * od.quantity}" type="number" minFractionDigits="0" maxFractionDigits="2" groupingUsed="true"/> &#273;</td>
                                                                                 </tr>
                                                                             </c:forEach>
                                                                         </tbody>
