@@ -43,12 +43,6 @@
             <span>Cart</span>
         </a>
     </li>
-    <li class="nav-item${fn:endsWith(currentUri, '/home') ? ' active' : ''}">
-        <a class="nav-link" href="${pageContext.request.contextPath}/home">
-            <i class="fas fa-fw fa-home"></i>
-            <span>Home</span>
-        </a>
-    </li>
 </ul>
 
 <div class="modal fade" id="updateProfileModalUser" tabindex="-1">

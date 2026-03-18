@@ -57,16 +57,4 @@
             </div>
         </div>
     </div>
-    <div class="site-footer-bottom">
-        <div class="container">
-            <div class="site-footer-bottom-inner">
-                <p>2026 ShoeStore. Clean essentials for daily rotation.</p>
-                <div class="site-footer-payments">
-                    <span>Visa</span>
-                    <span>Mastercard</span>
-                    <span>COD</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </footer>

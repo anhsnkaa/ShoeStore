@@ -37,25 +37,29 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Khoi tao thong tin phan trang cho lan tai hien tai.
+        // tạo đối tượng phân trang
         PageControl pageControl = new PageControl();
+        
+        // các hàm normalize làm sạch dữ liệu đầu vào(nếu như viết trên url)
         String selectedGender = normalizeGender(request.getParameter("gender"));
         String viewMode = normalizeViewMode(request.getParameter("viewMode"));
         String sort = normalizeSort(request.getParameter("sort"));
 
-        // Lay danh sach san pham theo bo loc + sort.
+        // lấy danh sách sản phẩm theo bộ lọc + sort
         List<Product> listProduct = "variant".equals(viewMode) ? List.of() : findProductDoGet(request, pageControl, sort, viewMode);
         List<HomeVariantItem> listVariantItems = "variant".equals(viewMode) ? findVariantItems(request, pageControl, sort, viewMode) : List.of();
-        // Lay danh sach category de hien thi o sidebar.
+        // lấy danh sách category để hiển thị ở side bar
         List<Category> listCategory = selectedGender == null
                 ? categoryDAO.getDistinctCategoriesByName()
                 : categoryDAO.getCategoriesByGender(selectedGender);
+        // Đếm số sản phẩm của mỗi category
         Map<Integer, Integer> categoryProductCountMap = buildCategoryProductCountMap(listCategory, selectedGender);
+        
+        // lấy collection theo từng gender
         List<String> listCollection = selectedGender == null
                 ? productDAO.getAllCollections()
                 : productDAO.getCollectionsByGender(selectedGender);
 
-        // Day du lieu vao request de giam memory/session pressure.
         request.setAttribute("listProduct", listProduct);
         request.setAttribute("listVariantItems", listVariantItems);
         request.setAttribute("listCategory", listCategory);
@@ -67,6 +71,7 @@ public class HomeController extends HttpServlet {
         request.setAttribute("isHomePage", true);
         request.setAttribute("menCategories", categoryDAO.getCategoriesByGender("MEN"));
         request.setAttribute("womenCategories", categoryDAO.getCategoriesByGender("WOMEN"));
+        //
         HeaderDataSupport.populate(request);
         // Chuyen huong den trang home.jsp.
         request.getRequestDispatcher("view/homepage/home.jsp").forward(request, response);
@@ -97,19 +102,25 @@ public class HomeController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    // Xu ly tat ca bo loc/search/sort va tinh toan thong tin phan trang.
+    // lấy danh sách các sản phẩm + phân trang + sort
     private List<Product> findProductDoGet(HttpServletRequest request, PageControl pageControl, String sort, String viewMode) {
         int page = parsePage(request.getParameter("page"));
         int pageSize = 12;
+        
+        //xác định kiểu lọc đang dùng
         String actionSearch = resolveActionSearch(request);
+        
+        //lấy đúng sản phẩm (lọc) cho trang đó
         List<Product> product = fetchProductsByAction(request, actionSearch, sort, page);
         int totalRecord = resolveTotalRecord(request, actionSearch);
-
+        
+        //lấy tổng số trang
         int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
         if (totalPage <= 0) {
             totalPage = 1;
         }
-
+        
+        //nếu nhập page lớn hơn tổng trang thì sẽ là ở trang cuối
         if (page > totalPage) {
             page = totalPage;
             product = fetchProductsByAction(request, actionSearch, sort, page);
@@ -122,11 +133,18 @@ public class HomeController extends HttpServlet {
         return product;
     }
 
+    //lấy danh sách các biến thể của sản phẩm + phân trang + sort
     private List<HomeVariantItem> findVariantItems(HttpServletRequest request, PageControl pageControl, String sort, String viewMode) {
         int page = parsePage(request.getParameter("page"));
         int pageSize = 12;
+        
+        //xác định kiểu lọc đang dùng
         String actionSearch = resolveActionSearch(request);
+        
+        //lấy đúng sản phẩm (lọc) cho trang đó
         List<Product> allProducts = fetchAllProductsByAction(request, actionSearch, sort);
+        
+        //lấy các sản phẩm được lọc để phân ra từng biến thể rồi add vào list mới
         List<HomeVariantItem> allVariantItems = buildVariantItems(allProducts);
         int totalRecord = allVariantItems.size();
         int totalPage = (int) Math.ceil(totalRecord * 1.0 / pageSize);
@@ -150,6 +168,7 @@ public class HomeController extends HttpServlet {
         return pagedItems;
     }
 
+    //hàm trả về list phân ra từng biến thể
     private List<HomeVariantItem> buildVariantItems(List<Product> products) {
         List<HomeVariantItem> items = new ArrayList<>();
 
@@ -175,7 +194,8 @@ public class HomeController extends HttpServlet {
 
         return items;
     }
-
+    
+    //hàm lấy tất cả các sản phẩm dựa trên action cho variant items
     private List<Product> fetchAllProductsByAction(HttpServletRequest request, String actionSearch, String sort) {
         List<Product> products = new ArrayList<>();
 
@@ -195,6 +215,8 @@ public class HomeController extends HttpServlet {
         return products;
     }
 
+    
+    //hàm tìm sản phẩm dựa trên action cho một trang
     private List<Product> fetchProductsByAction(HttpServletRequest request, String actionSearch, String sort, int page) {
         switch (actionSearch) {
             case "category":
@@ -252,6 +274,7 @@ public class HomeController extends HttpServlet {
         }
     }
 
+    //hàm dùng để đếm tổng sản phẩm tùy điều kiện lọc để phân trang
     private int resolveTotalRecord(HttpServletRequest request, String actionSearch) {
         switch (actionSearch) {
             case "category":
@@ -308,11 +331,12 @@ public class HomeController extends HttpServlet {
         }
     }
 
-    private String resolveActionSearch(HttpServletRequest request) {
+        private String resolveActionSearch(HttpServletRequest request) {
         String actionSearch = request.getParameter("search");
         return actionSearch == null || actionSearch.isBlank() ? "default" : actionSearch;
     }
 
+        //hàm lấy url để lọc dữ liệu
     private String buildPageUrlPattern(HttpServletRequest request, String viewMode, String sort) {
         StringBuilder pattern = new StringBuilder(request.getRequestURL().toString()).append("?");
         appendQueryParam(pattern, "viewMode", viewMode);
@@ -327,6 +351,7 @@ public class HomeController extends HttpServlet {
         return pattern.toString();
     }
 
+    //hàm để gắn url
     private void appendQueryParam(StringBuilder builder, String key, String value) {
         if (value == null || value.isBlank()) {
             return;
@@ -338,6 +363,7 @@ public class HomeController extends HttpServlet {
                 .append("&");
     }
 
+    //lấy dữ liệu phân trang hợp lệ
     private int parsePage(String pageRaw) {
         try {
             int page = Integer.parseInt(pageRaw);
@@ -347,6 +373,7 @@ public class HomeController extends HttpServlet {
         }
     }
 
+    //chuyển chuỗi từ request để không bị lỗi(categoryid)
     private Integer parseNullableInt(String raw) {
         try {
             return raw == null || raw.isBlank() ? null : Integer.parseInt(raw);
@@ -355,6 +382,7 @@ public class HomeController extends HttpServlet {
         }
     }
 
+    //tạo map lưu số lượng sản phẩm của category
     private Map<Integer, Integer> buildCategoryProductCountMap(List<Category> categories, String selectedGender) {
         Map<Integer, Integer> countMap = new LinkedHashMap<>();
 
@@ -380,7 +408,7 @@ public class HomeController extends HttpServlet {
         return countMap;
     }
 
-    // Parse double va tra gia tri mac dinh neu loi.
+    // chuyển chuỗi từ request để không bị lỗi(giá tiền)
     private double parseDoubleOrDefault(String raw, double defaultValue) {
         try {
             return Double.parseDouble(raw);

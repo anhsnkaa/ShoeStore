@@ -136,7 +136,7 @@
                         <c:param name="viewMode" value="${viewMode}"/>
                         <c:param name="search" value="price"/>
                         <c:param name="min" value="0"/>
-                        <c:param name="max" value="9.99"/>
+                        <c:param name="max" value="800000"/>
                         <c:if test="${not empty param.sort}">
                             <c:param name="sort" value="${param.sort}"/>
                         </c:if>
@@ -144,8 +144,8 @@
                     <c:url var="priceRange2Url" value="home">
                         <c:param name="viewMode" value="${viewMode}"/>
                         <c:param name="search" value="price"/>
-                        <c:param name="min" value="30"/>
-                        <c:param name="max" value="39.99"/>
+                        <c:param name="min" value="800000"/>
+                        <c:param name="max" value="1200000"/>
                         <c:if test="${not empty param.sort}">
                             <c:param name="sort" value="${param.sort}"/>
                         </c:if>
@@ -153,8 +153,8 @@
                     <c:url var="priceRange3Url" value="home">
                         <c:param name="viewMode" value="${viewMode}"/>
                         <c:param name="search" value="price"/>
-                        <c:param name="min" value="40"/>
-                        <c:param name="max" value="49.99"/>
+                        <c:param name="min" value="1200000"/>
+                        <c:param name="max" value="1800000"/>
                         <c:if test="${not empty param.sort}">
                             <c:param name="sort" value="${param.sort}"/>
                         </c:if>
@@ -162,8 +162,8 @@
                     <c:url var="priceRange4Url" value="home">
                         <c:param name="viewMode" value="${viewMode}"/>
                         <c:param name="search" value="price"/>
-                        <c:param name="min" value="50"/>
-                        <c:param name="max" value="59.99"/>
+                        <c:param name="min" value="1800000"/>
+                        <c:param name="max" value="2500000"/>
                         <c:if test="${not empty param.sort}">
                             <c:param name="sort" value="${param.sort}"/>
                         </c:if>
@@ -171,7 +171,7 @@
                     <c:url var="priceRange5Url" value="home">
                         <c:param name="viewMode" value="${viewMode}"/>
                         <c:param name="search" value="price"/>
-                        <c:param name="min" value="70"/>
+                        <c:param name="min" value="2500000"/>
                         <c:if test="${not empty param.sort}">
                             <c:param name="sort" value="${param.sort}"/>
                         </c:if>
@@ -194,11 +194,11 @@
                                                 window.location.href = this.value;
                                             }">
                                         <option value="${allPriceUrl}#products-section" ${param.search != 'price' ? 'selected="selected"' : ''}>All Prices</option>
-                                        <option value="${priceRange1Url}#products-section" ${param.search == 'price' and param.min == '0' and param.max == '9.99' ? 'selected="selected"' : ''}>0.00 &#273; - 9.99 &#273;</option>
-                                        <option value="${priceRange2Url}#products-section" ${param.search == 'price' and param.min == '30' and param.max == '39.99' ? 'selected="selected"' : ''}>30.00 &#273; - 39.99 &#273;</option>
-                                        <option value="${priceRange3Url}#products-section" ${param.search == 'price' and param.min == '40' and param.max == '49.99' ? 'selected="selected"' : ''}>40.00 &#273; - 49.99 &#273;</option>
-                                        <option value="${priceRange4Url}#products-section" ${param.search == 'price' and param.min == '50' and param.max == '59.99' ? 'selected="selected"' : ''}>50.00 &#273; - 59.99 &#273;</option>
-                                        <option value="${priceRange5Url}#products-section" ${param.search == 'price' and param.min == '70' and empty param.max ? 'selected="selected"' : ''}>70.00 &#273; and above</option>
+                                        <option value="${priceRange1Url}#products-section" ${param.search == 'price' and param.min == '0' and param.max == '800000' ? 'selected="selected"' : ''}>Under 800,000 &#273;</option>
+                                        <option value="${priceRange2Url}#products-section" ${param.search == 'price' and param.min == '800000' and param.max == '1200000' ? 'selected="selected"' : ''}>800,000 &#273; - 1,200,000 &#273;</option>
+                                        <option value="${priceRange3Url}#products-section" ${param.search == 'price' and param.min == '1200000' and param.max == '1800000' ? 'selected="selected"' : ''}>1,200,000 &#273; - 1,800,000 &#273;</option>
+                                        <option value="${priceRange4Url}#products-section" ${param.search == 'price' and param.min == '1800000' and param.max == '2500000' ? 'selected="selected"' : ''}>1,800,000 &#273; - 2,500,000 &#273;</option>
+                                        <option value="${priceRange5Url}#products-section" ${param.search == 'price' and param.min == '2500000' and empty param.max ? 'selected="selected"' : ''}>2,500,000 &#273; and above</option>
                                     </select>
                                 </div>
                                 <div class="toolbar-sorter">
